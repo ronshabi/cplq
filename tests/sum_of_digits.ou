@@ -1,0 +1,14 @@
+num: int;
+sum: int;
+curr: int;
+{
+    input(num);
+    sum = 0;
+    curr = 0;
+
+    while (num != 0) {
+        curr = num / 10;
+        num = num / 10;
+        output(curr);
+    }
+}

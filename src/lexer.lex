@@ -39,6 +39,7 @@ digit   [0-9]
 "/*"(.|\n)+"*/" ;
 
 {letter}({letter}|{digit})*    {
+        yylval.sym = yytext;
         return ID;
 }
 

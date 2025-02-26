@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "list.h"
+
 extern FILE *yyin;
 extern int yyparse();
+
+struct list symbol_table;
 
 void usage() {
     fprintf(stderr, "usage: ./cpq [source_file.ou]\n");
@@ -25,9 +29,12 @@ int main(int argc, const char *argv[]) {
         usage();
     }
 
-    check_file_extension(argv[1]);
+    xmalloc(-1);
 
+    check_file_extension(argv[1]);
     yyin = fopen(argv[1], "r");
+
+    list_init(&symbol_table);
 
     yyparse();
 

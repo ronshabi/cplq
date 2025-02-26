@@ -1,6 +1,8 @@
 %code requires {
 #include "bison_types.h"    
 
+#include <stdio.h>
+
 void yyerror(const char *s);
 int yylex(void);
 
@@ -10,7 +12,7 @@ int yylex(void);
     struct number num;
     enum operator_type op;
     enum cast_type cast;
-    void* sym;
+    char* sym;
 }
 
 %token BREAK CASE DEFAULT ELSE FLOAT IF INPUT INT OUTPUT SWITCH WHILE OR AND NOT;
@@ -18,7 +20,6 @@ int yylex(void);
 %token <cast> CAST;
 %token <sym> ID;
 %token <num> NUM;
-
 
 %%
 
@@ -38,8 +39,12 @@ declaration:
 type:   INT | FLOAT;
 
 idlist:
-        idlist ',' ID
-        | ID
+        idlist ',' ID {
+                printf("idlist '%s'\n", $3);
+        }
+        | ID {
+                printf("lone id: '%s'\n", $1);
+        }
         ;
 
 stmt:
