@@ -1,9 +1,10 @@
 %code requires {
 
-#include <stdio.h>
+#include <iostream>
 #include <vector>
 #include <string>
-#include "cpl_types.hxx"
+#include "types.hxx"
+#include "ast.hxx"
 
 void yyerror(const char *s);
 int yylex(void);
@@ -15,7 +16,8 @@ int yylex(void);
     cpl::NumberType number_type;
     cpl::OperatorType operator_type;
     char *str;
-    std::vector<std::string> *vec;
+    cpl::ast::Decl *ast_decl;
+    std::vector<std::string> *decl_names;
 }
 
 %token BREAK CASE DEFAULT ELSE IF INPUT OUTPUT SWITCH WHILE OR AND NOT;
@@ -26,7 +28,8 @@ int yylex(void);
 %token <number> NUM;
 
 %type <number_type> type;
-
+%type <decl_names> idlist;
+%type <ast_decl> declaration;
 %%
 
 program: 
@@ -40,7 +43,12 @@ declarations:
 
 declaration:
         idlist ':' type ';' {
+                for (auto name : *$1) {
+                        std::cout << "Id = " << name << "\n";
+                }
                 printf("DECL type is %d\n", $3);
+                $$ = new cpl::ast::Decl($1, $3);
+                $$->print_repr();
         }
         ;
 
@@ -48,10 +56,13 @@ type:   INT | FLOAT;
 
 idlist:
         idlist ',' ID {
-                printf("idlist '%s'\n", $3);
+                $$->push_back($3);
+                printf("@idlist '%s'\n", $3);
         }
         | ID {
-                printf("new ID: '%s'\n", $1);
+                printf("@ID: '%s'\n", $1);
+                $$ = new std::vector<std::string>();
+                $$->push_back($1);
         }
         ;
 
