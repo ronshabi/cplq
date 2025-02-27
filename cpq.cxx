@@ -17,6 +17,7 @@ int main(int argc, const char *argv[])
     if (yyin == nullptr)
     {
         std::cerr << "file not found\n";
+        exit(EXIT_FAILURE);
     }
 
     yyparse();

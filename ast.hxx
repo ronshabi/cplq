@@ -33,7 +33,8 @@ class DeclarationBlock : public Node
 public:
     DeclarationBlock();
     void print_repr() const override;
-    void add_declaration(Declaration *declaration);    
+    void add_declaration(Declaration *declaration);
+
 private:
     std::vector<Declaration *> m_declarations;
 };
@@ -42,9 +43,7 @@ class Expression : public Node
 {
 };
 
-
-
-class NumberExpression : public Expression 
+class NumberExpression : public Expression
 {
 public:
     NumberExpression(Number number);
@@ -65,9 +64,10 @@ private:
     Expression *m_expression;
 };
 
-class IdExpression : public Expression {
+class IdExpression : public Expression
+{
 public:
-    IdExpression(std::string *id_name);
+    IdExpression(char *id_name);
     void print_repr() const override;
 
 private:
@@ -77,7 +77,7 @@ private:
 class BinaryExpression : public Expression
 {
 public:
-    BinaryExpression(Expression* exp1, Expression *exp2, Operator op);
+    BinaryExpression(Expression *exp1, Expression *exp2, Operator op);
     void print_repr() const override;
 
 private:

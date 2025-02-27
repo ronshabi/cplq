@@ -23,6 +23,7 @@ enum class NumberType
 };
 
 const char *to_string(NumberType number_type);
+const char *to_string(Operator op);
 
 struct Number
 {
