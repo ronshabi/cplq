@@ -2,7 +2,7 @@
 
 namespace cpl
 {
-enum class OperatorType
+enum class Operator
 {
     EQ,
     NEQ,

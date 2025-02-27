@@ -21,16 +21,16 @@ digit   [0-9]
 "output"        return OUTPUT;
 "switch"        return SWITCH;
 "while"         return WHILE;
-"=="            { yylval.operator_type = cpl::OperatorType::EQ;     return RELOP; };
-"!="            { yylval.operator_type = cpl::OperatorType::NEQ;    return RELOP; };
-"<"             { yylval.operator_type = cpl::OperatorType::LT;     return RELOP; };
-">"             { yylval.operator_type = cpl::OperatorType::GT;     return RELOP; };
-"<="            { yylval.operator_type = cpl::OperatorType::LTE;    return RELOP; };
-">="            { yylval.operator_type = cpl::OperatorType::GTE;    return RELOP; };
-"+"             { yylval.operator_type = cpl::OperatorType::PLUS;   return ADDOP; };
-"-"             { yylval.operator_type = cpl::OperatorType::MINUS;  return ADDOP; };
-"*"             { yylval.operator_type = cpl::OperatorType::MUL;    return MULOP; };
-"/"             { yylval.operator_type = cpl::OperatorType::DIV;    return MULOP; };
+"=="            { yylval.operator_type = cpl::Operator::EQ;     return RELOP; };
+"!="            { yylval.operator_type = cpl::Operator::NEQ;    return RELOP; };
+"<"             { yylval.operator_type = cpl::Operator::LT;     return RELOP; };
+">"             { yylval.operator_type = cpl::Operator::GT;     return RELOP; };
+"<="            { yylval.operator_type = cpl::Operator::LTE;    return RELOP; };
+">="            { yylval.operator_type = cpl::Operator::GTE;    return RELOP; };
+"+"             { yylval.operator_type = cpl::Operator::PLUS;   return ADDOP; };
+"-"             { yylval.operator_type = cpl::Operator::MINUS;  return ADDOP; };
+"*"             { yylval.operator_type = cpl::Operator::MUL;    return MULOP; };
+"/"             { yylval.operator_type = cpl::Operator::DIV;    return MULOP; };
 "||"            { return OR; }
 "&&"            { return AND; }
 "!"             { return NOT; }

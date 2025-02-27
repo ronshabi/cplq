@@ -9,15 +9,15 @@
 namespace cpl::ast
 {
 
-class ASTNode
+class Node
 {
 public:
-    ASTNode() = default;
-    virtual ~ASTNode() = default;
+    Node() = default;
+    virtual ~Node() = default;
     virtual void print_repr() const = 0;
 };
 
-class Declaration : public ASTNode
+class Declaration : public Node
 {
 public:
     Declaration(std::vector<std::string> *id_vec_ptr,
@@ -25,22 +25,31 @@ public:
     void print_repr() const override;
 
 private:
-    std::unique_ptr<std::vector<std::string>> m_ids;
+    std::vector<std::string> *m_ids;
     cpl::NumberType m_type;
 };
 
-class DeclarationBlock : public ASTNode
+class DeclarationBlock : public Node
 {
 public:
     DeclarationBlock();
     void print_repr() const override;
     void add_declaration(Declaration *declaration);    
 private:
-    std::vector<std::unique_ptr<Declaration>> m_declarations;
+    std::vector<Declaration *> m_declarations;
 };
 
-class Expression : public ASTNode
-
+class Expression : public Node
 {
+};
+
+class UnaryExpression : public Expression 
+{
+
+};
+
+class BinaryExpression : public Expression
+{
+
 };
 } // namespace cpl::ast

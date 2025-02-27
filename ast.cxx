@@ -7,7 +7,7 @@ namespace cpl::ast
 
 Declaration::Declaration(std::vector<std::string> *id_vec_ptr,
                          cpl::NumberType decl_type)
-    : ASTNode(), m_ids(id_vec_ptr), m_type(decl_type)
+    : Node(), m_ids(id_vec_ptr), m_type(decl_type)
 {
 }
 
@@ -28,7 +28,7 @@ void Declaration::print_repr() const
 }
 
 DeclarationBlock::DeclarationBlock()
-    : ASTNode(),
+    : Node(),
       m_declarations()
 {
     

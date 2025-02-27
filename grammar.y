@@ -16,7 +16,7 @@ using namespace cpl;
 %union {
     Number number;
     NumberType number_type;
-    OperatorType operator_type;
+    Operator operator_type;
     char *str;
     ast::Declaration *ast_declaration;
     ast::DeclarationBlock *ast_declaration_block;
@@ -37,7 +37,9 @@ using namespace cpl;
 %%
 
 program: 
-        declarations stmt_block
+        declarations stmt_block {
+            $1->print_repr();
+        }
         ;
 
 declarations:
@@ -46,9 +48,7 @@ declarations:
         }
         | declarations declaration {
             $1->add_declaration($2);
-            $1->print_repr();
             $$ = $1;
-
         }
         ;
 
@@ -62,13 +62,10 @@ declaration:
 type:   INT | FLOAT;
 
 idlist:
-        idlist ',' ID {
+        idlist ',' ID { 
             $$->push_back($3);
         }
-        | ID {
-            $$ = new std::vector<std::string>();
-            $$->push_back($1);
-        }
+        | ID { $$ = new std::vector<std::string>(); $$->push_back($1); }
         ;
 
 stmt:
