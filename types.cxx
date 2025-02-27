@@ -2,13 +2,14 @@
 
 namespace cpl
 {
-const char* to_string(NumberType number_type)
+const char *to_string(NumberType number_type)
 {
-    if (number_type == NumberType::FLOAT) {
+    if (number_type == NumberType::FLOAT)
+    {
         return "Float";
     }
 
     return "Int";
 }
 
-}
+} // namespace cpl

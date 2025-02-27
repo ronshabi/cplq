@@ -11,23 +11,36 @@ namespace cpl::ast
 
 class ASTNode
 {
-  public:
+public:
     ASTNode() = default;
     virtual ~ASTNode() = default;
     virtual void print_repr() const = 0;
 };
 
-class Decl : public ASTNode
+class Declaration : public ASTNode
 {
-  public:
-    Decl(std::vector<std::string> *id_vec_ptr, cpl::NumberType decl_type);
+public:
+    Declaration(std::vector<std::string> *id_vec_ptr,
+                cpl::NumberType decl_type);
     void print_repr() const override;
-  private:
+
+private:
     std::unique_ptr<std::vector<std::string>> m_ids;
-    cpl::NumberType                           m_type;
+    cpl::NumberType m_type;
+};
+
+class DeclarationBlock : public ASTNode
+{
+public:
+    DeclarationBlock();
+    void print_repr() const override;
+    void add_declaration(Declaration *declaration);    
+private:
+    std::vector<std::unique_ptr<Declaration>> m_declarations;
 };
 
 class Expression : public ASTNode
+
 {
 };
-}    // namespace cpl::ast
+} // namespace cpl::ast

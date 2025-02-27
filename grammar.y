@@ -9,14 +9,17 @@
 void yyerror(const char *s);
 int yylex(void);
 
+using namespace cpl;
+
 }
 
 %union {
-    cpl::Number number;
-    cpl::NumberType number_type;
-    cpl::OperatorType operator_type;
+    Number number;
+    NumberType number_type;
+    OperatorType operator_type;
     char *str;
-    cpl::ast::Decl *ast_decl;
+    ast::Declaration *ast_declaration;
+    ast::DeclarationBlock *ast_declaration_block;
     std::vector<std::string> *decl_names;
 }
 
@@ -29,7 +32,8 @@ int yylex(void);
 
 %type <number_type> type;
 %type <decl_names> idlist;
-%type <ast_decl> declaration;
+%type <ast_declaration> declaration;
+%type <ast_declaration_block> declarations;
 %%
 
 program: 
@@ -37,18 +41,21 @@ program:
         ;
 
 declarations:
-        %empty
-        | declarations declaration
+        %empty {
+            $$ = new ast::DeclarationBlock();
+        }
+        | declarations declaration {
+            $1->add_declaration($2);
+            $1->print_repr();
+            $$ = $1;
+
+        }
         ;
 
 declaration:
         idlist ':' type ';' {
-                for (auto name : *$1) {
-                        std::cout << "Id = " << name << "\n";
-                }
-                printf("DECL type is %d\n", $3);
-                $$ = new cpl::ast::Decl($1, $3);
-                $$->print_repr();
+            $$ = new ast::Declaration($1, $3);
+            $$->print_repr();
         }
         ;
 
@@ -56,13 +63,11 @@ type:   INT | FLOAT;
 
 idlist:
         idlist ',' ID {
-                $$->push_back($3);
-                printf("@idlist '%s'\n", $3);
+            $$->push_back($3);
         }
         | ID {
-                printf("@ID: '%s'\n", $1);
-                $$ = new std::vector<std::string>();
-                $$->push_back($1);
+            $$ = new std::vector<std::string>();
+            $$->push_back($1);
         }
         ;
 

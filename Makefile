@@ -23,6 +23,9 @@ CLANG_FORMAT_FLAGS=-i --verbose
 .PHONY: all
 all: $(TARGET)
 
+.PHONY: fmt
+fmt:
+	find . -name '*.[ch]xx' -not -name 'grammar.*' -exec $(CLANG_FORMAT) $(CLANG_FORMAT_FLAGS) {} +
 
 $(TARGET): $(BISON_OBJECTS) $(FLEX_OBJECTS) $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
