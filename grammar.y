@@ -20,6 +20,7 @@ using namespace cpl;
     char *str;
     ast::Declaration *ast_declaration;
     ast::DeclarationBlock *ast_declaration_block;
+    ast::Expression *ast_expression;
     std::vector<std::string> *decl_names;
 }
 
@@ -34,6 +35,7 @@ using namespace cpl;
 %type <decl_names> idlist;
 %type <ast_declaration> declaration;
 %type <ast_declaration_block> declarations;
+%type <ast_expression> factor expression term;
 %%
 
 program: 
@@ -116,20 +118,20 @@ boolfactor:
         ;
 
 expression:
-        expression ADDOP term
-        | term
+        expression ADDOP term { $$ = new ast::BinaryExpression($1, $3, $2); }
+        | term { $$ = $1; }
         ;
 
 term:
-        term MULOP factor
-        | factor
+        term MULOP factor { $$ = new ast::BinaryExpression($1, $3, $2); }
+        | factor { $$ = $1; }
         ;
 
 factor:
-        '(' expression ')'
-        | CAST '(' expression ')'
-        | ID
-        | NUM
+        '(' expression ')' { $$ = $2; }
+        | CAST '(' expression ')' { $$ = new ast::CastExpression($1, $3); }
+        | ID { $$ = new ast::IdExpression($1); }
+        | NUM { $$ = new ast::NumberExpression($1); }
         ;
 
 %%

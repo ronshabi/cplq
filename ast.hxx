@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -43,13 +42,47 @@ class Expression : public Node
 {
 };
 
-class UnaryExpression : public Expression 
-{
 
+
+class NumberExpression : public Expression 
+{
+public:
+    NumberExpression(Number number);
+    void print_repr() const override;
+
+private:
+    Number m_number;
+};
+
+class CastExpression : public Expression
+{
+public:
+    CastExpression(NumberType cast_to, Expression *casted_expr);
+    void print_repr() const override;
+
+private:
+    NumberType m_cast;
+    Expression *m_expression;
+};
+
+class IdExpression : public Expression {
+public:
+    IdExpression(std::string *id_name);
+    void print_repr() const override;
+
+private:
+    std::string *m_id;
 };
 
 class BinaryExpression : public Expression
 {
+public:
+    BinaryExpression(Expression* exp1, Expression *exp2, Operator op);
+    void print_repr() const override;
 
+private:
+    Expression *m_exp1;
+    Expression *m_exp2;
+    Operator m_op;
 };
 } // namespace cpl::ast
