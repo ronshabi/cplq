@@ -1,5 +1,4 @@
-num: int;
-sum: int;
+num, sum: int;
 curr: int;
 {
     input(num);
@@ -8,6 +7,8 @@ curr: int;
 
     while (num != 0) {
         curr = num / 10;
+        curr = curr * 10;
+        curr = num - curr; /* Modulu 10 */
         num = num / 10;
         output(curr);
     }

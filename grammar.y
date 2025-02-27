@@ -1,7 +1,9 @@
 %code requires {
-#include "bison_types.h"    
 
 #include <stdio.h>
+#include <vector>
+#include <string>
+#include "cpl_types.hxx"
 
 void yyerror(const char *s);
 int yylex(void);
@@ -9,17 +11,21 @@ int yylex(void);
 }
 
 %union {
-    struct number num;
-    enum operator_type op;
-    enum cast_type cast;
-    char* sym;
+    cpl::Number number;
+    cpl::NumberType number_type;
+    cpl::OperatorType operator_type;
+    char *str;
+    std::vector<std::string> *vec;
 }
 
-%token BREAK CASE DEFAULT ELSE FLOAT IF INPUT INT OUTPUT SWITCH WHILE OR AND NOT;
-%token <op> RELOP ADDOP MULOP; 
-%token <cast> CAST;
-%token <sym> ID;
-%token <num> NUM;
+%token BREAK CASE DEFAULT ELSE IF INPUT OUTPUT SWITCH WHILE OR AND NOT;
+%token <number_type> INT FLOAT;
+%token <operator_type> RELOP ADDOP MULOP; 
+%token <number_type> CAST;
+%token <str> ID;
+%token <number> NUM;
+
+%type <number_type> type;
 
 %%
 
@@ -33,7 +39,9 @@ declarations:
         ;
 
 declaration:
-        idlist ':' type ';'
+        idlist ':' type ';' {
+                printf("DECL type is %d\n", $3);
+        }
         ;
 
 type:   INT | FLOAT;
@@ -43,7 +51,7 @@ idlist:
                 printf("idlist '%s'\n", $3);
         }
         | ID {
-                printf("lone id: '%s'\n", $1);
+                printf("new ID: '%s'\n", $1);
         }
         ;
 
@@ -110,3 +118,10 @@ factor:
         | ID
         | NUM
         ;
+
+%%
+
+void yyerror(const char *s)
+{
+    printf("BISON ERROR: '%s'\n", s);
+}

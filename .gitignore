@@ -1,3 +1,8 @@
 .cache/
 build/
 .vscode/
+*.o
+grammar.cxx
+grammar.hxx
+lexer.cxx
+cplq
