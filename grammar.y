@@ -35,7 +35,7 @@ using namespace cpl;
 %type <decl_names> idlist;
 %type <ast_declaration> declaration;
 %type <ast_declaration_block> declarations;
-%type <ast_expression> factor expression term;
+%type <ast_expression> factor expression term boolexpr boolfactor boolterm;
 %%
 
 program: 
@@ -103,18 +103,22 @@ stmtlist:
         ;
                         
 boolexpr:               
-        boolexpr OR boolterm
+        boolexpr OR boolterm { $$ = new ast::BinaryExpression($1, $3, Operator::OR); }
         | boolterm
         ;
 
 boolterm:
-        boolterm AND boolfactor
+        boolterm AND boolfactor { $$ = new ast::BinaryExpression($1, $3, Operator::AND); }
         | boolfactor
         ;
 
 boolfactor:
-        NOT '(' boolexpr ')'
-        | expression RELOP expression
+        NOT '(' boolexpr ')' {
+                $$ = new ast::NotExpression($3);
+        }
+        | expression RELOP expression {
+                $$ = new ast::BinaryExpression($1, $3, $2);
+        }
         ;
 
 expression:

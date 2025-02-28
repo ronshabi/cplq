@@ -13,7 +13,9 @@ enum class Operator
     PLUS,
     MINUS,
     MUL,
-    DIV
+    DIV,
+    AND,
+    OR
 };
 
 enum class NumberType

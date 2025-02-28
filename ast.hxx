@@ -16,6 +16,7 @@ public:
     virtual void print_repr() const = 0;
 };
 
+// what
 class Declaration : public Node
 {
 public:
@@ -71,7 +72,7 @@ public:
     void print_repr() const override;
 
 private:
-    std::string *m_id;
+    char *m_id;
 };
 
 class BinaryExpression : public Expression
@@ -84,5 +85,14 @@ private:
     Expression *m_exp1;
     Expression *m_exp2;
     Operator m_op;
+};
+
+class NotExpression : public Expression
+{
+public:
+    NotExpression(Expression *exp) : m_exp(exp) {}
+    void print_repr() const override;
+private:
+    Expression *m_exp;
 };
 } // namespace cpl::ast

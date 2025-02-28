@@ -46,6 +46,12 @@ void DeclarationBlock::add_declaration(Declaration *declaration)
     m_declarations.emplace_back(declaration);
 }
 
+BinaryExpression::BinaryExpression(Expression *exp1, Expression *exp2,
+                                   Operator op)
+    : m_exp1(exp1), m_exp2(exp2), m_op(op)
+{
+}
+
 void BinaryExpression::print_repr() const
 {
     std::cout << "BinaryExpression<" << to_string(m_op) << ">\n";
@@ -55,6 +61,9 @@ void BinaryExpression::print_repr() const
     std::cout << "    ";
     m_exp2->print_repr();
     std::cout << "\n";
+}
+NumberExpression::NumberExpression(Number number) : m_number(number)
+{
 }
 void NumberExpression::print_repr() const
 {
@@ -67,6 +76,12 @@ void NumberExpression::print_repr() const
         std::cout << "Number<Int>(" << m_number.i << ")\n";
     }
 }
+
+CastExpression::CastExpression(NumberType cast_to, Expression *casted_expr)
+    : m_cast(cast_to), m_expression(casted_expr)
+{
+}
+
 void CastExpression::print_repr() const
 {
     if (m_cast == NumberType::FLOAT)
@@ -83,9 +98,21 @@ void CastExpression::print_repr() const
     std::cout << "\n";
 }
 
+IdExpression::IdExpression(char *id_name) : m_id(id_name)
+{
+}
+
 void IdExpression::print_repr() const
 {
     std::cout << "ID<" << *m_id << ">\n";
+}
+
+void NotExpression::print_repr() const
+{
+    std::cout << "NotExpression:\n";
+    std::cout << "    ";
+    m_exp->print_repr();
+    std::cout << "\n";
 }
 
 } // namespace cpl::ast
