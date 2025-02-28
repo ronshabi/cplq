@@ -111,3 +111,9 @@ void NotExpression::print_repr() const
     m_exp->print_repr();
     std::cout << "\n";
 }
+
+bool BinaryBoolExpression::evaluate() const
+{
+    // TODO
+    return false;
+}
