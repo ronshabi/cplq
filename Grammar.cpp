@@ -534,11 +534,11 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    40,    40,    46,    49,    56,    62,    62,    65,    68,
-      72,    73,    74,    75,    76,    77,    78,    79,    82,    83,
-      84,    85,    86,    87,    91,    92,    95,    96,    99,   100,
-     104,   105,   109,   110,   114,   117,   123,   124,   128,   129,
-     133,   134,   135,   136
+       0,    42,    42,    48,    51,    58,    64,    64,    67,    70,
+      74,    75,    76,    77,    78,    79,    80,    81,    84,    85,
+      86,    87,    88,    89,    93,    94,    97,    98,   101,   102,
+     106,   107,   111,   112,   116,   119,   125,   126,   130,   131,
+     135,   136,   137,   138
 };
 #endif
 
@@ -1160,7 +1160,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* program: declarations stmt_block  */
-#line 40 "Grammar.y"
+#line 42 "Grammar.y"
                                 {
             (yyvsp[-1].ast_declaration_block)->print_repr();
         }
@@ -1168,7 +1168,7 @@ yyreduce:
     break;
 
   case 3: /* declarations: %empty  */
-#line 46 "Grammar.y"
+#line 48 "Grammar.y"
                {
             (yyval.ast_declaration_block) = new DeclarationBlock();
         }
@@ -1176,7 +1176,7 @@ yyreduce:
     break;
 
   case 4: /* declarations: declarations declaration  */
-#line 49 "Grammar.y"
+#line 51 "Grammar.y"
                                    {
             (yyvsp[-1].ast_declaration_block)->add_declaration((yyvsp[0].ast_declaration));
             (yyval.ast_declaration_block) = (yyvsp[-1].ast_declaration_block);
@@ -1185,7 +1185,7 @@ yyreduce:
     break;
 
   case 5: /* declaration: idlist ':' type ';'  */
-#line 56 "Grammar.y"
+#line 58 "Grammar.y"
                             {
             (yyval.ast_declaration) = new Declaration((yyvsp[-3].decl_names), (yyvsp[-1].number_type));
             (yyval.ast_declaration)->print_repr();
@@ -1194,7 +1194,7 @@ yyreduce:
     break;
 
   case 8: /* idlist: idlist ',' ID  */
-#line 65 "Grammar.y"
+#line 67 "Grammar.y"
                       { 
             (yyval.decl_names)->push_back((yyvsp[0].str));
         }
@@ -1202,83 +1202,83 @@ yyreduce:
     break;
 
   case 9: /* idlist: ID  */
-#line 68 "Grammar.y"
+#line 70 "Grammar.y"
              { (yyval.decl_names) = new std::vector<std::string>(); (yyval.decl_names)->push_back((yyvsp[0].str)); }
 #line 1208 "Grammar.cpp"
     break;
 
   case 30: /* boolexpr: boolexpr OR boolterm  */
-#line 104 "Grammar.y"
-                             { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), Operator::OR); }
+#line 106 "Grammar.y"
+                             { (yyval.ast_bool_expression) = new BinaryBoolExpression((yyvsp[-2].ast_bool_expression), (yyvsp[0].ast_bool_expression), Operator::OR); }
 #line 1214 "Grammar.cpp"
     break;
 
   case 32: /* boolterm: boolterm AND boolfactor  */
-#line 109 "Grammar.y"
-                                { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), Operator::AND); }
+#line 111 "Grammar.y"
+                                { (yyval.ast_bool_expression) = new BinaryBoolExpression((yyvsp[-2].ast_bool_expression), (yyvsp[0].ast_bool_expression), Operator::AND); }
 #line 1220 "Grammar.cpp"
     break;
 
   case 34: /* boolfactor: NOT '(' boolexpr ')'  */
-#line 114 "Grammar.y"
+#line 116 "Grammar.y"
                              {
-                (yyval.ast_expression) = new NotExpression((yyvsp[-1].ast_expression));
+                (yyval.ast_bool_expression) = new NotExpression((yyvsp[-1].ast_bool_expression));
         }
 #line 1228 "Grammar.cpp"
     break;
 
   case 35: /* boolfactor: expression RELOP expression  */
-#line 117 "Grammar.y"
+#line 119 "Grammar.y"
                                       {
-                (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type));
+                (yyval.ast_bool_expression) = new BinaryBoolExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type));
         }
 #line 1236 "Grammar.cpp"
     break;
 
   case 36: /* expression: expression ADDOP term  */
-#line 123 "Grammar.y"
+#line 125 "Grammar.y"
                               { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type)); }
 #line 1242 "Grammar.cpp"
     break;
 
   case 37: /* expression: term  */
-#line 124 "Grammar.y"
+#line 126 "Grammar.y"
                { (yyval.ast_expression) = (yyvsp[0].ast_expression); }
 #line 1248 "Grammar.cpp"
     break;
 
   case 38: /* term: term MULOP factor  */
-#line 128 "Grammar.y"
+#line 130 "Grammar.y"
                           { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type)); }
 #line 1254 "Grammar.cpp"
     break;
 
   case 39: /* term: factor  */
-#line 129 "Grammar.y"
+#line 131 "Grammar.y"
                  { (yyval.ast_expression) = (yyvsp[0].ast_expression); }
 #line 1260 "Grammar.cpp"
     break;
 
   case 40: /* factor: '(' expression ')'  */
-#line 133 "Grammar.y"
+#line 135 "Grammar.y"
                            { (yyval.ast_expression) = (yyvsp[-1].ast_expression); }
 #line 1266 "Grammar.cpp"
     break;
 
   case 41: /* factor: CAST '(' expression ')'  */
-#line 134 "Grammar.y"
+#line 136 "Grammar.y"
                                   { (yyval.ast_expression) = new CastExpression((yyvsp[-3].number_type), (yyvsp[-1].ast_expression)); }
 #line 1272 "Grammar.cpp"
     break;
 
   case 42: /* factor: ID  */
-#line 135 "Grammar.y"
+#line 137 "Grammar.y"
              { (yyval.ast_expression) = new IdExpression((yyvsp[0].str)); }
 #line 1278 "Grammar.cpp"
     break;
 
   case 43: /* factor: NUM  */
-#line 136 "Grammar.y"
+#line 138 "Grammar.y"
               { (yyval.ast_expression) = new NumberExpression((yyvsp[0].number)); }
 #line 1284 "Grammar.cpp"
     break;
@@ -1477,7 +1477,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 139 "Grammar.y"
+#line 141 "Grammar.y"
 
 
 void yyerror(const char *s)

@@ -106,9 +106,10 @@ union YYSTYPE
     Declaration *ast_declaration;
     DeclarationBlock *ast_declaration_block;
     Expression *ast_expression;
+    BoolExpression *ast_bool_expression;
     std::vector<std::string> *decl_names;
 
-#line 112 "Grammar.hpp"
+#line 113 "Grammar.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

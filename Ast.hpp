@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -20,7 +22,13 @@ public:
 class Declaration : public Node
 {
 public:
-    Declaration(std::vector<std::string> *id_vec_ptr, NumberType decl_type);
+    Declaration(std::vector<std::string> *id_vec_ptr, NumberType decl_type)
+        : Node()
+        , m_ids(id_vec_ptr)
+        , m_type(decl_type)
+    {
+    }
+
     void print_repr() const override;
 
 private:
@@ -33,7 +41,12 @@ private:
 class DeclarationBlock : public Node
 {
 public:
-    DeclarationBlock();
+    DeclarationBlock()
+        : Node()
+        , m_declarations()
+    {
+    }
+
     void print_repr() const override;
     void add_declaration(Declaration *declaration);
 
@@ -58,9 +71,13 @@ public:
 class NotExpression : public BoolExpression
 {
 public:
-    NotExpression(BoolExpression *exp) : m_exp(exp)
+    NotExpression(BoolExpression *exp)
+        : BoolExpression()
+        , m_exp(exp)
     {
     }
+
+    void print_repr() const override;
 
     bool evaluate() const override
     {
@@ -75,11 +92,14 @@ class BinaryBoolExpression : public BoolExpression
 {
 public:
     BinaryBoolExpression(Expression *e1, Expression *e2, Operator op)
-        : m_op(op), m_exp1(e1), m_exp2(e2)
+        : BoolExpression()
+        , m_op(op)
+        , m_exp1(e1)
+        , m_exp2(e2)
     {
     }
-
-    bool evaluate() const;
+    void print_repr() const override;
+    bool evaluate() const override;
 
 private:
     Operator m_op;
@@ -92,7 +112,12 @@ private:
 class NumberExpression : public Expression
 {
 public:
-    NumberExpression(Number number);
+    NumberExpression(Number number)
+        : Expression()
+        , m_number(number)
+    {
+    }
+
     void print_repr() const override;
 
 private:
@@ -104,7 +129,13 @@ private:
 class CastExpression : public Expression
 {
 public:
-    CastExpression(NumberType cast_to, Expression *casted_expr);
+    CastExpression(NumberType cast_to, Expression *casted_expr)
+        : Expression()
+        , m_cast(cast_to)
+        , m_expression(casted_expr)
+    {
+    }
+
     void print_repr() const override;
 
 private:
@@ -117,7 +148,11 @@ private:
 class IdExpression : public Expression
 {
 public:
-    IdExpression(char *id_name);
+    IdExpression(char *id_name)
+        : Expression()
+        , m_id(id_name)
+    {
+    }
     void print_repr() const override;
 
 private:
@@ -129,7 +164,13 @@ private:
 class BinaryExpression : public Expression
 {
 public:
-    BinaryExpression(Expression *exp1, Expression *exp2, Operator op);
+    BinaryExpression(Expression *exp1, Expression *exp2, Operator op)
+        : Expression()
+        , m_exp1(exp1)
+        , m_exp2(exp2)
+        , m_op(op)
+    {
+    }
     void print_repr() const override;
 
 private:
@@ -149,7 +190,9 @@ class Statement : public Node
 class AssignStatement : public Statement
 {
 public:
-    AssignStatement(char *id, Expression *exp) : m_id(id), m_exp(exp)
+    AssignStatement(char *id, Expression *exp)
+        : m_id(id)
+        , m_exp(exp)
     {
     }
 
@@ -167,7 +210,10 @@ public:
         Output
     };
 
-    IOStatement(Type type, Expression *exp) : m_type(type), m_exp(exp)
+    IOStatement(Type type, Expression *exp)
+        : Statement()
+        , m_type(type)
+        , m_exp(exp)
     {
     }
 
@@ -179,11 +225,40 @@ private:
 class IfStatement : public Statement
 {
 public:
+    IfStatement(BoolExpression *condition, Statement *then_stmt,
+                Statement *else_stmt)
+        : Statement()
+        , m_condition_exp(condition)
+        , m_then_branch(then_stmt)
+        , m_else_branch(else_stmt)
+    {
+    }
 
 private:
     BoolExpression *m_condition_exp;
     Statement *m_then_branch;
     Statement *m_else_branch;
+};
+
+class WhileStatement : public Statement
+{
+public:
+    WhileStatement(BoolExpression *condition, Statement *body)
+        : Statement()
+        , m_condition_exp(condition)
+        , m_body_statement(body)
+    {
+    }
+
+private:
+    BoolExpression *m_condition_exp;
+    Statement *m_body_statement;
+};
+
+class BreakStatement : public Statement
+{
+public:
+    BreakStatement() = default;
 };
 
 //===----------------------------------------------------------------------===//

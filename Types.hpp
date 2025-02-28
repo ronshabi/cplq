@@ -22,8 +22,8 @@ enum class NumberType
     FLOAT
 };
 
-const char *to_string(NumberType number_type);
-const char *to_string(Operator op);
+const char *number_type_to_string(NumberType number_type);
+const char *operator_to_string(Operator op);
 
 struct Number
 {

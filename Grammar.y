@@ -19,6 +19,7 @@ int yylex(void);
     Declaration *ast_declaration;
     DeclarationBlock *ast_declaration_block;
     Expression *ast_expression;
+    BoolExpression *ast_bool_expression;
     std::vector<std::string> *decl_names;
 }
 
@@ -33,7 +34,8 @@ int yylex(void);
 %type <decl_names> idlist;
 %type <ast_declaration> declaration;
 %type <ast_declaration_block> declarations;
-%type <ast_expression> factor expression term boolexpr boolfactor boolterm;
+%type <ast_expression> factor expression term;
+%type <ast_bool_expression> boolexpr boolfactor boolterm;
 %%
 
 program: 
@@ -101,12 +103,12 @@ stmtlist:
         ;
                         
 boolexpr:               
-        boolexpr OR boolterm { $$ = new BinaryExpression($1, $3, Operator::OR); }
+        boolexpr OR boolterm { $$ = new BinaryBoolExpression($1, $3, Operator::OR); }
         | boolterm
         ;
 
 boolterm:
-        boolterm AND boolfactor { $$ = new BinaryExpression($1, $3, Operator::AND); }
+        boolterm AND boolfactor { $$ = new BinaryBoolExpression($1, $3, Operator::AND); }
         | boolfactor
         ;
 
@@ -115,7 +117,7 @@ boolfactor:
                 $$ = new NotExpression($3);
         }
         | expression RELOP expression {
-                $$ = new BinaryExpression($1, $3, $2);
+                $$ = new BinaryBoolExpression($1, $3, $2);
         }
         ;
 

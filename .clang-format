@@ -5,3 +5,5 @@ TabWidth: 4
 LineEnding: LF
 MaxEmptyLinesToKeep: 1
 AccessModifierOffset: -4
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
