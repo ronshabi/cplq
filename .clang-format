@@ -7,3 +7,10 @@ MaxEmptyLinesToKeep: 1
 AccessModifierOffset: -4
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveBitFields: Consecutive
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlines: LeftWithLastLine
+AlignOperands: Align

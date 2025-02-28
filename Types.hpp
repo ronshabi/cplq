@@ -30,7 +30,7 @@ struct Number
     NumberType type;
 
     union {
-        int i;
+        int    i;
         double d;
     };
 };

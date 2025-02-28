@@ -1,6 +1,6 @@
 #include <iostream>
 
-extern void yyparse();
+extern void  yyparse();
 extern FILE *yyin;
 
 int main(int argc, const char *argv[])

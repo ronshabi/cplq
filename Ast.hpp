@@ -14,8 +14,8 @@ class StatementList;
 class Node
 {
 public:
-    Node() = default;
-    virtual ~Node() = default;
+    Node()                          = default;
+    virtual ~Node()                 = default;
     virtual void print_repr() const = 0;
 };
 
@@ -35,7 +35,7 @@ public:
 
 private:
     std::vector<std::string> *m_ids;
-    NumberType m_type;
+    NumberType                m_type;
 };
 
 //===----------------------------------------------------------------------===//
@@ -104,7 +104,7 @@ public:
     bool evaluate() const override;
 
 private:
-    Operator m_op;
+    Operator    m_op;
     Expression *m_exp1;
     Expression *m_exp2;
 };
@@ -141,7 +141,7 @@ public:
     void print_repr() const override;
 
 private:
-    NumberType m_cast;
+    NumberType  m_cast;
     Expression *m_expression;
 };
 
@@ -178,7 +178,7 @@ public:
 private:
     Expression *m_exp1;
     Expression *m_exp2;
-    Operator m_op;
+    Operator    m_op;
 };
 
 //===----------------------------------------------------------------------===//
@@ -206,7 +206,7 @@ public:
     void print_repr() const override;
 
 private:
-    char *m_id;
+    char       *m_id;
     Expression *m_exp;
 };
 
@@ -253,8 +253,8 @@ public:
 
 private:
     BoolExpression *m_condition_exp;
-    Statement *m_then_branch;
-    Statement *m_else_branch;
+    Statement      *m_then_branch;
+    Statement      *m_else_branch;
 };
 
 class WhileStatement : public Statement
@@ -274,7 +274,7 @@ public:
 
 private:
     BoolExpression *m_condition_exp;
-    Statement *m_body_statement;
+    Statement      *m_body_statement;
 };
 
 class BreakStatement : public Statement
@@ -316,9 +316,9 @@ public:
     }
 
 private:
-    Expression *m_exp;
+    Expression                                     *m_exp;
     std::vector<std::pair<Number, StatementList *>> m_cases;
-    StatementList *m_default_case = nullptr;
+    StatementList                                  *m_default_case = nullptr;
 };
 
 //===----------------------------------------------------------------------===//
