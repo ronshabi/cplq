@@ -1,12 +1,9 @@
-#include "ast.hxx"
+#include "Ast.hpp"
 
 #include <iostream>
 
-namespace cpl::ast
-{
-
 Declaration::Declaration(std::vector<std::string> *id_vec_ptr,
-                         cpl::NumberType decl_type)
+                         NumberType decl_type)
     : Node(), m_ids(id_vec_ptr), m_type(decl_type)
 {
 }
@@ -114,5 +111,3 @@ void NotExpression::print_repr() const
     m_exp->print_repr();
     std::cout << "\n";
 }
-
-} // namespace cpl::ast

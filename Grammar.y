@@ -3,13 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "types.hxx"
-#include "ast.hxx"
+#include "Types.hpp"
+#include "Ast.hpp"
 
 void yyerror(const char *s);
 int yylex(void);
-
-using namespace cpl;
 
 }
 
@@ -18,9 +16,9 @@ using namespace cpl;
     NumberType number_type;
     Operator operator_type;
     char *str;
-    ast::Declaration *ast_declaration;
-    ast::DeclarationBlock *ast_declaration_block;
-    ast::Expression *ast_expression;
+    Declaration *ast_declaration;
+    DeclarationBlock *ast_declaration_block;
+    Expression *ast_expression;
     std::vector<std::string> *decl_names;
 }
 
@@ -46,7 +44,7 @@ program:
 
 declarations:
         %empty {
-            $$ = new ast::DeclarationBlock();
+            $$ = new DeclarationBlock();
         }
         | declarations declaration {
             $1->add_declaration($2);
@@ -56,7 +54,7 @@ declarations:
 
 declaration:
         idlist ':' type ';' {
-            $$ = new ast::Declaration($1, $3);
+            $$ = new Declaration($1, $3);
             $$->print_repr();
         }
         ;
@@ -103,39 +101,39 @@ stmtlist:
         ;
                         
 boolexpr:               
-        boolexpr OR boolterm { $$ = new ast::BinaryExpression($1, $3, Operator::OR); }
+        boolexpr OR boolterm { $$ = new BinaryExpression($1, $3, Operator::OR); }
         | boolterm
         ;
 
 boolterm:
-        boolterm AND boolfactor { $$ = new ast::BinaryExpression($1, $3, Operator::AND); }
+        boolterm AND boolfactor { $$ = new BinaryExpression($1, $3, Operator::AND); }
         | boolfactor
         ;
 
 boolfactor:
         NOT '(' boolexpr ')' {
-                $$ = new ast::NotExpression($3);
+                $$ = new NotExpression($3);
         }
         | expression RELOP expression {
-                $$ = new ast::BinaryExpression($1, $3, $2);
+                $$ = new BinaryExpression($1, $3, $2);
         }
         ;
 
 expression:
-        expression ADDOP term { $$ = new ast::BinaryExpression($1, $3, $2); }
+        expression ADDOP term { $$ = new BinaryExpression($1, $3, $2); }
         | term { $$ = $1; }
         ;
 
 term:
-        term MULOP factor { $$ = new ast::BinaryExpression($1, $3, $2); }
+        term MULOP factor { $$ = new BinaryExpression($1, $3, $2); }
         | factor { $$ = $1; }
         ;
 
 factor:
         '(' expression ')' { $$ = $2; }
-        | CAST '(' expression ')' { $$ = new ast::CastExpression($1, $3); }
-        | ID { $$ = new ast::IdExpression($1); }
-        | NUM { $$ = new ast::NumberExpression($1); }
+        | CAST '(' expression ')' { $$ = new CastExpression($1, $3); }
+        | ID { $$ = new IdExpression($1); }
+        | NUM { $$ = new NumberExpression($1); }
         ;
 
 %%

@@ -2,19 +2,19 @@ CXX=g++
 CXXFLAGS=-std=c++20 -g -O1 -Wall -Wextra -Wformat
 
 TARGET=cplq
-OBJECTS=cpq.o ast.o types.o
+OBJECTS=Cpq.o Ast.o Types.o
 
 BISON=bison
 BISON_FLAGS=-d
-BISON_INPUT=grammar.y
-BISON_CXX_OUTPUT=$(BISON_INPUT:.y=.cxx)
-BISON_HXX_OUTPUT=$(BISON_INPUT:.y=.hxx)
+BISON_INPUT=Grammar.y
+BISON_CPP_OUTPUT=$(BISON_INPUT:.y=.cpp)
+BISON_HPP_OUTPUT=$(BISON_INPUT:.y=.hpp)
 BISON_OBJECTS=$(BISON_INPUT:.y=.o)
 
 FLEX=flex
 FLEX_FLAGS=
-FLEX_INPUT=lexer.l
-FLEX_CXX_OUTPUT=$(FLEX_INPUT:.l=.cxx)
+FLEX_INPUT=Lexer.l
+FLEX_CPP_OUTPUT=$(FLEX_INPUT:.l=.cpp)
 FLEX_OBJECTS=$(FLEX_INPUT:.l=.o)
 
 CLANG_FORMAT=clang-format
@@ -25,31 +25,32 @@ all: $(TARGET)
 
 .PHONY: fmt
 fmt:
-	find . -name '*.[ch]xx' -not -name 'grammar.*' -exec $(CLANG_FORMAT) $(CLANG_FORMAT_FLAGS) {} +
+	find . -name '*.[ch]pp' -not -name 'Grammar.*' -exec $(CLANG_FORMAT) $(CLANG_FORMAT_FLAGS) {} +
 
 $(TARGET): $(BISON_OBJECTS) $(FLEX_OBJECTS) $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-$(BISON_CXX_OUTPUT) $(BISON_HXX_OUTPUT): $(BISON_INPUT)
-	$(BISON) $(BISON_FLAGS) -o $(BISON_CXX_OUTPUT) $<
+$(BISON_CPP_OUTPUT) $(BISON_HPP_OUTPUT): $(BISON_INPUT)
+	$(BISON) $(BISON_FLAGS) -o $(BISON_CPP_OUTPUT) $<
 
-$(FLEX_CXX_OUTPUT): $(FLEX_INPUT)
+$(FLEX_CPP_OUTPUT): $(FLEX_INPUT)
 	$(FLEX) $(FLEX_FLAGS) -o $@ $<
 
-$(BISON_OBJECTS): $(BISON_CXX_OUTPUT) $(BISON_HXX_OUTPUT)
+$(BISON_OBJECTS): $(BISON_CPP_OUTPUT) $(BISON_HPP_OUTPUT)
 	$(CXX) -c $< -o $@
 
-$(FLEX_OBJECTS): $(FLEX_CXX_OUTPUT)
+$(FLEX_OBJECTS): $(FLEX_CPP_OUTPUT)
 	$(CXX) -c $< -o $@
 
-%.o: %.cxx %.hxx
+%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-%.o: %.cxx
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:
-	rm -f $(FLEX_CXX_OUTPUT) $(FLEX_OBJECTS)
-	rm -f $(BISON_CXX_OUTPUT) $(BISON_HXX_OUTPUT) $(BISON_OBJECTS)
-	rm -f $(OBJECTS)
+	rm -f $(FLEX_CPP_OUTPUT) $(FLEX_OBJECTS)
+	rm -f $(BISON_CPP_OUTPUT) $(BISON_HPP_OUTPUT) $(BISON_OBJECTS)
+	rm -f *.o
+	rm -f $(TARGET)

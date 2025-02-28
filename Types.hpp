@@ -1,7 +1,5 @@
 #pragma once
 
-namespace cpl
-{
 enum class Operator
 {
     EQ,
@@ -36,4 +34,3 @@ struct Number
         double d;
     };
 };
-} // namespace cpl
