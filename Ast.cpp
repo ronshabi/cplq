@@ -58,7 +58,6 @@ void NumberExpression::print_repr() const
     }
 }
 
-
 void CastExpression::print_repr() const
 {
     if (m_cast == NumberType::FLOAT)
@@ -97,4 +96,28 @@ bool BinaryBoolExpression::evaluate() const
 {
     // TODO
     return false;
+}
+
+void AssignStatement::print_repr() const
+{
+    std::cout << "Assign<" << m_id << ">:\n";
+    std::cout << "    ";
+    m_exp->print_repr();
+    std::cout << "\n";
+}
+
+void InputStatement::print_repr() const
+{
+    std::cout << "Input<" << m_id << ">\n";
+}
+
+void IfStatement::print_repr() const
+{
+    std::cout << "If:\n";
+    std::cout << "    Condition: ";
+    m_condition_exp->print_repr();
+    std::cout << "    Then: ";
+    m_then_branch->print_repr();
+    std::cout << "    Else: ";
+    m_else_branch->print_repr();
 }

@@ -107,9 +107,18 @@ union YYSTYPE
     DeclarationBlock *ast_declaration_block;
     Expression *ast_expression;
     BoolExpression *ast_bool_expression;
+    Statement *ast_statement;
+    AssignStatement *ast_assign_statement;
+    OutputStatement *ast_output_statement;
+    InputStatement *ast_input_statement;
+    IfStatement *ast_if_statement;
+    WhileStatement *ast_while_statement;
+    BreakStatement *ast_break_statement;
+    StatementList *ast_statement_list;
+    SwitchStatement *ast_switch_statement;
     std::vector<std::string> *decl_names;
 
-#line 113 "Grammar.hpp"
+#line 122 "Grammar.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

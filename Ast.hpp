@@ -7,6 +7,8 @@
 
 #include "Types.hpp"
 
+class StatementList;
+
 //===----------------------------------------------------------------------===//
 
 class Node
@@ -183,6 +185,11 @@ private:
 
 class Statement : public Node
 {
+public:
+    void print_repr() const override
+    {
+        std::cout << "Statement<?>\n";
+    }
 };
 
 //===----------------------------------------------------------------------===//
@@ -196,30 +203,38 @@ public:
     {
     }
 
+    void print_repr() const override;
+
 private:
     char *m_id;
     Expression *m_exp;
 };
 
-class IOStatement : public Statement
+class OutputStatement : public Statement
 {
 public:
-    enum class Type
-    {
-        Input,
-        Output
-    };
-
-    IOStatement(Type type, Expression *exp)
+    OutputStatement(Expression *exp)
         : Statement()
-        , m_type(type)
         , m_exp(exp)
     {
     }
 
 private:
-    Type m_type;
     Expression *m_exp;
+};
+
+class InputStatement : public Statement
+{
+public:
+    InputStatement(char *id)
+        : m_id(id)
+    {
+    }
+
+    void print_repr() const override;
+
+private:
+    char *m_id;
 };
 
 class IfStatement : public Statement
@@ -233,6 +248,8 @@ public:
         , m_else_branch(else_stmt)
     {
     }
+
+    void print_repr() const override;
 
 private:
     BoolExpression *m_condition_exp;
@@ -250,6 +267,11 @@ public:
     {
     }
 
+    void print_repr() const override
+    {
+        std::cout << "while (TODO)\n";
+    }
+
 private:
     BoolExpression *m_condition_exp;
     Statement *m_body_statement;
@@ -259,14 +281,61 @@ class BreakStatement : public Statement
 {
 public:
     BreakStatement() = default;
+    void print_repr() const override
+    {
+        std::cout << "Break\n";
+    }
+};
+
+class SwitchStatement : public Statement
+{
+public:
+    SwitchStatement()
+        : Statement()
+    {
+    }
+
+    void add_case(Number case_num, StatementList *case_statements)
+    {
+        m_cases.emplace_back(case_num, case_statements);
+    }
+
+    void set_expression(Expression *exp)
+    {
+        m_exp = exp;
+    }
+
+    void set_default_case(StatementList *default_case_stmt_list)
+    {
+        m_default_case = default_case_stmt_list;
+    }
+
+    void print_repr() const override
+    {
+        std::cout << "Switch<TODO>\n";
+    }
+
+private:
+    Expression *m_exp;
+    std::vector<std::pair<Number, StatementList *>> m_cases;
+    StatementList *m_default_case = nullptr;
 };
 
 //===----------------------------------------------------------------------===//
 
-class StatementList : public Node
+class StatementList : public Statement
 {
 public:
     StatementList() = default;
+    void add_statement(Statement *stmt_ptr)
+    {
+        m_statements.push_back(stmt_ptr);
+    }
+
+    void print_repr() const override
+    {
+        std::cout << "StatementList TODO\n";
+    }
 
 private:
     std::vector<Statement *> m_statements;

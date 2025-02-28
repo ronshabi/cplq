@@ -20,6 +20,15 @@ int yylex(void);
     DeclarationBlock *ast_declaration_block;
     Expression *ast_expression;
     BoolExpression *ast_bool_expression;
+    Statement *ast_statement;
+    AssignStatement *ast_assign_statement;
+    OutputStatement *ast_output_statement;
+    InputStatement *ast_input_statement;
+    IfStatement *ast_if_statement;
+    WhileStatement *ast_while_statement;
+    BreakStatement *ast_break_statement;
+    StatementList *ast_statement_list;
+    SwitchStatement *ast_switch_statement;
     std::vector<std::string> *decl_names;
 }
 
@@ -36,6 +45,10 @@ int yylex(void);
 %type <ast_declaration_block> declarations;
 %type <ast_expression> factor expression term;
 %type <ast_bool_expression> boolexpr boolfactor boolterm;
+%type <ast_statement> stmt assignment_stmt input_stmt output_stmt if_stmt while_stmt break_stmt switch_stmt  stmt_block; 
+%type <ast_switch_statement> caselist;
+%type <ast_statement_list> stmtlist;
+
 %%
 
 program: 
@@ -81,25 +94,48 @@ stmt:
         | stmt_block
         ;
 
-assignment_stmt:        ID '=' expression ';';
-input_stmt:             INPUT '(' ID ')' ';';
-output_stmt:            OUTPUT '(' expression ')' ';';
-if_stmt:                IF '(' boolexpr ')' stmt ELSE stmt;
-while_stmt:             WHILE '(' boolexpr ')' stmt;
-switch_stmt:            SWITCH '(' expression ')'
-                        '{' caselist '}' DEFAULT ':' stmtlist '}';
+assignment_stmt:    ID '=' expression ';' 
+                    { $$ = new AssignStatement($1, $3); }
+
+input_stmt:         INPUT '(' ID ')' ';' 
+                    { $$ = new InputStatement($3); }
+
+output_stmt:        OUTPUT '(' expression ')' ';' 
+                    { $$ = new OutputStatement($3); }
+
+if_stmt:            IF '(' boolexpr ')' stmt ELSE stmt
+                    { $$ = new IfStatement($3, $5, $7); }
+
+while_stmt:         WHILE '(' boolexpr ')' stmt 
+                    { $$ = new WhileStatement($3, $5); }
+
+switch_stmt:        SWITCH '(' expression ')'
+                    '{' caselist '}' DEFAULT ':' stmtlist '}'
+                    {
+                        $6->set_expression($3);
+                        $6->set_default_case($10);
+                        $$ = $6;
+                    }
 
 caselist:              
         %empty
+        { $$ = new SwitchStatement(); }
         | caselist CASE NUM ':' stmtlist
+        { $1->add_case($3, $5); $$ = $1; }
         ;
                         
-break_stmt:             BREAK ';';
-stmt_block:             '{' stmtlist '}';
+break_stmt:             BREAK ';'
+                        { $$ = new BreakStatement(); }
+
+stmt_block:             '{' stmtlist '}'
+                        { $$ = $2; }
 
 stmtlist:               
-        %empty
-        | stmtlist stmt
+        %empty 
+        { $$ = new StatementList(); }
+        
+        | stmtlist stmt 
+        { $1->add_statement($2); $$ = $1; }
         ;
                         
 boolexpr:               
