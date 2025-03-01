@@ -9,6 +9,8 @@
 void yyerror(const char *s);
 int yylex(void);
 
+extern Program *g_program;
+
 }
 
 %union {
@@ -52,34 +54,27 @@ int yylex(void);
 %%
 
 program: 
-        declarations stmt_block {
-            $1->print_repr();
+        declarations stmt_block
+        {
+            g_program = new Program();
+            g_program->set_declaration_block($1);
+            g_program->set_program_statements($2);
         }
         ;
 
 declarations:
-        %empty {
-            $$ = new DeclarationBlock();
-        }
-        | declarations declaration {
-            $1->add_declaration($2);
-            $$ = $1;
-        }
+        %empty { $$ = new DeclarationBlock(); }
+        | declarations declaration { $1->add_declaration($2); $$ = $1; }
         ;
 
 declaration:
-        idlist ':' type ';' {
-            $$ = new Declaration($1, $3);
-            $$->print_repr();
-        }
+        idlist ':' type ';' { $$ = new Declaration($1, $3); }
         ;
 
 type:   INT | FLOAT;
 
 idlist:
-        idlist ',' ID { 
-            $$->push_back($3);
-        }
+        idlist ',' ID { $$->push_back($3); }
         | ID { $$ = new std::vector<std::string>(); $$->push_back($1); }
         ;
 

@@ -57,8 +57,10 @@ extern int yydebug;
 void yyerror(const char *s);
 int yylex(void);
 
+extern Program *g_program;
 
-#line 62 "Grammar.hpp"
+
+#line 64 "Grammar.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -97,7 +99,7 @@ int yylex(void);
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "Grammar.y"
+#line 16 "Grammar.y"
 
     Number number;
     NumberType number_type;
@@ -118,7 +120,7 @@ union YYSTYPE
     SwitchStatement *ast_switch_statement;
     std::vector<std::string> *decl_names;
 
-#line 122 "Grammar.hpp"
+#line 124 "Grammar.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

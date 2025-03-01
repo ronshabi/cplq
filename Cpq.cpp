@@ -1,7 +1,11 @@
 #include <iostream>
 
+#include "Ast.hpp"
+
 extern void  yyparse();
 extern FILE *yyin;
+
+Program* g_program = nullptr;
 
 int main(int argc, const char *argv[])
 {
@@ -21,6 +25,8 @@ int main(int argc, const char *argv[])
     }
 
     yyparse();
+
+    g_program->print_repr();
 
     return 0;
 }

@@ -7,7 +7,11 @@
 
 #include "Types.hpp"
 
+class Node;
+class Statement;
 class StatementList;
+class Declaration;
+class DeclarationBlock;
 
 //===----------------------------------------------------------------------===//
 
@@ -20,6 +24,7 @@ public:
 };
 
 //===----------------------------------------------------------------------===//
+
 
 class Declaration : public Node
 {
@@ -334,9 +339,39 @@ public:
 
     void print_repr() const override
     {
-        std::cout << "StatementList TODO\n";
+        std::cout << "StatementList<" << m_statements.size() << ">:\n";
+        for (auto const stmt : m_statements) {
+            std::cout << "    ";
+            stmt->print_repr();
+        }
     }
 
 private:
     std::vector<Statement *> m_statements;
+};
+
+class Program : public Node
+{
+public:
+    Program() = default;
+    
+    void set_declaration_block(DeclarationBlock *db) {
+        m_declaration_block = db;
+    }
+
+    void set_program_statements(Statement *statement) {
+        m_program_statements = statement;
+    }
+
+    void print_repr() const override {
+        std::cout << "//===- Declarations -------===//\n";
+        m_declaration_block->print_repr();   
+        std::cout << "//===- Statements -------===//\n";
+        m_program_statements->print_repr();   
+
+    }
+    
+private:
+    DeclarationBlock* m_declaration_block;
+    Statement *m_program_statements = nullptr;
 };
