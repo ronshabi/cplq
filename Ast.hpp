@@ -163,7 +163,7 @@ public:
     void print_repr() const override;
 
 private:
-    char *m_id;
+    std::string m_id;
 };
 
 //===----------------------------------------------------------------------===//
@@ -211,7 +211,7 @@ public:
     void print_repr() const override;
 
 private:
-    char       *m_id;
+    std::string m_id;
     Expression *m_exp;
 };
 
@@ -239,7 +239,7 @@ public:
     void print_repr() const override;
 
 private:
-    char *m_id;
+    std::string m_id;
 };
 
 class IfStatement : public Statement

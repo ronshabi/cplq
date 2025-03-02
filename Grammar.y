@@ -17,7 +17,6 @@ extern Program *g_program;
     Number number;
     NumberType number_type;
     Operator operator_type;
-    char *str;
     Declaration *ast_declaration;
     DeclarationBlock *ast_declaration_block;
     Expression *ast_expression;
@@ -32,6 +31,7 @@ extern Program *g_program;
     StatementList *ast_statement_list;
     SwitchStatement *ast_switch_statement;
     std::vector<std::string> *decl_names;
+    std::string *str;
 }
 
 %token BREAK CASE DEFAULT ELSE IF INPUT OUTPUT SWITCH WHILE OR AND NOT;
@@ -75,7 +75,7 @@ type:   INT | FLOAT;
 
 idlist:
         idlist ',' ID { $$->push_back($3); }
-        | ID { $$ = new std::vector<std::string>(); $$->push_back($1); }
+        | ID { $$ = new std::vector<std::string*>(); $$->push_back($1); }
         ;
 
 stmt:

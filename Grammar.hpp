@@ -104,7 +104,6 @@ union YYSTYPE
     Number number;
     NumberType number_type;
     Operator operator_type;
-    char *str;
     Declaration *ast_declaration;
     DeclarationBlock *ast_declaration_block;
     Expression *ast_expression;
@@ -119,6 +118,7 @@ union YYSTYPE
     StatementList *ast_statement_list;
     SwitchStatement *ast_switch_statement;
     std::vector<std::string> *decl_names;
+    std::string *str;
 
 #line 124 "Grammar.hpp"
 

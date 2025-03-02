@@ -40,7 +40,7 @@ digit   [0-9]
 "/*"(.|\n)+"*/" ;
 
 {letter}({letter}|{digit})*    {
-        yylval.str = yytext;
+        yylval.str = new std::string(yytext);
         return ID;
 }
 

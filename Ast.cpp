@@ -76,7 +76,7 @@ void CastExpression::print_repr() const
 
 void IdExpression::print_repr() const
 {
-    std::cout << "ID<" << *m_id << ">\n";
+    std::cout << "ID<" << m_id << ">\n";
 }
 
 void NotExpression::print_repr() const

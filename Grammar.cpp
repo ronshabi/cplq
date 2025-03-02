@@ -1195,7 +1195,7 @@ yyreduce:
 
   case 9: /* idlist: ID  */
 #line 78 "Grammar.y"
-             { (yyval.decl_names) = new std::vector<std::string>(); (yyval.decl_names)->push_back((yyvsp[0].str)); }
+             { (yyval.decl_names) = new std::vector<std::string*>(); (yyval.decl_names)->push_back((yyvsp[0].str)); }
 #line 1200 "Grammar.cpp"
     break;
 

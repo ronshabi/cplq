@@ -959,7 +959,7 @@ case 28:
 YY_RULE_SETUP
 #line 42 "Lexer.l"
 {
-        yylval.str = yytext;
+        yylval.str = new std::string(yytext);
         return ID;
 }
 	YY_BREAK
