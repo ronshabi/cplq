@@ -117,10 +117,9 @@ union YYSTYPE
     BreakStatement *ast_break_statement;
     StatementList *ast_statement_list;
     SwitchStatement *ast_switch_statement;
-    std::vector<std::string> *decl_names;
     std::string *str;
 
-#line 124 "Grammar.hpp"
+#line 123 "Grammar.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

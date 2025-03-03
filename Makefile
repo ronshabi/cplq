@@ -37,10 +37,10 @@ $(FLEX_CPP_OUTPUT): $(FLEX_INPUT)
 	$(FLEX) $(FLEX_FLAGS) -o $@ $<
 
 $(BISON_OBJECTS): $(BISON_CPP_OUTPUT) $(BISON_HPP_OUTPUT)
-	$(CXX) -c $< -o $@
+	$(CXX) -g -c $< -o $@
 
 $(FLEX_OBJECTS): $(FLEX_CPP_OUTPUT)
-	$(CXX) -c $< -o $@
+	$(CXX) -g -c $< -o $@
 
 %.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

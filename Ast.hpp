@@ -29,37 +29,26 @@ public:
 class Declaration : public Node
 {
 public:
-    Declaration(std::vector<std::string> *id_vec_ptr, NumberType decl_type)
-        : Node()
-        , m_ids(id_vec_ptr)
-        , m_type(decl_type)
-    {
-    }
+    Declaration() = default;
 
     void print_repr() const override;
+    void add_id(std::string* id) { m_ids.push_back(id); }
+    void assign_number_type(NumberType type) { m_type = type; }
 
 private:
-    std::vector<std::string> *m_ids;
+    std::vector<std::string *> m_ids;
     NumberType                m_type;
 };
 
-//===----------------------------------------------------------------------===//
-
-class DeclarationBlock : public Node
-{
+class DeclarationBlock : public Node {
 public:
-    DeclarationBlock()
-        : Node()
-        , m_declarations()
-    {
-    }
-
+    DeclarationBlock() = default;
     void print_repr() const override;
-    void add_declaration(Declaration *declaration);
-
+    void add_declaration(Declaration *decl);
 private:
     std::vector<Declaration *> m_declarations;
 };
+
 
 //===----------------------------------------------------------------------===//
 
@@ -155,7 +144,7 @@ private:
 class IdExpression : public Expression
 {
 public:
-    IdExpression(char *id_name)
+    IdExpression(std::string *id_name)
         : Expression()
         , m_id(id_name)
     {
@@ -163,7 +152,7 @@ public:
     void print_repr() const override;
 
 private:
-    std::string m_id;
+    std::string *m_id;
 };
 
 //===----------------------------------------------------------------------===//
@@ -202,7 +191,7 @@ public:
 class AssignStatement : public Statement
 {
 public:
-    AssignStatement(char *id, Expression *exp)
+    AssignStatement(std::string *id, Expression *exp)
         : m_id(id)
         , m_exp(exp)
     {
@@ -211,7 +200,7 @@ public:
     void print_repr() const override;
 
 private:
-    std::string m_id;
+    std::string* m_id;
     Expression *m_exp;
 };
 
@@ -231,7 +220,7 @@ private:
 class InputStatement : public Statement
 {
 public:
-    InputStatement(char *id)
+    InputStatement(std::string *id)
         : m_id(id)
     {
     }
@@ -239,7 +228,7 @@ public:
     void print_repr() const override;
 
 private:
-    std::string m_id;
+    std::string *m_id;
 };
 
 class IfStatement : public Statement

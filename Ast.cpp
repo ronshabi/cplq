@@ -7,11 +7,11 @@ void Declaration::print_repr() const
     std::cout << "Declaration<"
               << number_type_to_string(static_cast<NumberType>(m_type))
               << "> [";
-    for (std::size_t i = 0; i < m_ids->size(); ++i)
+    for (std::size_t i = 0; i < m_ids.size(); ++i)
     {
-        std::cout << m_ids->operator[](i);
+        std::cout << *m_ids[i];
 
-        if (i + 1 != m_ids->size())
+        if (i + 1 != m_ids.size())
         {
             std::cout << ", ";
         }
@@ -76,7 +76,7 @@ void CastExpression::print_repr() const
 
 void IdExpression::print_repr() const
 {
-    std::cout << "ID<" << m_id << ">\n";
+    std::cout << "ID<" << *m_id << ">\n";
 }
 
 void NotExpression::print_repr() const
@@ -100,7 +100,7 @@ bool BinaryBoolExpression::evaluate() const
 
 void AssignStatement::print_repr() const
 {
-    std::cout << "Assign<" << m_id << ">:\n";
+    std::cout << "Assign<" << *m_id << ">:\n";
     std::cout << "    ";
     m_exp->print_repr();
     std::cout << "\n";
@@ -108,7 +108,7 @@ void AssignStatement::print_repr() const
 
 void InputStatement::print_repr() const
 {
-    std::cout << "Input<" << m_id << ">\n";
+    std::cout << "Input<" << *m_id << ">\n";
 }
 
 void IfStatement::print_repr() const

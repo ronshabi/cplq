@@ -30,7 +30,6 @@ extern Program *g_program;
     BreakStatement *ast_break_statement;
     StatementList *ast_statement_list;
     SwitchStatement *ast_switch_statement;
-    std::vector<std::string> *decl_names;
     std::string *str;
 }
 
@@ -42,8 +41,7 @@ extern Program *g_program;
 %token <number> NUM;
 
 %type <number_type> type;
-%type <decl_names> idlist;
-%type <ast_declaration> declaration;
+%type <ast_declaration> idlist declaration;
 %type <ast_declaration_block> declarations;
 %type <ast_expression> factor expression term;
 %type <ast_bool_expression> boolexpr boolfactor boolterm;
@@ -68,14 +66,14 @@ declarations:
         ;
 
 declaration:
-        idlist ':' type ';' { $$ = new Declaration($1, $3); }
+        idlist ':' type ';' { $1->assign_number_type($3); $$ = $1; }
         ;
 
 type:   INT | FLOAT;
 
 idlist:
-        idlist ',' ID { $$->push_back($3); }
-        | ID { $$ = new std::vector<std::string*>(); $$->push_back($1); }
+        idlist ',' ID { $1->add_id($3); $$ = $1; }
+        | ID { $$ = new Declaration(); $$->add_id($1); }
         ;
 
 stmt:
