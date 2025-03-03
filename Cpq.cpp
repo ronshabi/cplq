@@ -5,7 +5,7 @@
 extern void  yyparse();
 extern FILE *yyin;
 
-Program* g_program = nullptr;
+Program *g_program = nullptr;
 
 int main(int argc, const char *argv[])
 {

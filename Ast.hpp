@@ -25,30 +25,36 @@ public:
 
 //===----------------------------------------------------------------------===//
 
-
 class Declaration : public Node
 {
 public:
     Declaration() = default;
 
     void print_repr() const override;
-    void add_id(std::string* id) { m_ids.push_back(id); }
-    void assign_number_type(NumberType type) { m_type = type; }
+    void add_id(std::string *id)
+    {
+        m_ids.push_back(id);
+    }
+    void assign_number_type(NumberType type)
+    {
+        m_type = type;
+    }
 
 private:
     std::vector<std::string *> m_ids;
-    NumberType                m_type;
+    NumberType                 m_type;
 };
 
-class DeclarationBlock : public Node {
+class DeclarationBlock : public Node
+{
 public:
     DeclarationBlock() = default;
     void print_repr() const override;
     void add_declaration(Declaration *decl);
+
 private:
     std::vector<Declaration *> m_declarations;
 };
-
 
 //===----------------------------------------------------------------------===//
 
@@ -200,8 +206,8 @@ public:
     void print_repr() const override;
 
 private:
-    std::string* m_id;
-    Expression *m_exp;
+    std::string *m_id;
+    Expression  *m_exp;
 };
 
 class OutputStatement : public Statement
@@ -329,7 +335,8 @@ public:
     void print_repr() const override
     {
         std::cout << "StatementList<" << m_statements.size() << ">:\n";
-        for (auto const stmt : m_statements) {
+        for (auto const stmt : m_statements)
+        {
             std::cout << "    ";
             stmt->print_repr();
         }
@@ -343,24 +350,26 @@ class Program : public Node
 {
 public:
     Program() = default;
-    
-    void set_declaration_block(DeclarationBlock *db) {
+
+    void set_declaration_block(DeclarationBlock *db)
+    {
         m_declaration_block = db;
     }
 
-    void set_program_statements(Statement *statement) {
+    void set_program_statements(Statement *statement)
+    {
         m_program_statements = statement;
     }
 
-    void print_repr() const override {
+    void print_repr() const override
+    {
         std::cout << "//===- Declarations -------===//\n";
-        m_declaration_block->print_repr();   
+        m_declaration_block->print_repr();
         std::cout << "//===- Statements -------===//\n";
-        m_program_statements->print_repr();   
-
+        m_program_statements->print_repr();
     }
-    
+
 private:
-    DeclarationBlock* m_declaration_block;
-    Statement *m_program_statements = nullptr;
+    DeclarationBlock *m_declaration_block;
+    Statement        *m_program_statements = nullptr;
 };
