@@ -64,7 +64,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "DeclBlock<" << m_declarations.size() << ">:\n";
+        std::cout << "DeclBlock<" << m_declarations.size() << ">\n";
         for (const auto& decl : m_declarations) {
             decl->dump(indent + 4);
         }
@@ -104,7 +104,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "NotExp:\n";
+        std::cout << "NotExp\n";
         m_exp->dump(indent + 4);
     }
 
@@ -127,7 +127,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "BinaryBoolExpression<" << operator_to_string(m_op) << ">:\n";
+        std::cout << "BinaryBoolExpression<" << operator_to_string(m_op) << ">\n";
         m_exp1->dump(indent + 4);
         m_exp2->dump(indent + 4);
     }
@@ -176,7 +176,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "Cast<" << number_type_to_string(m_cast) << ">:\n";
+        std::cout << "Cast<" << number_type_to_string(m_cast) << ">\n";
         m_expression->dump(indent+4);
     }
 private:
@@ -218,7 +218,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "BinaryExpression<" << operator_to_string(m_op) << ">:\n";
+        std::cout << "BinaryExpression<" << operator_to_string(m_op) << ">\n";
         m_exp1->dump(indent + 4);
         m_exp2->dump(indent + 4);
     }
@@ -248,7 +248,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "Assign<" << *m_id << ">:\n";
+        std::cout << "Assign<" << *m_id << ">\n";
         m_exp->dump(indent+4);
     }
 
@@ -268,7 +268,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "Output:\n";
+        std::cout << "Output\n";
         m_exp->dump(indent+4);
     }
     
@@ -307,7 +307,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "If:\n";
+        std::cout << "If\n";
         m_condition_exp->dump(indent+4);
         m_then_branch->dump(indent+4);
         m_else_branch->dump(indent+4);
@@ -332,7 +332,7 @@ public:
 
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "While:\n";
+        std::cout << "While\n";
         m_condition_exp->dump(indent+4);
         m_body_statement->dump(indent+4);
     }
@@ -396,7 +396,7 @@ public:
     
     void dump(unsigned indent) const override {
         Node::dump(indent);
-        std::cout << "StatementList:\n";
+        std::cout << "StatementList\n";
         for (auto const& stmt : m_statements) {
             stmt->dump(indent+4);
         }
