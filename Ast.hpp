@@ -45,11 +45,7 @@ public:
         m_type = type;
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Decl<" << number_type_to_string(m_type) << "> " << vector_to_string(m_ids) << "\n";
-    }
-
+    void dump(unsigned indent) const override;
 
 private:
     std::vector<std::string *> m_ids;
@@ -62,13 +58,7 @@ public:
     DeclarationBlock() = default;
     void add_declaration(Declaration *decl);
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "DeclBlock<" << m_declarations.size() << ">\n";
-        for (const auto& decl : m_declarations) {
-            decl->dump(indent + 4);
-        }
-    }
+    void dump(unsigned indent) const override;
 
 private:
     std::vector<Declaration *> m_declarations;
@@ -102,11 +92,7 @@ public:
         return !m_exp->evaluate();
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "NotExp\n";
-        m_exp->dump(indent + 4);
-    }
+    void dump(unsigned indent) const override;
 
 
 private:
@@ -125,12 +111,7 @@ public:
     }
     bool evaluate() const override;
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "BinaryBoolExpression<" << operator_to_string(m_op) << ">\n";
-        m_exp1->dump(indent + 4);
-        m_exp2->dump(indent + 4);
-    }
+    void dump(unsigned indent) const override;
 
 private:
     Operator    m_op;
@@ -149,14 +130,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        if (m_number.type == NumberType::FLOAT) {
-            std::cout << "Number<Float>(" << m_number.d << ")\n";
-        } else {
-            std::cout << "Number<Int>(" << m_number.i << ")\n";
-        }
-    }
+    void dump(unsigned indent) const override;
 
 private:
     Number m_number;
@@ -174,11 +148,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Cast<" << number_type_to_string(m_cast) << ">\n";
-        m_expression->dump(indent+4);
-    }
+    void dump(unsigned indent) const override;
 private:
     NumberType  m_cast;
     Expression *m_expression;
@@ -195,10 +165,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Id<" << *m_id << ">\n";
-    }
+    void dump(unsigned indent) const override;
 private:
     std::string *m_id;
 };
@@ -216,12 +183,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "BinaryExpression<" << operator_to_string(m_op) << ">\n";
-        m_exp1->dump(indent + 4);
-        m_exp2->dump(indent + 4);
-    }
+    void dump(unsigned indent) const override;
 
 private:
     Expression *m_exp1;
@@ -246,11 +208,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Assign<" << *m_id << ">\n";
-        m_exp->dump(indent+4);
-    }
+    void dump(unsigned indent) const override;
 
 private:
     std::string *m_id;
@@ -266,11 +224,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Output\n";
-        m_exp->dump(indent+4);
-    }
+    void dump(unsigned indent) const override;
     
 private:
     Expression *m_exp;
@@ -284,10 +238,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Input<" << *m_id << ">\n";
-    }
+    void dump(unsigned indent) const override;
 
 private:
     std::string *m_id;
@@ -305,13 +256,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "If\n";
-        m_condition_exp->dump(indent+4);
-        m_then_branch->dump(indent+4);
-        m_else_branch->dump(indent+4);
-    }
+    void dump(unsigned indent) const override;
 
 
 private:
@@ -330,12 +275,7 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "While\n";
-        m_condition_exp->dump(indent+4);
-        m_body_statement->dump(indent+4);
-    }
+    void dump(unsigned indent) const override;
 
 private:
     BoolExpression *m_condition_exp;
@@ -347,10 +287,7 @@ class BreakStatement : public Statement
 public:
     BreakStatement() = default;
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Break\n";
-    }
+    void dump(unsigned indent) const override;
 };
 
 
@@ -366,13 +303,7 @@ public:
     }
 
     
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "StatementList\n";
-        for (auto const& stmt : m_statements) {
-            stmt->dump(indent+4);
-        }
-    }
+    void dump(unsigned indent) const override;
 
 
 private:
@@ -403,20 +334,7 @@ public:
         m_default_case = default_case_stmt_list;
     }
     
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        std::cout << "Switch\n";
-        m_exp->dump(indent+4);
-        for (auto const &case_pair: m_cases) {
-            NumberExpression x(case_pair.first);
-            x.dump(indent+4);
-            (case_pair.second)->dump(indent+8);
-        }
-
-        Node::dump(indent+4);
-        std::cout << "Default\n";
-        m_default_case->dump(indent+8);
-    }
+    void dump(unsigned indent) const override;
 
 private:
     Expression                                     *m_exp;
@@ -440,11 +358,7 @@ public:
         m_program_statements = statement;
     }
 
-    void dump(unsigned indent) const override {
-        Node::dump(indent);
-        m_declaration_block->dump(0);
-        m_program_statements->dump(0);
-    }
+    void dump(unsigned indent) const override;
 
 
 private:
