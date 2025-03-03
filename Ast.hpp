@@ -22,11 +22,7 @@ public:
     Node()                     = default;
     virtual ~Node()            = default;
 
-    virtual void dump(unsigned indent = 0) const {
-        for (unsigned i = 0; i < indent; ++i) {
-            std::cout << ' ';
-        }
-    }
+    virtual void dump(unsigned indent = 0) const;
 };
 
 //===----------------------------------------------------------------------===//
@@ -40,6 +36,7 @@ public:
     {
         m_ids.push_back(id);
     }
+
     void assign_number_type(NumberType type)
     {
         m_type = type;
@@ -338,8 +335,8 @@ public:
 
 private:
     Expression                                     *m_exp;
-    std::vector<std::pair<Number, StatementList *>> m_cases;
-    StatementList                                  *m_default_case = nullptr;
+    std::vector<std::pair<Number, Statement *>> m_cases;
+    Statement                                  *m_default_case = nullptr;
 };
 
 

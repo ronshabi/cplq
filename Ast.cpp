@@ -1,5 +1,12 @@
 #include "Ast.hpp"
 
+
+void Node::dump(unsigned indent) const {
+    for (unsigned i = 0; i < indent; ++i) {
+        std::cout << ' ';
+    }
+}
+
 void DeclarationBlock::add_declaration(Declaration *declaration)
 {
     m_declarations.emplace_back(declaration);
