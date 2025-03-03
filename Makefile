@@ -2,7 +2,7 @@ CXX=g++
 CXXFLAGS=-std=c++20 -g -O1 -Wall -Wextra -Wformat
 
 TARGET=cplq
-OBJECTS=Cpq.o Ast.o Types.o
+OBJECTS=Cpq.o Ast.o Types.o Utils.o
 
 BISON=bison
 BISON_FLAGS=-d

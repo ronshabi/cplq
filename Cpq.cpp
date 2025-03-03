@@ -26,7 +26,7 @@ int main(int argc, const char *argv[])
 
     yyparse();
 
-    g_program->print_repr();
+    g_program->dump(0);
 
     return 0;
 }
