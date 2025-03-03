@@ -353,34 +353,6 @@ public:
     }
 };
 
-class SwitchStatement : public Statement
-{
-public:
-    SwitchStatement()
-        : Statement()
-    {
-    }
-
-    void add_case(Number case_num, StatementList *case_statements)
-    {
-        m_cases.emplace_back(case_num, case_statements);
-    }
-
-    void set_expression(Expression *exp)
-    {
-        m_exp = exp;
-    }
-
-    void set_default_case(StatementList *default_case_stmt_list)
-    {
-        m_default_case = default_case_stmt_list;
-    }
-
-private:
-    Expression                                     *m_exp;
-    std::vector<std::pair<Number, StatementList *>> m_cases;
-    StatementList                                  *m_default_case = nullptr;
-};
 
 //===----------------------------------------------------------------------===//
 
@@ -406,6 +378,52 @@ public:
 private:
     std::vector<Statement *> m_statements;
 };
+
+
+class SwitchStatement : public Statement
+{
+public:
+    SwitchStatement()
+        : Statement()
+    {
+    }
+
+    void add_case(Number case_num, StatementList *case_statements)
+    {
+        m_cases.emplace_back(case_num, case_statements);
+    }
+
+    void set_expression(Expression *exp)
+    {
+        m_exp = exp;
+    }
+
+    void set_default_case(StatementList *default_case_stmt_list)
+    {
+        m_default_case = default_case_stmt_list;
+    }
+    
+    void dump(unsigned indent) const override {
+        Node::dump(indent);
+        std::cout << "Switch\n";
+        m_exp->dump(indent+4);
+        for (auto const &case_pair: m_cases) {
+            NumberExpression x(case_pair.first);
+            x.dump(indent+4);
+            (case_pair.second)->dump(indent+8);
+        }
+
+        Node::dump(indent+4);
+        std::cout << "Default\n";
+        m_default_case->dump(indent+8);
+    }
+
+private:
+    Expression                                     *m_exp;
+    std::vector<std::pair<Number, StatementList *>> m_cases;
+    StatementList                                  *m_default_case = nullptr;
+};
+
 
 class Program : public Node
 {
