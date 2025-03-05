@@ -56,7 +56,7 @@ void Module::check_correct_file_extension() {
     }
 
     auto const extension = m_file_name.substr(dot);
-    if (extension != "ou") {
+    if (extension != ".ou") {
         m_status = ModuleStatus::InvalidExtension;
     }
 }

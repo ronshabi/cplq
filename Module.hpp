@@ -46,6 +46,10 @@ public:
         m_ast = root;
     }
 
+    void set_status(ModuleStatus status) {
+        m_status = status;
+    }
+
 private:
     void check_correct_file_extension();
     void try_to_open_file();

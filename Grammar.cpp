@@ -2178,5 +2178,7 @@ yyreturnlab:
 
 void yyerror(YYLTYPE *locp, const char *s)
 {
-    printf("BISON ERROR at %d: '%s'\n", locp->first_line, s);
+    g_module->set_current_position(locp->first_line,  locp->first_column);
+    g_module->emit_error(s);
+    g_module->set_status(ModuleStatus::SyntaxError);
 }
