@@ -54,13 +54,12 @@ extern int yydebug;
 #include "Types.hpp"
 #include "Ast.hpp"
 
-void yyerror(const char *s);
-int yylex(void);
+struct YYLTYPE;
 
 extern Program *g_program;
 
 
-#line 64 "Grammar.hpp"
+#line 63 "Grammar.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -99,7 +98,7 @@ extern Program *g_program;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 16 "Grammar.y"
+#line 27 "Grammar.y"
 
     Number number;
     NumberType number_type;
@@ -119,7 +118,7 @@ union YYSTYPE
     SwitchStatement *ast_switch_statement;
     std::string *str;
 
-#line 123 "Grammar.hpp"
+#line 122 "Grammar.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -127,11 +126,32 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
 
-extern YYSTYPE yylval;
+
 
 
 int yyparse (void);
 
+/* "%code provides" blocks.  */
+#line 16 "Grammar.y"
+
+
+void yyerror(YYLTYPE *locp, const char *s);
+int yylex(YYSTYPE *, YYLTYPE*);
+
+#line 156 "Grammar.hpp"
 
 #endif /* !YY_YY_GRAMMAR_HPP_INCLUDED  */

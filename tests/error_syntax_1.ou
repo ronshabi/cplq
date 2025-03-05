@@ -1,0 +1,1 @@
+a, b: Float; /* <-- Error, float should be lowercase */

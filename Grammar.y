@@ -6,12 +6,23 @@
 #include "Types.hpp"
 #include "Ast.hpp"
 
-void yyerror(const char *s);
-int yylex(void);
+struct YYLTYPE;
 
 extern Program *g_program;
 
 }
+
+
+%code provides {
+
+void yyerror(YYLTYPE *locp, const char *s);
+int yylex(YYSTYPE *, YYLTYPE*);
+}
+
+%define parse.error detailed
+%define parse.lac full
+%locations
+%define api.pure full
 
 %union {
     Number number;
@@ -169,7 +180,7 @@ factor:
 
 %%
 
-void yyerror(const char *s)
+void yyerror(YYLTYPE *locp, const char *s)
 {
-    printf("BISON ERROR: '%s'\n", s);
+    printf("BISON ERROR at %d: '%s'\n", locp->first_line, s);
 }
