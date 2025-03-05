@@ -555,9 +555,10 @@ char *yytext;
 #line 1 "Lexer.l"
 #line 2 "Lexer.l"
 #include "Grammar.hpp"
-#line 559 "Lexer.cpp"
-/* %option location */
+
+#define YY_USER_ACTION yylloc->first_line = yylineno;
 #line 561 "Lexer.cpp"
+#line 562 "Lexer.cpp"
 
 #define INITIAL 0
 
@@ -792,10 +793,10 @@ YY_DECL
 		}
 
 	{
-#line 13 "Lexer.l"
+#line 15 "Lexer.l"
 
 
-#line 799 "Lexer.cpp"
+#line 800 "Lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -864,143 +865,143 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 15 "Lexer.l"
+#line 17 "Lexer.l"
 return BREAK;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 16 "Lexer.l"
+#line 18 "Lexer.l"
 return CASE;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 17 "Lexer.l"
+#line 19 "Lexer.l"
 return DEFAULT;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 18 "Lexer.l"
+#line 20 "Lexer.l"
 return ELSE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 19 "Lexer.l"
+#line 21 "Lexer.l"
 { yylval->number_type = NumberType::FLOAT; return FLOAT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 20 "Lexer.l"
+#line 22 "Lexer.l"
 { yylval->number_type = NumberType::INT; return INT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 21 "Lexer.l"
+#line 23 "Lexer.l"
 return IF;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 22 "Lexer.l"
+#line 24 "Lexer.l"
 return INPUT;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 23 "Lexer.l"
+#line 25 "Lexer.l"
 return OUTPUT;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 24 "Lexer.l"
+#line 26 "Lexer.l"
 return SWITCH;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 25 "Lexer.l"
+#line 27 "Lexer.l"
 return WHILE;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 26 "Lexer.l"
+#line 28 "Lexer.l"
 { yylval->operator_type = Operator::EQ;     return RELOP; };
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 27 "Lexer.l"
+#line 29 "Lexer.l"
 { yylval->operator_type = Operator::NEQ;    return RELOP; };
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 28 "Lexer.l"
+#line 30 "Lexer.l"
 { yylval->operator_type = Operator::LT;     return RELOP; };
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 29 "Lexer.l"
+#line 31 "Lexer.l"
 { yylval->operator_type = Operator::GT;     return RELOP; };
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "Lexer.l"
+#line 32 "Lexer.l"
 { yylval->operator_type = Operator::LTE;    return RELOP; };
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 31 "Lexer.l"
+#line 33 "Lexer.l"
 { yylval->operator_type = Operator::GTE;    return RELOP; };
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 32 "Lexer.l"
+#line 34 "Lexer.l"
 { yylval->operator_type = Operator::PLUS;   return ADDOP; };
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 33 "Lexer.l"
+#line 35 "Lexer.l"
 { yylval->operator_type = Operator::MINUS;  return ADDOP; };
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 34 "Lexer.l"
+#line 36 "Lexer.l"
 { yylval->operator_type = Operator::MUL;    return MULOP; };
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 35 "Lexer.l"
+#line 37 "Lexer.l"
 { yylval->operator_type = Operator::DIV;    return MULOP; };
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 36 "Lexer.l"
+#line 38 "Lexer.l"
 { return OR; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 37 "Lexer.l"
+#line 39 "Lexer.l"
 { return AND; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 38 "Lexer.l"
+#line 40 "Lexer.l"
 { return NOT; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 39 "Lexer.l"
+#line 41 "Lexer.l"
 { yylval->number_type = NumberType::INT;   return CAST; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 40 "Lexer.l"
+#line 42 "Lexer.l"
 { yylval->number_type = NumberType::FLOAT; return CAST; }
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 42 "Lexer.l"
+#line 44 "Lexer.l"
 ;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 44 "Lexer.l"
+#line 46 "Lexer.l"
 {
         yylval->str = new std::string(yytext);
         return ID;
@@ -1008,7 +1009,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 49 "Lexer.l"
+#line 51 "Lexer.l"
 {
         yylval->number.type = NumberType::INT;
         yylval->number.i = atoi(yytext);
@@ -1017,7 +1018,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 55 "Lexer.l"
+#line 57 "Lexer.l"
 {
         yylval->number.type = NumberType::FLOAT;
         yylval->number.d = atof(yytext);
@@ -1027,20 +1028,20 @@ YY_RULE_SETUP
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 62 "Lexer.l"
+#line 64 "Lexer.l"
 ;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 63 "Lexer.l"
+#line 65 "Lexer.l"
 { return *yytext; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 64 "Lexer.l"
+#line 67 "Lexer.l"
 ECHO;
 	YY_BREAK
-#line 1044 "Lexer.cpp"
+#line 1045 "Lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2057,7 +2058,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 64 "Lexer.l"
-
-
+#line 67 "Lexer.l"
 

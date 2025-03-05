@@ -82,6 +82,7 @@ declarations:
 
 declaration:
         idlist ':' type ';' { $1->assign_number_type($3); $$ = $1; }
+        | error ';' { printf("error in decl!\n"); yyerrok; }
         ;
 
 type:   INT | FLOAT;
@@ -187,6 +188,6 @@ factor:
 void yyerror(YYLTYPE *locp, const char *s)
 {
     g_module->set_status(ModuleStatus::SyntaxError);
-    g_module->set_current_position(locp->first_line,  locp->first_column);
+    g_module->set_current_position(locp->first_line);
     g_module->emit_error(s);
 }

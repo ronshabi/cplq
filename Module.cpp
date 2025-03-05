@@ -30,7 +30,7 @@ Module::~Module()
 }
 
 void Module::emit_error(const char *fmt, ...) {
-    fprintf_color(stdout, kAnsiBold, "%s:%d%d: ", m_file_name.c_str(), m_current_line_no, m_current_column_no);
+    fprintf_color(stdout, kAnsiBold, "%s:%d: ", m_file_name.c_str(), m_current_line_no);
     fprintf_color(stdout, kAnsiBoldRed, "error: ");
     va_list ap;
     va_start(ap, fmt);
@@ -53,6 +53,7 @@ void Module::check_correct_file_extension() {
     auto const dot = m_file_name.find_last_of('.');
     if (dot == std::string::npos) {
         m_status = ModuleStatus::InvalidExtension;
+        return;
     }
 
     auto const extension = m_file_name.substr(dot);

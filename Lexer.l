@@ -1,13 +1,15 @@
 %{
 #include "Grammar.hpp"
+
+#define YY_USER_ACTION yylloc->first_line = yylineno;
 %}
 
 letter  [a-zA-Z]
 digit   [0-9]
 
+
 %option noyywrap
 %option yylineno
-/* %option location */
 %option bison-locations
 %option bison-bridge
 %%
@@ -61,5 +63,5 @@ digit   [0-9]
 
 [[:space:]]         ;
 .                       { return *yytext; }
-%%
 
+%%
