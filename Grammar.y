@@ -8,7 +8,8 @@
 
 struct YYLTYPE;
 
-extern Program *g_program;
+#include "Module.hpp"
+extern Module *g_module;
 
 }
 
@@ -41,6 +42,7 @@ int yylex(YYSTYPE *, YYLTYPE*);
     BreakStatement *ast_break_statement;
     StatementList *ast_statement_list;
     SwitchStatement *ast_switch_statement;
+    Program *ast_program;
     std::string *str;
 }
 
@@ -59,15 +61,17 @@ int yylex(YYSTYPE *, YYLTYPE*);
 %type <ast_statement> stmt assignment_stmt input_stmt output_stmt if_stmt while_stmt break_stmt switch_stmt  stmt_block; 
 %type <ast_switch_statement> caselist;
 %type <ast_statement_list> stmtlist;
+%type <ast_program> program;
 
 %%
 
 program: 
         declarations stmt_block
         {
-            g_program = new Program();
-            g_program->set_declaration_block($1);
-            g_program->set_program_statements($2);
+            $$ = new Program();
+            $$->set_declaration_block($1);
+            $$->set_program_statements($2);
+            g_module->set_ast_root($$);
         }
         ;
 

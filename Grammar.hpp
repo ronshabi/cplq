@@ -56,10 +56,11 @@ extern int yydebug;
 
 struct YYLTYPE;
 
-extern Program *g_program;
+#include "Module.hpp"
+extern Module *g_module;
 
 
-#line 63 "Grammar.hpp"
+#line 64 "Grammar.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -98,7 +99,7 @@ extern Program *g_program;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "Grammar.y"
+#line 28 "Grammar.y"
 
     Number number;
     NumberType number_type;
@@ -116,9 +117,10 @@ union YYSTYPE
     BreakStatement *ast_break_statement;
     StatementList *ast_statement_list;
     SwitchStatement *ast_switch_statement;
+    Program *ast_program;
     std::string *str;
 
-#line 122 "Grammar.hpp"
+#line 124 "Grammar.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -146,12 +148,12 @@ struct YYLTYPE
 int yyparse (void);
 
 /* "%code provides" blocks.  */
-#line 16 "Grammar.y"
+#line 17 "Grammar.y"
 
 
 void yyerror(YYLTYPE *locp, const char *s);
 int yylex(YYSTYPE *, YYLTYPE*);
 
-#line 156 "Grammar.hpp"
+#line 158 "Grammar.hpp"
 
 #endif /* !YY_YY_GRAMMAR_HPP_INCLUDED  */

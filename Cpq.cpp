@@ -1,12 +1,10 @@
 #include <iostream>
 
-#include "Ast.hpp"
+#include "Module.hpp"
 
-extern void  yyparse();
 extern FILE *yyin;
 
-Program *g_program = nullptr;
-bool g_dump_ast = false;
+Module *g_module;
 
 void usage(int exit_code = 1)
 {
@@ -18,37 +16,16 @@ void usage(int exit_code = 1)
 
 int main(int argc, const char *argv[])
 {
-    if (argc != 2 && argc != 3)
+    if (argc != 2)
     {
         usage();
     }
 
-    std::string source_file = argv[1];
+    Module main_module(argv[1]);
 
-    if (argc == 3) {
-        std::string command = argv[2];
-        if (command == "--dump-ast") {
-            g_dump_ast = true;
-        } else {
-            std::cerr << "unknown command\n";
-            usage();
-        }
-    }
+    g_module = &main_module;
 
-    yyin = fopen(argv[1], "r");
+    main_module.parse();
 
-    // TODO: format nicely
-    if (yyin == nullptr)
-    {
-        std::cerr << "file not found\n";
-        exit(EXIT_FAILURE);
-    }
-
-    yyparse();
-
-    if (g_dump_ast) {
-        g_program->dump(0);
-    }
-
-    return 0;
+    return main_module.get_error_code();
 }

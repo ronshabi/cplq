@@ -8,7 +8,7 @@
 #include "Types.hpp"
 #include "Utils.hpp"
 
-class Node;
+class AstNode;
 class Statement;
 class StatementList;
 class Declaration;
@@ -16,18 +16,18 @@ class DeclarationBlock;
 
 //===----------------------------------------------------------------------===//
 
-class Node
+class AstNode
 {
 public:
-    Node()                     = default;
-    virtual ~Node()            = default;
+    AstNode()                     = default;
+    virtual ~AstNode()            = default;
 
     virtual void dump(unsigned indent = 0) const;
 };
 
 //===----------------------------------------------------------------------===//
 
-class Declaration : public Node
+class Declaration : public AstNode
 {
 public:
     Declaration() = default;
@@ -49,7 +49,7 @@ private:
     NumberType                 m_type;
 };
 
-class DeclarationBlock : public Node
+class DeclarationBlock : public AstNode
 {
 public:
     DeclarationBlock() = default;
@@ -63,7 +63,7 @@ private:
 
 //===----------------------------------------------------------------------===//
 
-class Expression : public Node
+class Expression : public AstNode
 {
 };
 
@@ -190,7 +190,7 @@ private:
 
 //===----------------------------------------------------------------------===//
 
-class Statement : public Node
+class Statement : public AstNode
 {
 };
 
@@ -340,7 +340,7 @@ private:
 };
 
 
-class Program : public Node
+class Program : public AstNode
 {
 public:
     Program() = default;
