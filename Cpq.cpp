@@ -27,5 +27,9 @@ int main(int argc, const char *argv[])
 
     main_module.parse();
 
+    if (main_module.is_ok()) {
+        main_module.dump_ast();
+    }
+
     return main_module.get_error_code();
 }

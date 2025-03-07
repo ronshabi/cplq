@@ -57,6 +57,10 @@ public:
 
     void set_reached_eof() { m_at_eof = true; }
 
+    void dump_ast() const {
+        m_ast->dump();
+    }
+
 private:
     void check_correct_file_extension();
     void try_to_open_file();

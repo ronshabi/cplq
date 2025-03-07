@@ -82,7 +82,6 @@ declarations:
 
 declaration:
         idlist ':' type ';' { $1->assign_number_type($3); $$ = $1; }
-        | error ';' { printf("error in decl!\n"); yyerrok; }
         ;
 
 type:   INT | FLOAT;
