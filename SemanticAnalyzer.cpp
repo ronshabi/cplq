@@ -8,9 +8,9 @@ void SemanticAnalyzer::analyze(Program *node)
     node->get_statemenets()->accept_semantic_analyzer(*this);
 }
 
-void SemanticAnalyzer::analyze(DeclarationBlock *db)
+void SemanticAnalyzer::analyze(DeclarationBlock *node)
 {
-    auto const decls = db->get_declarations();
+    auto const decls = node->get_declarations();
     for (auto const decl : decls)
     {
         decl->dump(2);

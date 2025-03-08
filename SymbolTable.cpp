@@ -1,6 +1,5 @@
 #include "SymbolTable.hpp"
 #include <iostream>
-#include <iomanip>
 
 std::optional<Symbol> SymbolTable::get(std::string const &symbol_name)
 {
@@ -30,19 +29,23 @@ void SymbolTable::dump() const
 std::string Symbol::to_string() const {
     std::string o = "Symbol<" + std::to_string(line_number);
 
-    if (value.has_value) {
-        if (value.type == NumberType::INT) {
-            o.append(", Int>(");
+    if (value.type == NumberType::INT) {
+        o.append(", Int>(");
+        if (value.has_value) {
             o.append(std::to_string(value.i));
-
         } else {
-            o.append(", Float>(");
-            o.append(std::to_string(value.d));
+            o.append("None");
         }
-        o.append(")");
     } else {
-        o.append(", NoValue>");
+        o.append(", Float>(");
+        if (value.has_value) {
+            o.append(std::to_string(value.d));
+        } else {
+            o.append("None");
+        }
     }
+    
+    o.append(")");
 
     return o;
 }
