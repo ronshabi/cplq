@@ -3,19 +3,22 @@
 
 #include <cstdarg>
 
-Module::Module(std::string const& file_name)
-    : m_file_name(file_name), m_semantic_analyzer(reinterpret_cast<Program*>(m_ast), *this)
+Module::Module(std::string const &file_name)
+    : m_file_name(file_name)
+    , m_semantic_analyzer(reinterpret_cast<Program *>(m_ast), *this)
 {
     check_correct_file_extension();
 
-    if (m_status == ModuleStatus::InvalidExtension) {
+    if (m_status == ModuleStatus::InvalidExtension)
+    {
         emit_fatal_error("unsupported file extension");
         return;
     }
 
     try_to_open_file();
 
-    if (m_status == ModuleStatus::FileNotFound) {
+    if (m_status == ModuleStatus::FileNotFound)
+    {
         emit_fatal_error("file not found");
         return;
     }
@@ -23,14 +26,17 @@ Module::Module(std::string const& file_name)
 
 Module::~Module()
 {
-    if (m_file_ptr) {
+    if (m_file_ptr)
+    {
         fclose(m_file_ptr);
         m_file_ptr = nullptr;
     }
 }
 
-void Module::emit_error(const char *fmt, ...) {
-    fprintf_color(stderr, kAnsiBold, "%s:%d: ", m_file_name.c_str(), m_current_line_no);
+void Module::emit_error(const char *fmt, ...)
+{
+    fprintf_color(stderr, kAnsiBold, "%s:%d: ", m_file_name.c_str(),
+                  m_current_line_no);
     fprintf_color(stderr, kAnsiBoldRed, "error: ");
     va_list ap;
     va_start(ap, fmt);
@@ -40,10 +46,11 @@ void Module::emit_error(const char *fmt, ...) {
 
     // Semantic Error will be the default error type, if we want to change it
     // We can just call set_status after emit_error
-    set_status(ModuleStatus::SemanticError); 
+    set_status(ModuleStatus::SemanticError);
 }
 
-void Module::emit_fatal_error(const char *fmt, ...) {
+void Module::emit_fatal_error(const char *fmt, ...)
+{
     fprintf_color(stdout, kAnsiBold, "%s: ", m_file_name.c_str());
     fprintf_color(stdout, kAnsiBoldRed, "fatal: ");
     va_list ap;
@@ -53,31 +60,38 @@ void Module::emit_fatal_error(const char *fmt, ...) {
     printf("\n");
 }
 
-void Module::semantic_analyze() {
-    if (!is_ok()) {
+void Module::semantic_analyze()
+{
+    if (!is_ok())
+    {
         return; // No need to analyze syntactically malformed code.
     }
 
     printf("Calling semantic analyzer on Module's ast\n");
-    m_semantic_analyzer.analyze(reinterpret_cast<Program*>(m_ast));
+    m_semantic_analyzer.analyze(reinterpret_cast<Program *>(m_ast));
 }
 
-void Module::check_correct_file_extension() {
+void Module::check_correct_file_extension()
+{
     auto const dot = m_file_name.find_last_of('.');
-    if (dot == std::string::npos) {
+    if (dot == std::string::npos)
+    {
         m_status = ModuleStatus::InvalidExtension;
         return;
     }
 
     auto const extension = m_file_name.substr(dot);
-    if (extension != ".ou") {
+    if (extension != ".ou")
+    {
         m_status = ModuleStatus::InvalidExtension;
     }
 }
 
-void Module::try_to_open_file() {
+void Module::try_to_open_file()
+{
     m_file_ptr = fopen(m_file_name.c_str(), "r");
-    if (m_file_ptr == nullptr) {
+    if (m_file_ptr == nullptr)
+    {
         m_status = ModuleStatus::FileNotFound;
         return;
     }

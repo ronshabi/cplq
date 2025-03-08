@@ -4,8 +4,8 @@
 
 #include "Ast.hpp"
 #include "ModuleStatus.hpp"
-#include "SymbolTable.hpp"
 #include "SemanticAnalyzer.hpp"
+#include "SymbolTable.hpp"
 
 extern "C" int yyparse();
 extern FILE   *yyin;
@@ -54,10 +54,11 @@ public:
 
     void set_status(ModuleStatus status)
     {
-        if (status == ModuleStatus::Ok) {
+        if (status == ModuleStatus::Ok)
+        {
             printf("!!!!!!!! You can't OK a bad module\n");
         }
-        
+
         m_status = status;
     }
 
@@ -66,7 +67,8 @@ public:
         m_ast->dump();
     }
 
-    void dump_symbol_table() {
+    void dump_symbol_table()
+    {
         m_semantic_analyzer.get_symbol_table().dump();
     }
 
@@ -76,10 +78,10 @@ private:
     void check_correct_file_extension();
     void try_to_open_file();
 
-    ModuleStatus m_status = ModuleStatus::Ok;
-    std::string  m_file_name;
-    unsigned     m_current_line_no = 0;
-    FILE        *m_file_ptr        = nullptr;
-    AstNode     *m_ast             = nullptr;
+    ModuleStatus     m_status = ModuleStatus::Ok;
+    std::string      m_file_name;
+    unsigned         m_current_line_no = 0;
+    FILE            *m_file_ptr        = nullptr;
+    AstNode         *m_ast             = nullptr;
     SemanticAnalyzer m_semantic_analyzer;
 };

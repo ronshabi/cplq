@@ -1,7 +1,6 @@
 #include "SemanticAnalyzer.hpp"
 
 #include "Module.hpp"
-#include "Print.hpp"
 
 void SemanticAnalyzer::analyze(Program *node)
 {
@@ -19,7 +18,7 @@ void SemanticAnalyzer::analyze(DeclarationBlock *db)
 
         auto const decl_ids = decl->get_ids();
         for (auto const id : decl_ids)
-        {   
+        {
             auto const id_optional = m_symbol_table.get(*id);
 
             // ID already exists in the symbol table. This is an Error.
@@ -27,12 +26,13 @@ void SemanticAnalyzer::analyze(DeclarationBlock *db)
             {
                 // Give detailed error based on its type
                 m_module.emit_error("Repeated declaration of symbol '%s'",
-                                     id->c_str());
+                                    id->c_str());
             }
             // ID doesn't exist in the symbol table, so add it.
             else
             {
-                m_symbol_table.add(*id, Symbol(decl->get_type(), decl->get_line_number()));
+                m_symbol_table.add(
+                    *id, Symbol(decl->get_type(), decl->get_line_number()));
             }
         }
 

@@ -27,12 +27,12 @@ int main(int argc, const char *argv[])
 
     main_module.parse();
 
-    if (main_module.is_ok()) {
+    if (main_module.is_ok())
+    {
         main_module.dump_ast();
         main_module.semantic_analyze();
         main_module.dump_symbol_table();
     }
-
 
     return main_module.get_error_code();
 }
