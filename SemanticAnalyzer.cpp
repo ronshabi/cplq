@@ -48,6 +48,11 @@ void SemanticAnalyzer::analyze(DeclarationBlock *node)
 void SemanticAnalyzer::analyze(StatementList *node) {
     for (auto const& stmt : node->get_statements()) {
         stmt->accept_semantic_analyzer(*this);
+
+        if (!m_allow_break_stmts && stmt->is_break_statement()) {
+            m_module.set_current_position(stmt->get_line_number());
+            m_module.emit_error("break statements can appear only in switch cases");
+        }
     }
 }
 
@@ -139,7 +144,10 @@ void SemanticAnalyzer::analyze(SwitchStatement *node) {
         }
 
         all_case_numbers.insert(case_num.i);
+        m_allow_break_stmts = true; // Allow break statements.
         case_stmt->accept_semantic_analyzer(*this);
+        m_allow_break_stmts = false; // Disallow break statements.
+        
     }
 
     // Check that the default statement is okay

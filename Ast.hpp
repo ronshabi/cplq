@@ -292,6 +292,7 @@ private:
 
 class Statement : public AstNode
 {
+public:
     virtual bool is_break_statement() const { return false; }
 };
 
