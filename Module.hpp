@@ -76,6 +76,8 @@ public:
 
     void semantic_analyze();
 
+    SymbolTable& get_symbol_table() {return m_symbol_table;}
+
 private:
     void check_correct_file_extension();
     void try_to_open_file();
@@ -86,4 +88,5 @@ private:
     FILE            *m_file_ptr        = nullptr;
     AstNode         *m_ast             = nullptr;
     SemanticAnalyzer m_semantic_analyzer;
+    SymbolTable m_symbol_table;
 };
