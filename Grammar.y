@@ -104,19 +104,19 @@ stmt:
         ;
 
 assignment_stmt:    ID '=' expression ';' 
-                    { $$ = new AssignStatement($1, $3); }
+                    { $$ = new AssignStatement($1, $3); $$->set_line_number(@$.first_line); }
 
 input_stmt:         INPUT '(' ID ')' ';' 
-                    { $$ = new InputStatement($3); }
+                    { $$ = new InputStatement($3); $$->set_line_number(@$.first_line); }
 
 output_stmt:        OUTPUT '(' expression ')' ';' 
-                    { $$ = new OutputStatement($3); }
+                    { $$ = new OutputStatement($3); $$->set_line_number(@$.first_line); }
 
 if_stmt:            IF '(' boolexpr ')' stmt ELSE stmt
-                    { $$ = new IfStatement($3, $5, $7); }
+                    { $$ = new IfStatement($3, $5, $7); $$->set_line_number(@$.first_line); }
 
 while_stmt:         WHILE '(' boolexpr ')' stmt 
-                    { $$ = new WhileStatement($3, $5); }
+                    { $$ = new WhileStatement($3, $5); $$->set_line_number(@$.first_line); }
 
 switch_stmt:        SWITCH '(' expression ')'
                     '{' caselist '}' DEFAULT ':' stmtlist '}'
@@ -128,51 +128,53 @@ switch_stmt:        SWITCH '(' expression ')'
 
 caselist:              
         %empty
-        { $$ = new SwitchStatement(); }
+        { $$ = new SwitchStatement(); $$->set_line_number(@$.first_line);  }
         | caselist CASE NUM ':' stmtlist
         { $1->add_case($3, $5); $$ = $1; }
         ;
                         
 break_stmt:             BREAK ';'
-                        { $$ = new BreakStatement(); }
+                        { $$ = new BreakStatement(); $$->set_line_number(@$.first_line); }
 
 stmt_block:             '{' stmtlist '}'
                         { $$ = $2; }
 
 stmtlist:               
         %empty 
-        { $$ = new StatementList(); }
+        { $$ = new StatementList(); $$->set_line_number(@$.first_line); }
         
         | stmtlist stmt 
         { $1->add_statement($2); $$ = $1; }
         ;
                         
 boolexpr:               
-        boolexpr OR boolterm { $$ = new BinaryBoolExpression($1, $3, Operator::OR); }
+        boolexpr OR boolterm { $$ = new BinaryBoolExpression($1, $3, Operator::OR); $$->set_line_number(@$.first_line); }
         | boolterm
         ;
 
 boolterm:
-        boolterm AND boolfactor { $$ = new BinaryBoolExpression($1, $3, Operator::AND); }
+        boolterm AND boolfactor { $$ = new BinaryBoolExpression($1, $3, Operator::AND); $$->set_line_number(@$.first_line); }
         | boolfactor
         ;
 
 boolfactor:
         NOT '(' boolexpr ')' {
                 $$ = new NotExpression($3);
+                $$->set_line_number(@$.first_line); 
         }
         | expression RELOP expression {
                 $$ = new BinaryBoolExpression($1, $3, $2);
+                $$->set_line_number(@$.first_line); 
         }
         ;
 
 expression:
-        expression ADDOP term { $$ = new BinaryExpression($1, $3, $2); }
+        expression ADDOP term { $$ = new BinaryExpression($1, $3, $2); $$->set_line_number(@$.first_line);  }
         | term { $$ = $1; }
         ;
 
 term:
-        term MULOP factor { $$ = new BinaryExpression($1, $3, $2); }
+        term MULOP factor { $$ = new BinaryExpression($1, $3, $2); $$->set_line_number(@$.first_line); }
         | factor { $$ = $1; }
         ;
 

@@ -31,7 +31,7 @@ class SymbolTable
 public:
     SymbolTable() = default;
 
-    std::optional<Symbol> get(std::string const &symbol_name);
+    std::optional<Symbol> get(std::string const &symbol_name) const;
     void                  add(std::string const &symbol_name, Symbol sym);
 
     void dump() const;

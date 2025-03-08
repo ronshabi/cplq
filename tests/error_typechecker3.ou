@@ -1,0 +1,4 @@
+var: int;
+{
+    var = cast<float>(var);
+}

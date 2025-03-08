@@ -114,6 +114,16 @@ void IdExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+NumberType IdExpression::get_type(SymbolTable const &symbol_table) const {
+    auto const sym = symbol_table.get(*m_id);
+    if (sym.has_value()) {
+        return sym->value.type;
+    } else {
+        return NumberType::INT; // Default value. If the number has no value
+        // It will be caught in the semantic analyzer before this
+    }
+}
+
 void BinaryExpression::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -125,6 +135,16 @@ void BinaryExpression::dump(unsigned indent) const
 void BinaryExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+NumberType BinaryExpression::get_type(SymbolTable const &symbol_table) const {
+    auto const exp1_type = m_exp1->get_type(symbol_table);
+    auto const exp2_type = m_exp2->get_type(symbol_table);
+    if (exp1_type == NumberType::FLOAT && exp2_type == NumberType::FLOAT) {
+        return NumberType::FLOAT;
+    }
+
+    return NumberType::INT;
 }
 
 void AssignStatement::dump(unsigned indent) const

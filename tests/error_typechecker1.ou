@@ -1,0 +1,4 @@
+myint: int;
+{
+    myint = 32.12;
+}

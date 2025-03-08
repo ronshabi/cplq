@@ -47,7 +47,28 @@ void SemanticAnalyzer::analyze(StatementList *node) {
 }
 
 void SemanticAnalyzer::analyze(AssignStatement *node) {
-    DBG("TODO");
+    // Check that the ID is in the symbol table
+    auto const id_sym = m_symbol_table.get(*node->get_id());
+    m_module.set_current_position(node->get_line_number());
+
+    if (!id_sym.has_value()) {
+        m_module.emit_error("unknown indentifier '%s' in assign statement", node->get_id()->c_str());
+    }
+
+    // Check the expression
+    node->get_expression()->accept_semantic_analyzer(*this);
+
+    // Check that the expression is not a boolean expression
+    if (node->get_expression()->is_bool_expr()) {
+        m_module.emit_error("a boolean expression cannot be an asignee");
+        return;
+    }
+
+    // Typechecker: Check the type of the expression, if it's a float, and we're an int, deny
+    if (node->get_expression()->get_type(m_symbol_table) == NumberType::FLOAT && id_sym->value.type == NumberType::INT) {
+        m_module.emit_error("type mismatch: can't assign a float to an int variable");
+        return;
+    }
 }
 
 void SemanticAnalyzer::analyze(InputStatement *node) {
@@ -61,7 +82,7 @@ void SemanticAnalyzer::analyze(InputStatement *node) {
 }
 
 void SemanticAnalyzer::analyze(OutputStatement *node) {
-    DBG("TODO");
+    node->get_expression()->accept_semantic_analyzer(*this);
 }
 
 void SemanticAnalyzer::analyze(IfStatement *node) {

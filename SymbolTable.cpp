@@ -1,7 +1,7 @@
 #include "SymbolTable.hpp"
 #include <iostream>
 
-std::optional<Symbol> SymbolTable::get(std::string const &symbol_name)
+std::optional<Symbol> SymbolTable::get(std::string const &symbol_name) const
 {
     auto const it = m_table.find(symbol_name);
     if (it == m_table.end())
@@ -27,7 +27,7 @@ void SymbolTable::dump() const
 }
 
 std::string Symbol::to_string() const {
-    std::string o = "Symbol<" + std::to_string(line_number);
+    std::string o = "Symbol<@" + std::to_string(line_number);
 
     if (value.type == NumberType::INT) {
         o.append(", Int>(");

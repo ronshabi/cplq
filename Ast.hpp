@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "SymbolTable.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
 
@@ -96,6 +97,16 @@ private:
 
 class Expression : public AstNode
 {
+public:
+    virtual bool is_bool_expr() const
+    {
+        return false;
+    }
+    virtual NumberType get_type(SymbolTable const &symbol_table) const
+    {
+        UNUSED(symbol_table);
+        return NumberType::INT;
+    } // default type
 };
 
 //===----------------------------------------------------------------------===//
@@ -103,6 +114,10 @@ class Expression : public AstNode
 class BoolExpression : public Expression
 {
 public:
+    virtual bool is_bool_expr() const
+    {
+        return true;
+    }
     virtual bool evaluate() const = 0;
 };
 
@@ -142,9 +157,18 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-    Expression *get_lhs_expr() { return m_exp1; }
-    Expression *get_rhs_expr() { return m_exp2; }
-    Operator get_operator() const { return m_op; }
+    Expression *get_lhs_expr()
+    {
+        return m_exp1;
+    }
+    Expression *get_rhs_expr()
+    {
+        return m_exp2;
+    }
+    Operator get_operator() const
+    {
+        return m_op;
+    }
 
 private:
     Operator    m_op;
@@ -163,8 +187,13 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    void       dump(unsigned indent) const override;
+    void       accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    NumberType get_type(SymbolTable const &symbol_table) const override
+    {
+        UNUSED(symbol_table);
+        return m_number.type;
+    }
 
 private:
     Number m_number;
@@ -182,8 +211,13 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    void       dump(unsigned indent) const override;
+    void       accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    NumberType get_type(SymbolTable const &symbol_table) const override
+    {
+        UNUSED(symbol_table);
+        return m_cast;
+    }
 
 private:
     NumberType  m_cast;
@@ -201,10 +235,15 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    std::string *get_id() const { return m_id; }
-    
+    void         dump(unsigned indent) const override;
+    void         accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    std::string *get_id() const
+    {
+        return m_id;
+    }
+
+    NumberType get_type(SymbolTable const &symbol_table) const override;
+
 private:
     std::string *m_id;
 };
@@ -224,6 +263,9 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+    NumberType get_type(SymbolTable const &symbol_table) const override;
+
 
 private:
     Expression *m_exp1;
@@ -251,6 +293,15 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+    std::string *get_id() const
+    {
+        return m_id;
+    }
+    Expression *get_expression()
+    {
+        return m_exp;
+    }
+
 private:
     std::string *m_id;
     Expression  *m_exp;
@@ -268,6 +319,11 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+    Expression *get_expression()
+    {
+        return m_exp;
+    }
+
 private:
     Expression *m_exp;
 };
@@ -280,9 +336,10 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    std::string *get_id() const {
+    void         dump(unsigned indent) const override;
+    void         accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    std::string *get_id() const
+    {
         return m_id;
     }
 
@@ -305,9 +362,18 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-    BoolExpression *get_condition_exp() { return m_condition_exp; }
-    Statement *get_then_branch() { return m_then_branch; }
-    Statement *get_else_branch() { return m_else_branch; }
+    BoolExpression *get_condition_exp()
+    {
+        return m_condition_exp;
+    }
+    Statement *get_then_branch()
+    {
+        return m_then_branch;
+    }
+    Statement *get_else_branch()
+    {
+        return m_else_branch;
+    }
 
 private:
     BoolExpression *m_condition_exp;
@@ -340,7 +406,6 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
 };
 
 //===----------------------------------------------------------------------===//
