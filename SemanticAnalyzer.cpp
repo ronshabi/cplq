@@ -92,12 +92,12 @@ void SemanticAnalyzer::analyze(IfStatement *node) {
 }
 
 void SemanticAnalyzer::analyze(BinaryExpression *node) {
-    DBG("TODO");
-    
+    node->get_lhs_expr()->accept_semantic_analyzer(*this);
+    node->get_rhs_expr()->accept_semantic_analyzer(*this);
 }
 
 void SemanticAnalyzer::analyze(BoolExpression *node) {
-    
+    DBG("TODO");
 }
 
 void SemanticAnalyzer::analyze(IdExpression *node) {
@@ -114,7 +114,8 @@ void SemanticAnalyzer::analyze(SwitchStatement *node) {
 }
 
 void SemanticAnalyzer::analyze(WhileStatement *node) {
-    DBG("TODO");
+    node->get_condition_expression()->accept_semantic_analyzer(*this);
+    node->get_body_statement()->accept_semantic_analyzer(*this);
 }
 
 void SemanticAnalyzer::analyze(CastExpression *node) {

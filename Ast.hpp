@@ -266,6 +266,18 @@ public:
 
     NumberType get_type(SymbolTable const &symbol_table) const override;
 
+    Expression *get_lhs_expr()
+    {
+        return m_exp1;
+    }
+    Expression *get_rhs_expr()
+    {
+        return m_exp2;
+    }
+    Operator get_operator() const
+    {
+        return m_op;
+    }
 
 private:
     Expression *m_exp1;
@@ -393,6 +405,9 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+    BoolExpression *get_condition_expression() { return m_condition_exp; }
+    Statement *get_body_statement() { return m_body_statement; }
 
 private:
     BoolExpression *m_condition_exp;
