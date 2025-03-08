@@ -1,0 +1,6 @@
+{
+    if (a > b)
+        output(a);
+    else
+        output(b);
+}

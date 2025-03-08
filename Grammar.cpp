@@ -1917,19 +1917,19 @@ yyreduce:
 
   case 41: /* factor: CAST '(' expression ')'  */
 #line 181 "Grammar.y"
-                                  { (yyval.ast_expression) = new CastExpression((yyvsp[-3].number_type), (yyvsp[-1].ast_expression)); }
+                                  { (yyval.ast_expression) = new CastExpression((yyvsp[-3].number_type), (yyvsp[-1].ast_expression)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
 #line 1922 "Grammar.cpp"
     break;
 
   case 42: /* factor: ID  */
 #line 182 "Grammar.y"
-             { (yyval.ast_expression) = new IdExpression((yyvsp[0].str)); }
+             { (yyval.ast_expression) = new IdExpression((yyvsp[0].str)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
 #line 1928 "Grammar.cpp"
     break;
 
   case 43: /* factor: NUM  */
 #line 183 "Grammar.y"
-              { (yyval.ast_expression) = new NumberExpression((yyvsp[0].number)); }
+              { (yyval.ast_expression) = new NumberExpression((yyvsp[0].number)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
 #line 1934 "Grammar.cpp"
     break;
 

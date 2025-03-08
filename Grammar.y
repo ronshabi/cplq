@@ -178,9 +178,9 @@ term:
 
 factor:
         '(' expression ')' { $$ = $2; }
-        | CAST '(' expression ')' { $$ = new CastExpression($1, $3); }
-        | ID { $$ = new IdExpression($1); }
-        | NUM { $$ = new NumberExpression($1); }
+        | CAST '(' expression ')' { $$ = new CastExpression($1, $3); $$->set_line_number(@$.first_line); }
+        | ID { $$ = new IdExpression($1); $$->set_line_number(@$.first_line); }
+        | NUM { $$ = new NumberExpression($1); $$->set_line_number(@$.first_line); }
         ;
 
 %%

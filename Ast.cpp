@@ -46,7 +46,7 @@ void BinaryBoolExpression::dump(unsigned indent) const
 
 void BinaryBoolExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void Declaration::dump(unsigned indent) const
@@ -58,7 +58,7 @@ void Declaration::dump(unsigned indent) const
 
 void Declaration::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    UNUSED(sema);
 }
 
 void NotExpression::dump(unsigned indent) const
@@ -70,7 +70,7 @@ void NotExpression::dump(unsigned indent) const
 
 void NotExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void NumberExpression::dump(unsigned indent) const
@@ -88,7 +88,7 @@ void NumberExpression::dump(unsigned indent) const
 
 void NumberExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    UNUSED(sema);
 }
 
 void CastExpression::dump(unsigned indent) const
@@ -100,7 +100,7 @@ void CastExpression::dump(unsigned indent) const
 
 void CastExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void IdExpression::dump(unsigned indent) const
@@ -111,7 +111,7 @@ void IdExpression::dump(unsigned indent) const
 
 void IdExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void BinaryExpression::dump(unsigned indent) const
@@ -124,7 +124,7 @@ void BinaryExpression::dump(unsigned indent) const
 
 void BinaryExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void AssignStatement::dump(unsigned indent) const
@@ -136,7 +136,7 @@ void AssignStatement::dump(unsigned indent) const
 
 void AssignStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void OutputStatement::dump(unsigned indent) const
@@ -148,7 +148,7 @@ void OutputStatement::dump(unsigned indent) const
 
 void OutputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void InputStatement::dump(unsigned indent) const
@@ -159,7 +159,7 @@ void InputStatement::dump(unsigned indent) const
 
 void InputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void IfStatement::dump(unsigned indent) const
@@ -173,7 +173,7 @@ void IfStatement::dump(unsigned indent) const
 
 void IfStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void WhileStatement::dump(unsigned indent) const
@@ -186,7 +186,7 @@ void WhileStatement::dump(unsigned indent) const
 
 void WhileStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void BreakStatement::dump(unsigned indent) const
@@ -197,7 +197,8 @@ void BreakStatement::dump(unsigned indent) const
 
 void BreakStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    // nop
+    UNUSED(sema);
 }
 
 void StatementList::dump(unsigned indent) const
@@ -212,7 +213,7 @@ void StatementList::dump(unsigned indent) const
 
 void StatementList::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void SwitchStatement::dump(unsigned indent) const
@@ -234,7 +235,7 @@ void SwitchStatement::dump(unsigned indent) const
 
 void SwitchStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
-    std::cout << __PRETTY_FUNCTION__ << "\n";
+    sema.analyze(this);
 }
 
 void Program::dump(unsigned indent) const

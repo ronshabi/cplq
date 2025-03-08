@@ -142,6 +142,10 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+    Expression *get_lhs_expr() { return m_exp1; }
+    Expression *get_rhs_expr() { return m_exp2; }
+    Operator get_operator() const { return m_op; }
+
 private:
     Operator    m_op;
     Expression *m_exp1;
@@ -199,7 +203,8 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
+    std::string *get_id() const { return m_id; }
+    
 private:
     std::string *m_id;
 };
@@ -277,6 +282,9 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    std::string *get_id() const {
+        return m_id;
+    }
 
 private:
     std::string *m_id;
@@ -296,6 +304,10 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+    BoolExpression *get_condition_exp() { return m_condition_exp; }
+    Statement *get_then_branch() { return m_then_branch; }
+    Statement *get_else_branch() { return m_else_branch; }
 
 private:
     BoolExpression *m_condition_exp;
@@ -328,6 +340,7 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 };
 
 //===----------------------------------------------------------------------===//

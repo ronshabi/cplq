@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Ast.hpp"
+#include "DebugStream.hpp"
 #include "ModuleStatus.hpp"
 #include "SemanticAnalyzer.hpp"
 #include "SymbolTable.hpp"
@@ -64,6 +65,7 @@ public:
 
     void dump_ast() const
     {
+        DBG("Dump AST");
         m_ast->dump();
     }
 

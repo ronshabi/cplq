@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#define UNUSED(x) ((void)(x))
+
 template <typename T, typename ToStringFn>
 std::string vector_to_string_impl(std::vector<T> const &vec, ToStringFn fn)
 {
