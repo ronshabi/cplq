@@ -4,7 +4,7 @@
 #include <cstdarg>
 
 Module::Module(std::string const& file_name)
-    : m_file_name(file_name), m_semantic_analyzer(reinterpret_cast<Program*>(m_ast))
+    : m_file_name(file_name), m_semantic_analyzer(reinterpret_cast<Program*>(m_ast), *this)
 {
     check_correct_file_extension();
 

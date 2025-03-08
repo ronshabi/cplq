@@ -1,3 +1,41 @@
 #include "SemanticAnalyzer.hpp"
 
+#include "Module.hpp"
 #include "Print.hpp"
+
+void SemanticAnalyzer::analyze(Program *node)
+{
+    node->get_declaration_block()->accept_semantic_analyzer(*this);
+    node->get_statemenets()->accept_semantic_analyzer(*this);
+}
+
+void SemanticAnalyzer::analyze(DeclarationBlock *db)
+{
+    auto const decls = db->get_declarations();
+    for (auto const decl : decls)
+    {
+        decl->dump(2);
+
+        auto const decl_ids = decl->get_ids();
+        for (auto const id : decl_ids)
+        {   
+            std::cout << "DeclID: " << id << "\n";
+            auto const id_optional = m_symbol_table.get(*id);
+
+            // ID already exists in the symbol table. This is an Error.
+            if (id_optional.has_value())
+            {
+                m_module.emit_error("Repeated declaration of symbol '%s'",
+                                     id->c_str());
+                m_module.set_status(ModuleStatus::SemanticError);
+            }
+            // ID doesn't exist in the symbol table, so add it.
+            else
+            {
+                m_symbol_table.add(*id, decl->get_type());
+            }
+        }
+
+        // Try to add to symbol table, else - ERROR!
+    }
+}

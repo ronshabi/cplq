@@ -29,6 +29,7 @@ struct Number
 {
     NumberType type;
 
+    bool has_value;
     union {
         int    i;
         double d;

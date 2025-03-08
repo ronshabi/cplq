@@ -54,6 +54,10 @@ public:
 
     void set_status(ModuleStatus status)
     {
+        if (status == ModuleStatus::Ok) {
+            printf("!!!!!!!! You can't OK a bad module\n");
+        }
+        
         m_status = status;
     }
 

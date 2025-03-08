@@ -46,6 +46,9 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+    std::vector<std::string *> const& get_ids() const { return m_ids; }
+    NumberType get_type() const { return m_type; }
+
 private:
     std::vector<std::string *> m_ids;
     NumberType                 m_type;
@@ -59,6 +62,8 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+    std::vector<Declaration *>& get_declarations() { return m_declarations; }
 
 private:
     std::vector<Declaration *> m_declarations;
