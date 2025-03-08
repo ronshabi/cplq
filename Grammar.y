@@ -130,7 +130,7 @@ caselist:
         %empty
         { $$ = new SwitchStatement(); $$->set_line_number(@$.first_line);  }
         | caselist CASE NUM ':' stmtlist
-        { $1->add_case($3, $5); $$ = $1; }
+        { $1->add_case($3, $5); $$ = $1;}
         ;
                         
 break_stmt:             BREAK ';'

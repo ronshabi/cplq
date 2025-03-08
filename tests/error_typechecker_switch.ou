@@ -1,0 +1,14 @@
+var: int;
+{
+    switch (var) {
+        case 0: {
+            output(1);
+        }
+
+        case 3.14: {
+            output(32);
+        }
+
+        default: {}
+    }
+}

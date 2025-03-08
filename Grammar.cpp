@@ -1829,7 +1829,7 @@ yyreduce:
 
   case 25: /* caselist: caselist CASE NUM ':' stmtlist  */
 #line 133 "Grammar.y"
-        { (yyvsp[-4].ast_switch_statement)->add_case((yyvsp[-2].number), (yyvsp[0].ast_statement_list)); (yyval.ast_switch_statement) = (yyvsp[-4].ast_switch_statement); }
+        { (yyvsp[-4].ast_switch_statement)->add_case((yyvsp[-2].number), (yyvsp[0].ast_statement_list)); (yyval.ast_switch_statement) = (yyvsp[-4].ast_switch_statement);}
 #line 1834 "Grammar.cpp"
     break;
 

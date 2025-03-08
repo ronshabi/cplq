@@ -1,0 +1,19 @@
+x: float;
+
+
+
+
+{
+
+    switch (x) {
+        case 3.2: {
+
+        }
+
+        case 3.20: {
+
+        }
+
+        default: {}
+    }
+}

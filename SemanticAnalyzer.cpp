@@ -123,7 +123,7 @@ void SemanticAnalyzer::analyze(SwitchStatement *node) {
         assert(case_num_optional.has_value() && "case number MUST have a constexpr value");
         double const case_num_normalized = case_num_optional.value();
         if (all_case_numbers.contains(case_num_normalized)) {
-            m_module.emit_error("ambiguous case number");
+            m_module.emit_error("switch contains ambiguous cases");
         }
 
         all_case_numbers.insert(case_num_normalized);
@@ -131,7 +131,7 @@ void SemanticAnalyzer::analyze(SwitchStatement *node) {
         // Typechecker: Check that if the case num is a float, and the switched expression
         // type is int, we have an error
         if (case_num.type == NumberType::FLOAT && switched_expr_type == NumberType::INT) {
-            m_module.emit_error("case number type mismatch, expected an integer");
+            m_module.emit_error("switch case number type mismatch, expected an integer");
         }
 
         // Check if the to-be-executed statement is okay
