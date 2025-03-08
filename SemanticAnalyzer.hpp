@@ -8,7 +8,7 @@ class Module;
 class SemanticAnalyzer
 {
 public:
-    SemanticAnalyzer(Program *ast, Module& mod) : m_ast(ast), m_symbol_table(), m_module(mod) {}
+    SemanticAnalyzer(Program *ast, Module& mod) : m_module(mod), m_ast(ast), m_symbol_table() {}
 
     void analyze(Program *node);
     void analyze(DeclarationBlock *db);

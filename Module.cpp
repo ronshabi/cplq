@@ -37,6 +37,10 @@ void Module::emit_error(const char *fmt, ...) {
     vfprintf(stderr, fmt, ap);
     va_end(ap);
     printf("\n");
+
+    // Semantic Error will be the default error type, if we want to change it
+    // We can just call set_status after emit_error
+    set_status(ModuleStatus::SemanticError); 
 }
 
 void Module::emit_fatal_error(const char *fmt, ...) {

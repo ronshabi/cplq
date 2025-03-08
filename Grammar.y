@@ -69,6 +69,7 @@ program:
         declarations stmt_block
         {
             $$ = new Program();
+            $$->set_line_number(@$.first_line);
             $$->set_declaration_block($1);
             $$->set_program_statements($2);
             g_module->set_ast_root($$);
@@ -88,7 +89,7 @@ type:   INT | FLOAT;
 
 idlist:
         idlist ',' ID { $1->add_id($3); $$ = $1; }
-        | ID { $$ = new Declaration(); $$->add_id($1); }
+        | ID { $$ = new Declaration(); $$->add_id($1); $$->set_line_number(@$.first_line); }
         ;
 
 stmt:
@@ -186,7 +187,7 @@ factor:
 
 void yyerror(YYLTYPE *locp, const char *s)
 {
-    g_module->set_status(ModuleStatus::SyntaxError);
     g_module->set_current_position(locp->first_line);
     g_module->emit_error(s);
+    g_module->set_status(ModuleStatus::SyntaxError);
 }

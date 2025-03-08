@@ -24,9 +24,9 @@ void SemanticAnalyzer::analyze(DeclarationBlock *db)
             // ID already exists in the symbol table. This is an Error.
             if (id_optional.has_value())
             {
+                m_module.set_current_position(decl->get_line_number());
                 m_module.emit_error("Repeated declaration of symbol '%s'",
                                      id->c_str());
-                m_module.set_status(ModuleStatus::SemanticError);
             }
             // ID doesn't exist in the symbol table, so add it.
             else
