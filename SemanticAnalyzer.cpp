@@ -113,32 +113,32 @@ void SemanticAnalyzer::analyze(IdExpression *node) {
 void SemanticAnalyzer::analyze(SwitchStatement *node) {
 
     // Check expression
+    m_module.set_current_position(node->get_line_number());
     node->get_expression()->accept_semantic_analyzer(*this);
     auto const switched_expr_type = node->get_expression()->get_type(get_symbol_table());
 
+    if (switched_expr_type != NumberType::INT) {
+        m_module.emit_error("type mismatch: switched expression must be an integer");
+    }
+
+
+
     // Check no ambiguous cases
     auto const cases = node->get_cases();
-    std::unordered_set<double> all_case_numbers;
+    std::unordered_set<int> all_case_numbers;
 
     for (auto const& [case_num, case_stmt] : cases) {
         // Check case didn't occur before. If it did, emit error
         m_module.set_current_position(case_stmt->get_line_number());
-        auto const case_num_optional = case_num.get_value_float();
-        assert(case_num_optional.has_value() && "case number MUST have a constexpr value");
-        double const case_num_normalized = case_num_optional.value();
-        if (all_case_numbers.contains(case_num_normalized)) {
-            m_module.emit_error("switch contains ambiguous cases");
+        if (case_num.type != NumberType::INT) {
+            m_module.emit_error("type mismatch: case number '%f' must be an integer", case_num.d);
+        }
+        
+        if (all_case_numbers.contains(case_num.i)) {
+            m_module.emit_error("switch contains ambiguous case for number '%d'", case_num.i);
         }
 
-        all_case_numbers.insert(case_num_normalized);
-
-        // Typechecker: Check that if the case num is a float, and the switched expression
-        // type is int, we have an error
-        if (case_num.type == NumberType::FLOAT && switched_expr_type == NumberType::INT) {
-            m_module.emit_error("switch case number type mismatch, expected an integer");
-        }
-
-        // Check if the to-be-executed statement is okay
+        all_case_numbers.insert(case_num.i);
         case_stmt->accept_semantic_analyzer(*this);
     }
 

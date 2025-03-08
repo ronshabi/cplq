@@ -292,6 +292,7 @@ private:
 
 class Statement : public AstNode
 {
+    virtual bool is_break_statement() const { return false; }
 };
 
 //===----------------------------------------------------------------------===//
@@ -422,6 +423,7 @@ class BreakStatement : public Statement
 public:
     BreakStatement() = default;
 
+    bool is_break_statement() const override { return true; }
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 };
