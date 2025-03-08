@@ -1,0 +1,24 @@
+var: int;
+mult: float;
+{
+    input(var);
+    switch (var) {
+        case 0:
+            mult = 3.14;
+            output(mult);
+
+        case 1: {
+            mult = 4.20;
+        }
+
+        case 2: {
+            mult =  69;
+        }
+
+        default: {
+            mult = 999;
+        }
+    }
+
+    output(mult);
+}

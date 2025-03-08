@@ -1,6 +1,7 @@
 #include "Ast.hpp"
 
 #include "SemanticAnalyzer.hpp"
+#include <unordered_set>
 
 void AstNode::dump(unsigned indent) const
 {
@@ -28,12 +29,6 @@ void DeclarationBlock::dump(unsigned indent) const
 void DeclarationBlock::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
-}
-
-bool BinaryBoolExpression::evaluate() const
-{
-    // TODO
-    return false;
 }
 
 void BinaryBoolExpression::dump(unsigned indent) const
@@ -256,6 +251,33 @@ void SwitchStatement::dump(unsigned indent) const
 void SwitchStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+bool SwitchStatement::has_redundant_cases() const {
+    std::unordered_set<double> all_case_numbers;
+    for (auto const &case_pair : m_cases) {
+        auto const num = case_pair.first;
+        assert(num.get_value_float().has_value() && "Constexpr number in switch stmt MUST have a value");
+        double case_value = num.get_value_float().value();
+        if (all_case_numbers.contains(case_value)) {
+            return true;
+        }
+
+        all_case_numbers.insert(case_value);
+    }
+
+    return false;
+}
+
+NumberType SwitchStatement::get_cases_type() const {
+    for (auto const &case_pair : m_cases) {
+        auto const num = case_pair.first;
+        if (num.type == NumberType::FLOAT) {
+            return NumberType::FLOAT;
+        }
+    }
+
+    return NumberType::INT;
 }
 
 void Program::dump(unsigned indent) const

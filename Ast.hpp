@@ -118,7 +118,6 @@ public:
     {
         return true;
     }
-    virtual bool evaluate() const = 0;
 };
 
 class NotExpression : public BoolExpression
@@ -130,9 +129,9 @@ public:
     {
     }
 
-    bool evaluate() const override
+    Expression *get_expression()
     {
-        return !m_exp->evaluate();
+        return m_exp;
     }
 
     void dump(unsigned indent) const override;
@@ -152,7 +151,6 @@ public:
         , m_exp2(e2)
     {
     }
-    bool evaluate() const override;
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
@@ -217,6 +215,11 @@ public:
     {
         UNUSED(symbol_table);
         return m_cast;
+    }
+
+    Expression *get_expression()
+    {
+        return m_expression;
     }
 
 private:
@@ -471,6 +474,13 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+    Expression *get_expression() { return m_exp; }
+    std::vector<std::pair<Number, Statement *>>& get_cases() { return m_cases; }
+    Statement *get_default_case() { return m_default_case; }
+
+    bool has_redundant_cases() const;
+    NumberType get_cases_type() const;
 
 private:
     Expression                                 *m_exp;

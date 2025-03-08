@@ -1,5 +1,5 @@
 #pragma once
-
+#include <optional>
 enum class Operator
 {
     EQ,
@@ -34,4 +34,16 @@ struct Number
         int    i;
         double d;
     };
+
+    std::optional<double> get_value_float() const {
+        if (has_value) {
+            if (type == NumberType::INT) {
+                return static_cast<double>(i);
+            } else {
+                return d;
+            }
+        }
+
+        return std::nullopt;
+    }
 };

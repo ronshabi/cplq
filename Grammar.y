@@ -119,10 +119,10 @@ while_stmt:         WHILE '(' boolexpr ')' stmt
                     { $$ = new WhileStatement($3, $5); $$->set_line_number(@$.first_line); }
 
 switch_stmt:        SWITCH '(' expression ')'
-                    '{' caselist '}' DEFAULT ':' stmtlist '}'
+                    '{' caselist DEFAULT ':' stmtlist '}'
                     {
                         $6->set_expression($3);
-                        $6->set_default_case($10);
+                        $6->set_default_case($9);
                         $$ = $6;
                     }
 

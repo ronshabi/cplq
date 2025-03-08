@@ -33,7 +33,6 @@ public:
     void analyze(NotExpression *node);
     void analyze(BinaryBoolExpression *node);
     void analyze(BinaryExpression *node);
-    void analyze(BoolExpression *node);
     void analyze(IdExpression *node);
 
 private:

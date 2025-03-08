@@ -96,10 +96,6 @@ void SemanticAnalyzer::analyze(BinaryExpression *node) {
     node->get_rhs_expr()->accept_semantic_analyzer(*this);
 }
 
-void SemanticAnalyzer::analyze(BoolExpression *node) {
-    DBG("TODO");
-}
-
 void SemanticAnalyzer::analyze(IdExpression *node) {
     // Check the ID is in the symbol table
     auto const sym = m_symbol_table.get(*node->get_id());
@@ -110,7 +106,10 @@ void SemanticAnalyzer::analyze(IdExpression *node) {
 }
 
 void SemanticAnalyzer::analyze(SwitchStatement *node) {
-    DBG("TODO");
+    // Check expression
+    
+    // Check no double cases
+    // Check each case type, if switched-expression is an int, and some case is a float, deny
 }
 
 void SemanticAnalyzer::analyze(WhileStatement *node) {
@@ -119,13 +118,11 @@ void SemanticAnalyzer::analyze(WhileStatement *node) {
 }
 
 void SemanticAnalyzer::analyze(CastExpression *node) {
-    DBG("TODO");
-    
+    node->get_expression()->accept_semantic_analyzer(*this);
 }
 
 void SemanticAnalyzer::analyze(NotExpression *node) {
-    DBG("TODO");
-    
+    node->get_expression()->accept_semantic_analyzer(*this);
 }
 
 void SemanticAnalyzer::analyze(BinaryBoolExpression *node) {
