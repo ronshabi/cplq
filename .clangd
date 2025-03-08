@@ -1,7 +1,7 @@
 InlayHints:
   Enabled: Yes
   ParameterNames: Yes
-  DeducedTypes: No
+  DeducedTypes: Yes
 CompileFlags:
   Add: [-xc++, -Wall, -Wextra, -Wformat, -std=c++20]
   Compiler: g++

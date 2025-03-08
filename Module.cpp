@@ -4,7 +4,7 @@
 #include <cstdarg>
 
 Module::Module(std::string const& file_name)
-    : m_file_name(file_name)
+    : m_file_name(file_name), m_semantic_analyzer(reinterpret_cast<Program*>(m_ast))
 {
     check_correct_file_extension();
 
@@ -47,6 +47,15 @@ void Module::emit_fatal_error(const char *fmt, ...) {
     vfprintf(stderr, fmt, ap);
     va_end(ap);
     printf("\n");
+}
+
+void Module::semantic_analyze() {
+    if (!is_ok()) {
+        return; // No need to analyze syntactically malformed code.
+    }
+
+    printf("Calling semantic analyzer on Module::m_ast\n");
+    m_semantic_analyzer.analyze(reinterpret_cast<Program*>(m_ast));
 }
 
 void Module::check_correct_file_extension() {

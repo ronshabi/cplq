@@ -2,7 +2,8 @@ CXX=g++
 CXXFLAGS=-std=c++20 -g -O1 -Wall -Wextra -Wformat
 
 TARGET=cplq
-OBJECTS=Cpq.o Ast.o Types.o Utils.o Module.o Print.o
+OBJECTS=Cpq.o Ast.o Types.o Utils.o Module.o Print.o \
+			SymbolTable.o SemanticAnalyzer.o
 
 BISON=bison
 BISON_FLAGS=-d

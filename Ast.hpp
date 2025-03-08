@@ -13,16 +13,17 @@ class Statement;
 class StatementList;
 class Declaration;
 class DeclarationBlock;
-
+class SemanticAnalyzer;
 //===----------------------------------------------------------------------===//
 
 class AstNode
 {
 public:
-    AstNode()                     = default;
-    virtual ~AstNode()            = default;
+    AstNode()          = default;
+    virtual ~AstNode() = default;
 
     virtual void dump(unsigned indent = 0) const;
+    virtual void accept_semantic_analyzer(SemanticAnalyzer &sema) = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -43,6 +44,7 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
 private:
     std::vector<std::string *> m_ids;
@@ -56,6 +58,7 @@ public:
     void add_declaration(Declaration *decl);
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
 private:
     std::vector<Declaration *> m_declarations;
@@ -90,6 +93,7 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
 
 private:
@@ -109,6 +113,8 @@ public:
     bool evaluate() const override;
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 
 private:
     Operator    m_op;
@@ -128,6 +134,8 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 
 private:
     Number m_number;
@@ -146,6 +154,9 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+
 private:
     NumberType  m_cast;
     Expression *m_expression;
@@ -163,6 +174,9 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+
 private:
     std::string *m_id;
 };
@@ -181,6 +195,8 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 
 private:
     Expression *m_exp1;
@@ -206,6 +222,8 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 
 private:
     std::string *m_id;
@@ -222,7 +240,9 @@ public:
     }
 
     void dump(unsigned indent) const override;
-    
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
+
 private:
     Expression *m_exp;
 };
@@ -236,6 +256,8 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 
 private:
     std::string *m_id;
@@ -254,6 +276,7 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
 
 private:
@@ -273,6 +296,8 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+
 
 private:
     BoolExpression *m_condition_exp;
@@ -285,8 +310,9 @@ public:
     BreakStatement() = default;
 
     void dump(unsigned indent) const override;
-};
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+};
 
 //===----------------------------------------------------------------------===//
 
@@ -299,14 +325,17 @@ public:
         m_statements.push_back(stmt_ptr);
     }
 
-    
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+    std::vector<Statement *> &get_statements()
+    {
+        return m_statements;
+    }
 
 private:
     std::vector<Statement *> m_statements;
 };
-
 
 class SwitchStatement : public Statement
 {
@@ -330,15 +359,15 @@ public:
     {
         m_default_case = default_case_stmt_list;
     }
-    
+
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
 private:
-    Expression                                     *m_exp;
+    Expression                                 *m_exp;
     std::vector<std::pair<Number, Statement *>> m_cases;
     Statement                                  *m_default_case = nullptr;
 };
-
 
 class Program : public AstNode
 {
@@ -356,7 +385,16 @@ public:
     }
 
     void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
+    DeclarationBlock *get_declaration_block()
+    {
+        return m_declaration_block;
+    }
+    Statement *get_statemenets()
+    {
+        return m_program_statements;
+    }
 
 private:
     DeclarationBlock *m_declaration_block;

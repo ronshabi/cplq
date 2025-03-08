@@ -4,6 +4,8 @@
 
 #include "Ast.hpp"
 #include "ModuleStatus.hpp"
+#include "SymbolTable.hpp"
+#include "SemanticAnalyzer.hpp"
 
 extern "C" int yyparse();
 extern FILE   *yyin;
@@ -55,11 +57,12 @@ public:
         m_status = status;
     }
 
-    void set_reached_eof() { m_at_eof = true; }
-
-    void dump_ast() const {
+    void dump_ast() const
+    {
         m_ast->dump();
     }
+
+    void semantic_analyze();
 
 private:
     void check_correct_file_extension();
@@ -70,5 +73,5 @@ private:
     unsigned     m_current_line_no = 0;
     FILE        *m_file_ptr        = nullptr;
     AstNode     *m_ast             = nullptr;
-    bool m_at_eof = false;
+    SemanticAnalyzer m_semantic_analyzer;
 };

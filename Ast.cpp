@@ -1,5 +1,6 @@
 #include "Ast.hpp"
 
+#include "SemanticAnalyzer.hpp"
 
 void AstNode::dump(unsigned indent) const {
     for (unsigned i = 0; i < indent; ++i) {
@@ -18,6 +19,10 @@ void DeclarationBlock::dump(unsigned indent) const {
     for (const auto& decl : m_declarations) {
         decl->dump(indent + 4);
     }
+}
+
+void DeclarationBlock::accept_semantic_analyzer(SemanticAnalyzer& sema) {
+    sema.analyze(this);
 }
 
 bool BinaryBoolExpression::evaluate() const
@@ -135,4 +140,8 @@ void Program::dump(unsigned indent) const {
     AstNode::dump(indent);
     m_declaration_block->dump(0);
     m_program_statements->dump(0);
+}
+
+void Program::accept_semantic_analyzer(SemanticAnalyzer& sema) {
+    sema.analyze(this);
 }
