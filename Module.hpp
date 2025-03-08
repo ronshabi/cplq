@@ -66,6 +66,10 @@ public:
         m_ast->dump();
     }
 
+    void dump_symbol_table() {
+        m_semantic_analyzer.get_symbol_table().dump();
+    }
+
     void semantic_analyze();
 
 private:

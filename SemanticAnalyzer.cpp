@@ -15,6 +15,7 @@ void SemanticAnalyzer::analyze(DeclarationBlock *db)
     for (auto const decl : decls)
     {
         decl->dump(2);
+        m_module.set_current_position(decl->get_line_number());
 
         auto const decl_ids = decl->get_ids();
         for (auto const id : decl_ids)
@@ -24,14 +25,14 @@ void SemanticAnalyzer::analyze(DeclarationBlock *db)
             // ID already exists in the symbol table. This is an Error.
             if (id_optional.has_value())
             {
-                m_module.set_current_position(decl->get_line_number());
+                // Give detailed error based on its type
                 m_module.emit_error("Repeated declaration of symbol '%s'",
                                      id->c_str());
             }
             // ID doesn't exist in the symbol table, so add it.
             else
             {
-                m_symbol_table.add(*id, decl->get_type());
+                m_symbol_table.add(*id, Symbol(decl->get_type(), decl->get_line_number()));
             }
         }
 

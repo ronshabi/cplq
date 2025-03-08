@@ -51,12 +51,14 @@ digit   [0-9]
 {digit}+            {
         yylval->number.type = NumberType::INT;
         yylval->number.i = atoi(yytext);
+        yylval->number.has_value = true;
         return NUM;
 }
 
 {digit}+\.{digit}*  {
         yylval->number.type = NumberType::FLOAT;
         yylval->number.d = atof(yytext);
+        yylval->number.has_value = true;
         return NUM;
 }
 

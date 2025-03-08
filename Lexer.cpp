@@ -1013,35 +1013,37 @@ YY_RULE_SETUP
 {
         yylval->number.type = NumberType::INT;
         yylval->number.i = atoi(yytext);
+        yylval->number.has_value = true;
         return NUM;
 }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 57 "Lexer.l"
+#line 58 "Lexer.l"
 {
         yylval->number.type = NumberType::FLOAT;
         yylval->number.d = atof(yytext);
+        yylval->number.has_value = true;
         return NUM;
 }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 64 "Lexer.l"
+#line 66 "Lexer.l"
 ;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 65 "Lexer.l"
+#line 67 "Lexer.l"
 { return *yytext; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 67 "Lexer.l"
+#line 69 "Lexer.l"
 ECHO;
 	YY_BREAK
-#line 1045 "Lexer.cpp"
+#line 1047 "Lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2058,5 +2060,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 67 "Lexer.l"
+#line 69 "Lexer.l"
 

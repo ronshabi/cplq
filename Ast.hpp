@@ -63,6 +63,7 @@ public:
     {
         return m_ids;
     }
+    
     NumberType get_type() const
     {
         return m_type;
