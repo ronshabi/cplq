@@ -3,7 +3,6 @@
 #include <map>
 #include <optional>
 #include <string>
-#include <string_view>
 
 struct Symbol
 {
@@ -20,6 +19,8 @@ struct Symbol
         value.has_value = false;
         value.type      = type;
     }
+
+    std::string to_string() const;
 
     Number   value;
     unsigned line_number;
