@@ -479,9 +479,6 @@ public:
     std::vector<std::pair<Number, Statement *>>& get_cases() { return m_cases; }
     Statement *get_default_case() { return m_default_case; }
 
-    bool has_redundant_cases() const;
-    NumberType get_cases_type() const;
-
 private:
     Expression                                 *m_exp;
     std::vector<std::pair<Number, Statement *>> m_cases;

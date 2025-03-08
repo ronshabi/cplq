@@ -2,6 +2,7 @@
 
 #include "DebugStream.hpp"
 #include "Module.hpp"
+#include <unordered_set>
 
 void SemanticAnalyzer::analyze(Program *node)
 {
@@ -106,10 +107,39 @@ void SemanticAnalyzer::analyze(IdExpression *node) {
 }
 
 void SemanticAnalyzer::analyze(SwitchStatement *node) {
+
     // Check expression
-    
-    // Check no double cases
-    // Check each case type, if switched-expression is an int, and some case is a float, deny
+    node->get_expression()->accept_semantic_analyzer(*this);
+    auto const switched_expr_type = node->get_expression()->get_type(m_symbol_table);
+
+    // Check no ambiguous cases
+    auto const cases = node->get_cases();
+    std::unordered_set<double> all_case_numbers;
+
+    for (auto const& [case_num, case_stmt] : cases) {
+        // Check case didn't occur before. If it did, emit error
+        m_module.set_current_position(case_stmt->get_line_number());
+        auto const case_num_optional = case_num.get_value_float();
+        assert(case_num_optional.has_value() && "case number MUST have a constexpr value");
+        double const case_num_normalized = case_num_optional.value();
+        if (all_case_numbers.contains(case_num_normalized)) {
+            m_module.emit_error("ambiguous case number");
+        }
+
+        all_case_numbers.insert(case_num_normalized);
+
+        // Typechecker: Check that if the case num is a float, and the switched expression
+        // type is int, we have an error
+        if (case_num.type == NumberType::FLOAT && switched_expr_type == NumberType::INT) {
+            m_module.emit_error("case number type mismatch, expected an integer");
+        }
+
+        // Check if the to-be-executed statement is okay
+        case_stmt->accept_semantic_analyzer(*this);
+    }
+
+    // Check that the default statement is okay
+    node->get_default_case()->accept_semantic_analyzer(*this);
 }
 
 void SemanticAnalyzer::analyze(WhileStatement *node) {
