@@ -8,9 +8,8 @@ class Module;
 class SemanticAnalyzer
 {
 public:
-    SemanticAnalyzer(Program *ast, Module &mod)
+    SemanticAnalyzer(Module &mod)
         : m_module(mod)
-        , m_ast(ast)
     {
     }
 
@@ -34,5 +33,4 @@ public:
 private:
     bool        m_allow_break_stmts = false;
     Module     &m_module;
-    Program    *m_ast;
 };

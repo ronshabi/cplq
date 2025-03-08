@@ -20,8 +20,9 @@ struct Symbol
         value.type      = type;
     }
 
+    static std::string get_asm_name(std::string const& symbol_name);
     std::string to_string() const;
-
+    
     Number   value;
     unsigned line_number;
 };

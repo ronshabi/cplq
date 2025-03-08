@@ -5,7 +5,7 @@
 
 Module::Module(std::string const &file_name)
     : m_file_name(file_name)
-    , m_semantic_analyzer(reinterpret_cast<Program *>(m_ast), *this)
+    , m_semantic_analyzer(*this)
 {
     check_correct_file_extension();
 
@@ -69,6 +69,11 @@ void Module::semantic_analyze()
 
     printf("Calling semantic analyzer on Module's ast\n");
     m_semantic_analyzer.analyze(reinterpret_cast<Program *>(m_ast));
+}
+
+std::string& Module::add_assembly_line(std::string const& line) {
+    m_assembly.push_back(line);
+    return m_assembly.back();
 }
 
 void Module::check_correct_file_extension()

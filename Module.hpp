@@ -76,17 +76,23 @@ public:
 
     void semantic_analyze();
 
-    SymbolTable& get_symbol_table() {return m_symbol_table;}
+    SymbolTable &get_symbol_table()
+    {
+        return m_symbol_table;
+    }
+
+    std::string& add_assembly_line(std::string const& line);
 
 private:
     void check_correct_file_extension();
     void try_to_open_file();
 
-    ModuleStatus     m_status = ModuleStatus::Ok;
-    std::string      m_file_name;
-    unsigned         m_current_line_no = 0;
-    FILE            *m_file_ptr        = nullptr;
-    AstNode         *m_ast             = nullptr;
-    SemanticAnalyzer m_semantic_analyzer;
-    SymbolTable m_symbol_table;
+    ModuleStatus             m_status = ModuleStatus::Ok;
+    std::string              m_file_name;
+    unsigned                 m_current_line_no = 0;
+    FILE                    *m_file_ptr        = nullptr;
+    AstNode                 *m_ast             = nullptr;
+    SemanticAnalyzer         m_semantic_analyzer;
+    SymbolTable              m_symbol_table;
+    std::vector<std::string> m_assembly;
 };

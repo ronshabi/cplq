@@ -26,6 +26,22 @@ void SymbolTable::dump() const
     }
 }
 
+std::string Symbol::get_asm_name(std::string const& symbol_name) {
+    std::string o = "v_";
+
+    for (char const ch : symbol_name) {
+        // Encode uppercase characters in original variable name for the quad name.
+        if (ch >= 'A' && ch <= 'Z') {
+            o.push_back(ch + ('a' - 'A'));
+            o.push_back('_');
+        } else {
+            o.push_back(ch);
+        }
+    }
+
+    return o;
+}
+
 std::string Symbol::to_string() const {
     std::string o = "Symbol<@" + std::to_string(line_number);
 

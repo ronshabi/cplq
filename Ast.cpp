@@ -31,6 +31,10 @@ void DeclarationBlock::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void DeclarationBlock::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void BinaryBoolExpression::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -42,6 +46,10 @@ void BinaryBoolExpression::dump(unsigned indent) const
 void BinaryBoolExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+void BinaryBoolExpression::accept_code_generator(CodeGenerator &cg) {
+    
 }
 
 void Declaration::dump(unsigned indent) const
@@ -56,6 +64,10 @@ void Declaration::accept_semantic_analyzer(SemanticAnalyzer &sema)
     UNUSED(sema);
 }
 
+void Declaration::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void NotExpression::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -66,6 +78,10 @@ void NotExpression::dump(unsigned indent) const
 void NotExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+void NotExpression::accept_code_generator(CodeGenerator &cg) {
+    
 }
 
 void NumberExpression::dump(unsigned indent) const
@@ -86,6 +102,10 @@ void NumberExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
     UNUSED(sema);
 }
 
+void NumberExpression::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void CastExpression::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -98,6 +118,10 @@ void CastExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void CastExpression::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void IdExpression::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -107,6 +131,10 @@ void IdExpression::dump(unsigned indent) const
 void IdExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+void IdExpression::accept_code_generator(CodeGenerator &cg) {
+    
 }
 
 NumberType IdExpression::get_type(SymbolTable const &symbol_table) const {
@@ -132,6 +160,10 @@ void BinaryExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void BinaryExpression::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 NumberType BinaryExpression::get_type(SymbolTable const &symbol_table) const {
     auto const exp1_type = m_exp1->get_type(symbol_table);
     auto const exp2_type = m_exp2->get_type(symbol_table);
@@ -154,6 +186,10 @@ void AssignStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void AssignStatement::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void OutputStatement::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -166,6 +202,10 @@ void OutputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void OutputStatement::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void InputStatement::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -175,6 +215,10 @@ void InputStatement::dump(unsigned indent) const
 void InputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+void InputStatement::accept_code_generator(CodeGenerator &cg) {
+    
 }
 
 void IfStatement::dump(unsigned indent) const
@@ -191,6 +235,10 @@ void IfStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void IfStatement::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void WhileStatement::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -204,6 +252,10 @@ void WhileStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void WhileStatement::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void BreakStatement::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -214,6 +266,10 @@ void BreakStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     // nop
     UNUSED(sema);
+}
+
+void BreakStatement::accept_code_generator(CodeGenerator &cg) {
+    
 }
 
 void StatementList::dump(unsigned indent) const
@@ -229,6 +285,10 @@ void StatementList::dump(unsigned indent) const
 void StatementList::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+void StatementList::accept_code_generator(CodeGenerator &cg) {
+    
 }
 
 void SwitchStatement::dump(unsigned indent) const
@@ -253,6 +313,10 @@ void SwitchStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
     sema.analyze(this);
 }
 
+void SwitchStatement::accept_code_generator(CodeGenerator &cg) {
+    
+}
+
 void Program::dump(unsigned indent) const
 {
     AstNode::dump(indent);
@@ -263,4 +327,8 @@ void Program::dump(unsigned indent) const
 void Program::accept_semantic_analyzer(SemanticAnalyzer &sema)
 {
     sema.analyze(this);
+}
+
+void Program::accept_code_generator(CodeGenerator &cg) {
+    
 }
