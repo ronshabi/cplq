@@ -19,7 +19,6 @@ void SemanticAnalyzer::analyze(DeclarationBlock *db)
         auto const decl_ids = decl->get_ids();
         for (auto const id : decl_ids)
         {   
-            std::cout << "DeclID: " << id << "\n";
             auto const id_optional = m_symbol_table.get(*id);
 
             // ID already exists in the symbol table. This is an Error.

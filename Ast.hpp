@@ -24,6 +24,19 @@ public:
 
     virtual void dump(unsigned indent = 0) const;
     virtual void accept_semantic_analyzer(SemanticAnalyzer &sema) = 0;
+
+    unsigned get_line_number() const
+    {
+        return m_line_no;
+    }
+
+    void set_line_number(unsigned line_no)
+    {
+        m_line_no = line_no;
+    }
+
+private:
+    unsigned m_line_no = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -46,8 +59,14 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-    std::vector<std::string *> const& get_ids() const { return m_ids; }
-    NumberType get_type() const { return m_type; }
+    std::vector<std::string *> const &get_ids() const
+    {
+        return m_ids;
+    }
+    NumberType get_type() const
+    {
+        return m_type;
+    }
 
 private:
     std::vector<std::string *> m_ids;
@@ -63,7 +82,10 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-    std::vector<Declaration *>& get_declarations() { return m_declarations; }
+    std::vector<Declaration *> &get_declarations()
+    {
+        return m_declarations;
+    }
 
 private:
     std::vector<Declaration *> m_declarations;
@@ -100,7 +122,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     BoolExpression *m_exp;
 };
@@ -119,7 +140,6 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
 
 private:
     Operator    m_op;
@@ -141,7 +161,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     Number m_number;
 };
@@ -160,7 +179,6 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
 
 private:
     NumberType  m_cast;
@@ -181,7 +199,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     std::string *m_id;
 };
@@ -201,7 +218,6 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
 
 private:
     Expression *m_exp1;
@@ -229,7 +245,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     std::string *m_id;
     Expression  *m_exp;
@@ -247,7 +262,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     Expression *m_exp;
 };
@@ -262,7 +276,6 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
 
 private:
     std::string *m_id;
@@ -283,7 +296,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     BoolExpression *m_condition_exp;
     Statement      *m_then_branch;
@@ -303,7 +315,6 @@ public:
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
 
-
 private:
     BoolExpression *m_condition_exp;
     Statement      *m_body_statement;
@@ -316,7 +327,6 @@ public:
 
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-
 };
 
 //===----------------------------------------------------------------------===//

@@ -54,7 +54,7 @@ void Module::semantic_analyze() {
         return; // No need to analyze syntactically malformed code.
     }
 
-    printf("Calling semantic analyzer on Module::m_ast\n");
+    printf("Calling semantic analyzer on Module's ast\n");
     m_semantic_analyzer.analyze(reinterpret_cast<Program*>(m_ast));
 }
 
