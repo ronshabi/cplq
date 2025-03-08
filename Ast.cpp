@@ -38,15 +38,27 @@ void BinaryBoolExpression::dump(unsigned indent) const {
     m_exp2->dump(indent + 4);
 }
 
+void BinaryBoolExpression::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void Declaration::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "Decl<" << number_type_to_string(m_type) << "> " << vector_to_string(m_ids) << "\n";
+}
+
+void Declaration::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void NotExpression::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "NotExp\n";
     m_exp->dump(indent + 4);
+}
+
+void NotExpression::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void NumberExpression::dump(unsigned indent) const {
@@ -58,15 +70,27 @@ void NumberExpression::dump(unsigned indent) const {
     }
 }
 
+void NumberExpression::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void CastExpression::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "Cast<" << number_type_to_string(m_cast) << ">\n";
     m_expression->dump(indent+4);
 }
 
+void CastExpression::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void IdExpression::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "Id<" << *m_id << ">\n";
+}
+
+void IdExpression::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void BinaryExpression::dump(unsigned indent) const {
@@ -76,10 +100,18 @@ void BinaryExpression::dump(unsigned indent) const {
     m_exp2->dump(indent + 4);
 }
 
+void BinaryExpression::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void AssignStatement::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "Assign<" << *m_id << ">\n";
     m_exp->dump(indent+4);
+}
+
+void AssignStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void OutputStatement::dump(unsigned indent) const {
@@ -88,9 +120,17 @@ void OutputStatement::dump(unsigned indent) const {
     m_exp->dump(indent+4);
 }
 
+void OutputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void InputStatement::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "Input<" << *m_id << ">\n";
+}
+
+void InputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void IfStatement::dump(unsigned indent) const {
@@ -101,6 +141,10 @@ void IfStatement::dump(unsigned indent) const {
     m_else_branch->dump(indent+4);
 }
 
+void IfStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void WhileStatement::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "While\n";
@@ -108,9 +152,17 @@ void WhileStatement::dump(unsigned indent) const {
     m_body_statement->dump(indent+4);
 }
 
+void WhileStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
+}
+
 void BreakStatement::dump(unsigned indent) const {
     AstNode::dump(indent);
     std::cout << "Break\n";
+}
+
+void BreakStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void StatementList::dump(unsigned indent) const {
@@ -119,6 +171,10 @@ void StatementList::dump(unsigned indent) const {
     for (auto const& stmt : m_statements) {
         stmt->dump(indent+4);
     }
+}
+
+void StatementList::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void SwitchStatement::dump(unsigned indent) const {
@@ -134,6 +190,10 @@ void SwitchStatement::dump(unsigned indent) const {
     AstNode::dump(indent+4);
     std::cout << "Default\n";
     m_default_case->dump(indent+8);
+}
+
+void SwitchStatement::accept_semantic_analyzer(SemanticAnalyzer &sema) {
+    std::cout << __PRETTY_FUNCTION__ << "\n";
 }
 
 void Program::dump(unsigned indent) const {

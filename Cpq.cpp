@@ -29,7 +29,9 @@ int main(int argc, const char *argv[])
 
     if (main_module.is_ok()) {
         main_module.dump_ast();
+        main_module.semantic_analyze();
     }
+
 
     return main_module.get_error_code();
 }
