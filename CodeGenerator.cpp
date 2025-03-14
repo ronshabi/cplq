@@ -33,11 +33,17 @@ CodeGenerator::codegen(StatementList *node)
 void
 CodeGenerator::codegen(AssignStatement *node)
 {
-    // const auto type = node->get_expression()->get_type(symbol_table());
+    // Generate code for the RHS expression
+    node->get_expression()->accept_code_generator(*this);
 
-    // if (type == NumberType::FLOAT) {
+    // Get ID of symbol
+    const auto id_symbol = symbol_table().get(*node->get_id());
 
-    // }
+    if (id_symbol->value.type == NumberType::INT) {
+        emit_line("IASN", id_symbol->reg, node->get_expression()->get_register());
+    } else {
+        emit_line("RASN", id_symbol->reg, node->get_expression()->get_register());
+    }
 }
 
 void

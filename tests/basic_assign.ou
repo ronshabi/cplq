@@ -1,0 +1,5 @@
+var1: float;
+{
+    var1 = 3.14;
+    output(var1);
+}
