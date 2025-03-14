@@ -108,13 +108,6 @@ Module::codegen()
     DBG("Created output file");
 }
 
-std::string &
-Module::add_assembly_line(std::string const &line)
-{
-    m_assembly.push_back(line);
-    return m_assembly.back();
-}
-
 void
 Module::check_correct_file_extension()
 {

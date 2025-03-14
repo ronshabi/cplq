@@ -42,5 +42,7 @@ private:
 
     SymbolTable &symbol_table();
 
+    unsigned current_asm_line_number() const;
+
     Module &m_module;
 };

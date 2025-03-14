@@ -111,6 +111,23 @@ CodeGenerator::codegen(OutputStatement *node)
 void
 CodeGenerator::codegen(IfStatement *node)
 {
+    node->get_condition_exp()->accept_code_generator(*this);
+    auto const condition_register = node->get_condition_exp()->get_register();
+    auto const before_then_branch = current_asm_line_number();
+    // Jmpz to the else branch
+    node->get_then_branch()->accept_code_generator(*this);
+    // Jmp to after the IF
+    auto const before_else_branch = current_asm_line_number();
+    node->get_else_branch()->accept_code_generator(*this);
+    auto const after_if = current_asm_line_number();
+
+    auto &asm_vec = m_module.m_assembly;
+
+    asm_vec.insert(asm_vec.begin() + before_then_branch,
+                   "JMPZ " + std::to_string(before_else_branch + 2) + " " +
+                       condition_register.name());
+    asm_vec.insert(asm_vec.begin() + before_else_branch + 1,
+                   "JMP " + std::to_string(after_if + 2));
 }
 
 void
@@ -154,6 +171,34 @@ CodeGenerator::codegen(NotExpression *node)
 void
 CodeGenerator::codegen(BinaryBoolExpression *node)
 {
+    node->get_lhs_expr()->accept_code_generator(*this);
+    node->get_rhs_expr()->accept_code_generator(*this);
+    const auto my_register  = node->get_register();
+    const auto lhs_register = node->get_lhs_expr()->get_register();
+    const auto rhs_register = node->get_rhs_expr()->get_register();
+
+    switch (node->get_operator())
+    {
+    case Operator::EQ:
+        
+        break;
+    case Operator::NEQ:
+        break;
+    case Operator::LT:
+        break;
+    case Operator::GT:
+        break;
+    case Operator::LTE:
+        break;
+    case Operator::GTE:
+        break;
+    case Operator::AND:
+        break;
+    case Operator::OR:
+        break;
+    default:
+        m_module.emit_fatal_error("invalid operator on boolean binary expression");
+    }
 }
 
 void
@@ -246,38 +291,38 @@ void
 CodeGenerator::emit_line(std::string const &opcode)
 {
     DBG(opcode);
-    m_module.add_assembly_line(opcode);
+    m_module.m_assembly.push_back(opcode);
 }
 
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r)
 {
     DBG(opcode << " " << r.name());
-    m_module.add_assembly_line(opcode + " " + r.name());
+    m_module.m_assembly.push_back(opcode + " " + r.name());
 }
 
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2)
 {
     DBG(opcode << " " << r1.name() << ", " << r2.name());
-    m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name());
+    m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name());
 }
 
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r, int val)
 {
     DBG(opcode << " " << r.name() << ", " << val);
-    m_module.add_assembly_line(opcode + " " + r.name() + " " +
-                               std::to_string(val));
+    m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
+                                  std::to_string(val));
 }
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r, int val1,
                          int val2)
 {
     DBG(opcode << " " << r.name() << ", " << val1 << ", " << val2);
-    m_module.add_assembly_line(opcode + " " + r.name() + " " +
-                               std::to_string(val1) + " " +
-                               std::to_string(val2));
+    m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
+                                  std::to_string(val1) + " " +
+                                  std::to_string(val2));
 }
 
 void
@@ -285,8 +330,8 @@ CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
                          int val)
 {
     DBG(opcode << " " << r1.name() << ", " << r2.name() << ", " << val);
-    m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name() +
-                               " " + std::to_string(val));
+    m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
+                                  " " + std::to_string(val));
 }
 
 void
@@ -294,8 +339,8 @@ CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
                          Register r3)
 {
     DBG(opcode << " " << r1.name() << ", " << r2.name() << ", " << r3.name());
-    m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name() +
-                               " " + r3.name());
+    m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
+                                  " " + r3.name());
 }
 
 void
@@ -304,12 +349,18 @@ CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
     std::array<char, 128> buf{};
     std::snprintf(buf.data(), buf.size(), "%.2f", val);
     DBG(opcode << " " << r.name() << ", " << buf.data());
-    m_module.add_assembly_line(opcode + " " + r.name() + " " +
-                               std::string(buf.data()));
+    m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
+                                  std::string(buf.data()));
 }
 
 SymbolTable &
 CodeGenerator::symbol_table()
 {
     return m_module.get_symbol_table();
+}
+
+unsigned
+CodeGenerator::current_asm_line_number() const
+{
+    return m_module.m_assembly.size();
 }

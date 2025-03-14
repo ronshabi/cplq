@@ -92,8 +92,7 @@ public:
         return m_symbol_table;
     }
 
-    std::string &add_assembly_line(std::string const &line);
-
+friend CodeGenerator;
 private:
     void check_correct_file_extension();
     void try_to_open_file();
