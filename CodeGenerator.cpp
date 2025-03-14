@@ -106,15 +106,18 @@ CodeGenerator::codegen(IdExpression *node)
     // std::cout << "IdExpr CodeGen: " << node->m_code.code;
 }
 
-void CodeGenerator::emit_line(std::string const& str) {
-    m_module.add_assembly_line(str);
+void CodeGenerator::emit_line(std::string const& opcode) {
+    DBG(opcode);
+    m_module.add_assembly_line(opcode);
 }
 
 void CodeGenerator::emit_line(std::string const& opcode, Register r) {
+    DBG(opcode << " " << r.name());
     m_module.add_assembly_line(opcode + " " + r.name());
 }
 
 void CodeGenerator::emit_line(std::string const& opcode, Register r1, Register r2) {
+    DBG(opcode << " " << r1.name() << ", " << r2.name());
     m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name());
 }
 
