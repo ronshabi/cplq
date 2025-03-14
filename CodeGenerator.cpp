@@ -39,17 +39,30 @@ CodeGenerator::codegen(AssignStatement *node)
     node->get_expression()->accept_code_generator(*this);
 
     // Get ID of symbol
-    const auto id_symbol = symbol_table().get(*node->get_id());
+    auto const id_symbol = symbol_table().get(*node->get_id());
+
+    auto const rhs_expr = node->get_expression();
+    auto const rhs_type = rhs_expr->get_type(symbol_table());
 
     if (id_symbol->value.type == NumberType::INT)
     {
+        // Check RHS expression type, convert it to int if needed
         emit_line("IASN", id_symbol->reg,
                   node->get_expression()->get_register());
     }
     else
     {
+        Register convert_result;
+
+        // Check RHS expression type, convert it to float if needed
+        if (rhs_type == NumberType::INT) {
+            emit_line("ITOR", convert_result, rhs_expr->get_register());
+        } else {
+            convert_result = rhs_expr->get_register();
+        }
+
         emit_line("RASN", id_symbol->reg,
-                  node->get_expression()->get_register());
+                  convert_result);
     }
 }
 
@@ -150,9 +163,40 @@ CodeGenerator::codegen(BinaryExpression *node)
         {
             emit_line("IADD", my_register, lhs_register, rhs_register);
         }
+        else
+        {
+            emit_line("RADD", my_register, lhs_register, rhs_register);
+        }
+        break;
     case Operator::MINUS:
+        if (type == NumberType::INT)
+        {
+            emit_line("ISUB", my_register, lhs_register, rhs_register);
+        }
+        else
+        {
+            emit_line("RSUB", my_register, lhs_register, rhs_register);
+        }
+        break;
     case Operator::MUL:
+        if (type == NumberType::INT)
+        {
+            emit_line("IMLT", my_register, lhs_register, rhs_register);
+        }
+        else
+        {
+            emit_line("RMLT", my_register, lhs_register, rhs_register);
+        }
+        break;
     case Operator::DIV:
+        if (type == NumberType::INT)
+        {
+            emit_line("IDIV", my_register, lhs_register, rhs_register);
+        }
+        else
+        {
+            emit_line("RDIV", my_register, lhs_register, rhs_register);
+        }
         break;
     default:
         m_module.emit_fatal_error("invalid operator in binary expression");
@@ -162,7 +206,6 @@ CodeGenerator::codegen(BinaryExpression *node)
 void
 CodeGenerator::codegen(IdExpression *node)
 {
-    DBG("CodeGen ID Expr");
     // I want to SET the ID register to the symbol register, to sync them.
     const auto sym   = symbol_table().get(*node->get_id());
     node->m_register = sym->reg;
