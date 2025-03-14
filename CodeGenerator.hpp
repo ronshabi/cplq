@@ -33,6 +33,9 @@ private:
     void         emit_line(std::string const &opcode, Register r);
     void         emit_line(std::string const &opcode, Register r1, Register r2);
     void         emit_line(std::string const &opcode, Register r, int val);
+    void         emit_line(std::string const &opcode, Register r, int val1, int val2);
+    void         emit_line(std::string const &opcode, Register r1, Register r2, int val);
+    void         emit_line(std::string const &opcode, Register r1, Register r2, Register r3);
     void         emit_line(std::string const &opcode, Register r, double val);
     SymbolTable &symbol_table();
 

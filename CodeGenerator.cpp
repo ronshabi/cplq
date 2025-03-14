@@ -35,6 +35,7 @@ void
 CodeGenerator::codegen(AssignStatement *node)
 {
     // Generate code for the RHS expression
+    // We do this first because we first need to evaluate RHS when assigning!
     node->get_expression()->accept_code_generator(*this);
 
     // Get ID of symbol
@@ -122,6 +123,9 @@ CodeGenerator::codegen(CastExpression *node)
 void
 CodeGenerator::codegen(NotExpression *node)
 {
+    node->accept_code_generator(*this);
+    emit_line("INQL", node->get_register(),
+              node->get_expression()->get_register(), 1);
 }
 
 void
@@ -132,6 +136,27 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 void
 CodeGenerator::codegen(BinaryExpression *node)
 {
+    node->get_lhs_expr()->accept_code_generator(*this);
+    node->get_rhs_expr()->accept_code_generator(*this);
+    const auto my_register  = node->get_register();
+    const auto lhs_register = node->get_lhs_expr()->get_register();
+    const auto rhs_register = node->get_rhs_expr()->get_register();
+    const auto type         = node->get_type(symbol_table());
+
+    switch (node->get_operator())
+    {
+    case Operator::PLUS:
+        if (type == NumberType::INT)
+        {
+            emit_line("IADD", my_register, lhs_register, rhs_register);
+        }
+    case Operator::MINUS:
+    case Operator::MUL:
+    case Operator::DIV:
+        break;
+    default:
+        m_module.emit_fatal_error("invalid operator in binary expression");
+    }
 }
 
 void
@@ -191,6 +216,33 @@ CodeGenerator::emit_line(std::string const &opcode, Register r, int val)
     DBG(opcode << " " << r.name() << ", " << val);
     m_module.add_assembly_line(opcode + " " + r.name() + " " +
                                std::to_string(val));
+}
+void
+CodeGenerator::emit_line(std::string const &opcode, Register r, int val1,
+                         int val2)
+{
+    DBG(opcode << " " << r.name() << ", " << val1 << ", " << val2);
+    m_module.add_assembly_line(opcode + " " + r.name() + " " +
+                               std::to_string(val1) + " " +
+                               std::to_string(val2));
+}
+
+void
+CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
+                         int val)
+{
+    DBG(opcode << " " << r1.name() << ", " << r2.name() << ", " << val);
+    m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name() +
+                               " " + std::to_string(val));
+}
+
+void
+CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
+                         Register r3)
+{
+    DBG(opcode << " " << r1.name() << ", " << r2.name() << ", " << r3.name());
+    m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name() +
+                               " " + r3.name());
 }
 
 void
