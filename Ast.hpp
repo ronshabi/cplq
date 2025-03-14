@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-
 #include "Register.hpp"
 #include "SymbolTable.hpp"
 #include "Types.hpp"
@@ -43,12 +42,17 @@ public:
         m_line_no = line_no;
     }
 
-    Register get_register() const { return m_register; }
+    Register
+    get_register() const
+    {
+        return m_register;
+    }
 
-friend CodeGenerator;
+    friend CodeGenerator;
 
 protected:
     Register m_register{};
+
 private:
     unsigned m_line_no = 0;
 };
@@ -225,7 +229,9 @@ public:
         return m_number.type;
     }
 
-    Number get_number() const {
+    Number
+    get_number() const
+    {
         return m_number;
     }
 

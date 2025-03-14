@@ -1,6 +1,6 @@
 #pragma once
-#include "Types.hpp"
 #include "Register.hpp"
+#include "Types.hpp"
 #include <map>
 #include <optional>
 #include <string>
@@ -38,7 +38,6 @@ public:
     // void set_register(std::string const &symbol_name, Register reg);
     std::optional<Symbol> get(std::string const &symbol_name) const;
     void                  add(std::string const &symbol_name, Symbol sym);
-
 
     void dump() const;
 

@@ -76,8 +76,11 @@ Module::semantic_analyze()
     m_semantic_analyzer.analyze(reinterpret_cast<Program *>(m_ast));
 }
 
-void Module::codegen() {
-    if (!is_ok()) {
+void
+Module::codegen()
+{
+    if (!is_ok())
+    {
         return; // No need to generate assembly for invalid source code
     }
 
@@ -85,15 +88,19 @@ void Module::codegen() {
     m_code_generator.codegen(reinterpret_cast<Program *>(m_ast));
 
     // Create the file
-    const std::string output_file_name = m_file_name.substr(0, m_file_name.size() - 2) + "qud";
+    const std::string output_file_name =
+        m_file_name.substr(0, m_file_name.size() - 2) + "qud";
     std::ofstream output_file(output_file_name);
-    if (output_file.bad()) {
-        emit_fatal_error("Can't create an output file '%s' due to OS error", output_file_name.c_str());
+    if (output_file.bad())
+    {
+        emit_fatal_error("Can't create an output file '%s' due to OS error",
+                         output_file_name.c_str());
         m_status = ModuleStatus::OSError;
         return;
     }
 
-    for (const auto& line : m_assembly) {
+    for (const auto &line : m_assembly)
+    {
         output_file << line << "\n";
     }
 

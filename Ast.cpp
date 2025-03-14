@@ -1,7 +1,7 @@
 #include "Ast.hpp"
 
-#include "SemanticAnalyzer.hpp"
 #include "CodeGenerator.hpp"
+#include "SemanticAnalyzer.hpp"
 #include <unordered_set>
 
 void

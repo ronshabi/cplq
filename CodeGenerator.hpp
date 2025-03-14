@@ -29,12 +29,12 @@ public:
     void codegen(BreakStatement *node);
 
 private:
-    void emit_line(std::string const& str);
-    void emit_line(std::string const& opcode, Register r);
-    void emit_line(std::string const& opcode, Register r1, Register r2);
-    void emit_line(std::string const& opcode, Register r, int val);
-    void emit_line(std::string const& opcode, Register r, double val);
-    SymbolTable& symbol_table();
+    void         emit_line(std::string const &str);
+    void         emit_line(std::string const &opcode, Register r);
+    void         emit_line(std::string const &opcode, Register r1, Register r2);
+    void         emit_line(std::string const &opcode, Register r, int val);
+    void         emit_line(std::string const &opcode, Register r, double val);
+    SymbolTable &symbol_table();
 
     Module &m_module;
 };
