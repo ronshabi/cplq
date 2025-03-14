@@ -19,7 +19,7 @@ CodeGenerator::codegen(Program *node)
 void
 CodeGenerator::codegen(DeclarationBlock *node)
 {
-    // Nothing?
+    UNUSED(node);
 }
 
 void

@@ -65,7 +65,7 @@ Symbol::get_asm_name(std::string const &symbol_name)
 std::string
 Symbol::to_string() const
 {
-    std::string o = "Symbol<@" + std::to_string(line_number);
+    std::string o = "Symbol<Reg: " + reg.name() + ", Line: " + std::to_string(line_number);
 
     if (value.type == NumberType::INT)
     {
