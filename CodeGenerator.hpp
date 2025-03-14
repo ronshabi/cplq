@@ -1,6 +1,8 @@
 #pragma once
 
 class Module;
+class SymbolTable;
+class Register;
 
 #include "Ast.hpp"
 
@@ -23,6 +25,12 @@ public:
     void codegen(BinaryBoolExpression *node);
     void codegen(BinaryExpression *node);
     void codegen(IdExpression *node);
+
 private:
-    Module& m_module;
+    void emit_line(std::string const& str);
+    void emit_line(std::string const& opcode, Register r);
+    void emit_line(std::string const& opcode, Register r1, Register r2);
+    SymbolTable& symbol_table();
+
+    Module &m_module;
 };

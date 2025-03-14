@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Ast.hpp"
+#include "CodeGenerator.hpp"
 #include "DebugStream.hpp"
 #include "ModuleStatus.hpp"
 #include "SemanticAnalyzer.hpp"
@@ -25,22 +26,26 @@ public:
     void emit_fatal_error(const char *fmt, ...)
         __attribute__((format(printf, 2, 3)));
 
-    void set_current_position(unsigned line_no)
+    void
+    set_current_position(unsigned line_no)
     {
         m_current_line_no = line_no;
     }
 
-    int get_error_code() const
+    int
+    get_error_code() const
     {
         return is_ok() ? 0 : 1;
     }
 
-    int is_ok() const
+    int
+    is_ok() const
     {
         return m_status == ModuleStatus::Ok;
     }
 
-    void parse()
+    void
+    parse()
     {
         if (is_ok())
         {
@@ -48,12 +53,14 @@ public:
         }
     }
 
-    void set_ast_root(AstNode *root)
+    void
+    set_ast_root(AstNode *root)
     {
         m_ast = root;
     }
 
-    void set_status(ModuleStatus status)
+    void
+    set_status(ModuleStatus status)
     {
         if (status == ModuleStatus::Ok)
         {
@@ -63,25 +70,29 @@ public:
         m_status = status;
     }
 
-    void dump_ast() const
+    void
+    dump_ast() const
     {
         DBG("Dump AST");
         m_ast->dump();
     }
 
-    void dump_symbol_table()
+    void
+    dump_symbol_table()
     {
         m_semantic_analyzer.get_symbol_table().dump();
     }
 
     void semantic_analyze();
+    void codegen();
 
-    SymbolTable &get_symbol_table()
+    SymbolTable &
+    get_symbol_table()
     {
         return m_symbol_table;
     }
 
-    std::string& add_assembly_line(std::string const& line);
+    std::string &add_assembly_line(std::string const &line);
 
 private:
     void check_correct_file_extension();
@@ -94,5 +105,6 @@ private:
     AstNode                 *m_ast             = nullptr;
     SemanticAnalyzer         m_semantic_analyzer;
     SymbolTable              m_symbol_table;
+    CodeGenerator            m_code_generator;
     std::vector<std::string> m_assembly;
 };

@@ -4,7 +4,7 @@ CXXFLAGS=-std=c++20 -g -O1 -Wall -Wextra -Wformat $(DEFINITIONS)
 
 TARGET=cplq
 OBJECTS=Cpq.o Ast.o Types.o Utils.o Module.o Print.o \
-			SymbolTable.o SemanticAnalyzer.o CodeGenerator.o
+			SymbolTable.o SemanticAnalyzer.o CodeGenerator.o Register.o
 
 
 BISON=bison

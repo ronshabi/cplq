@@ -1,6 +1,7 @@
 #include "Types.hpp"
 
-const char *number_type_to_string(NumberType number_type)
+const char *
+number_type_to_string(NumberType number_type)
 {
     if (number_type == NumberType::FLOAT)
     {
@@ -10,7 +11,8 @@ const char *number_type_to_string(NumberType number_type)
     return "Int";
 }
 
-const char *operator_to_string(Operator op)
+const char *
+operator_to_string(Operator op)
 {
     switch (op)
     {

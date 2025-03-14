@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "Register.hpp"
 #include "SymbolTable.hpp"
 #include "Types.hpp"
 #include "Utils.hpp"
@@ -27,18 +28,28 @@ public:
 
     virtual void dump(unsigned indent = 0) const;
     virtual void accept_semantic_analyzer(SemanticAnalyzer &sema) = 0;
-    virtual void accept_code_generator(CodeGenerator& cg) = 0;
+    virtual void accept_code_generator(CodeGenerator &cg)         = 0;
 
-    unsigned get_line_number() const
+    unsigned
+    get_line_number() const
     {
         return m_line_no;
     }
 
-    void set_line_number(unsigned line_no)
+    void
+    set_line_number(unsigned line_no)
     {
         m_line_no = line_no;
     }
 
+    Register get_register() const { return m_register; }
+    unsigned get_register_id() const { return m_register.id(); }
+    std::string get_register_name() const { return m_register.name(); }
+
+friend CodeGenerator;
+
+protected:
+    Register m_register{};
 private:
     unsigned m_line_no = 0;
 };
@@ -50,12 +61,14 @@ class Declaration : public AstNode
 public:
     Declaration() = default;
 
-    void add_id(std::string *id)
+    void
+    add_id(std::string *id)
     {
         m_ids.push_back(id);
     }
 
-    void assign_number_type(NumberType type)
+    void
+    assign_number_type(NumberType type)
     {
         m_type = type;
     }
@@ -64,12 +77,14 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    std::vector<std::string *> const &get_ids() const
+    std::vector<std::string *> const &
+    get_ids() const
     {
         return m_ids;
     }
 
-    NumberType get_type() const
+    NumberType
+    get_type() const
     {
         return m_type;
     }
@@ -89,7 +104,8 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    std::vector<Declaration *> &get_declarations()
+    std::vector<Declaration *> &
+    get_declarations()
     {
         return m_declarations;
     }
@@ -103,11 +119,13 @@ private:
 class Expression : public AstNode
 {
 public:
-    virtual bool is_bool_expr() const
+    virtual bool
+    is_bool_expr() const
     {
         return false;
     }
-    virtual NumberType get_type(SymbolTable const &symbol_table) const
+    virtual NumberType
+    get_type(SymbolTable const &symbol_table) const
     {
         UNUSED(symbol_table);
         return NumberType::INT;
@@ -119,7 +137,8 @@ public:
 class BoolExpression : public Expression
 {
 public:
-    virtual bool is_bool_expr() const
+    virtual bool
+    is_bool_expr() const
     {
         return true;
     }
@@ -134,7 +153,8 @@ public:
     {
     }
 
-    Expression *get_expression()
+    Expression *
+    get_expression()
     {
         return m_exp;
     }
@@ -162,15 +182,18 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    Expression *get_lhs_expr()
+    Expression *
+    get_lhs_expr()
     {
         return m_exp1;
     }
-    Expression *get_rhs_expr()
+    Expression *
+    get_rhs_expr()
     {
         return m_exp2;
     }
-    Operator get_operator() const
+    Operator
+    get_operator() const
     {
         return m_op;
     }
@@ -192,11 +215,12 @@ public:
     {
     }
 
-    void       dump(unsigned indent) const override;
-    void       accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    NumberType get_type(SymbolTable const &symbol_table) const override
+    NumberType
+    get_type(SymbolTable const &symbol_table) const override
     {
         UNUSED(symbol_table);
         return m_number.type;
@@ -218,17 +242,19 @@ public:
     {
     }
 
-    void       dump(unsigned indent) const override;
-    void       accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    NumberType get_type(SymbolTable const &symbol_table) const override
+    NumberType
+    get_type(SymbolTable const &symbol_table) const override
     {
         UNUSED(symbol_table);
         return m_cast;
     }
 
-    Expression *get_expression()
+    Expression *
+    get_expression()
     {
         return m_expression;
     }
@@ -249,11 +275,12 @@ public:
     {
     }
 
-    void         dump(unsigned indent) const override;
-    void         accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    std::string *get_id() const
+    std::string *
+    get_id() const
     {
         return m_id;
     }
@@ -283,15 +310,18 @@ public:
 
     NumberType get_type(SymbolTable const &symbol_table) const override;
 
-    Expression *get_lhs_expr()
+    Expression *
+    get_lhs_expr()
     {
         return m_exp1;
     }
-    Expression *get_rhs_expr()
+    Expression *
+    get_rhs_expr()
     {
         return m_exp2;
     }
-    Operator get_operator() const
+    Operator
+    get_operator() const
     {
         return m_op;
     }
@@ -307,7 +337,11 @@ private:
 class Statement : public AstNode
 {
 public:
-    virtual bool is_break_statement() const { return false; }
+    virtual bool
+    is_break_statement() const
+    {
+        return false;
+    }
 };
 
 //===----------------------------------------------------------------------===//
@@ -325,11 +359,13 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    std::string *get_id() const
+    std::string *
+    get_id() const
     {
         return m_id;
     }
-    Expression *get_expression()
+    Expression *
+    get_expression()
     {
         return m_exp;
     }
@@ -352,7 +388,8 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    Expression *get_expression()
+    Expression *
+    get_expression()
     {
         return m_exp;
     }
@@ -369,11 +406,12 @@ public:
     {
     }
 
-    void         dump(unsigned indent) const override;
-    void         accept_semantic_analyzer(SemanticAnalyzer &sema) override;
+    void dump(unsigned indent) const override;
+    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    std::string *get_id() const
+    std::string *
+    get_id() const
     {
         return m_id;
     }
@@ -398,15 +436,18 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    BoolExpression *get_condition_exp()
+    BoolExpression *
+    get_condition_exp()
     {
         return m_condition_exp;
     }
-    Statement *get_then_branch()
+    Statement *
+    get_then_branch()
     {
         return m_then_branch;
     }
-    Statement *get_else_branch()
+    Statement *
+    get_else_branch()
     {
         return m_else_branch;
     }
@@ -431,8 +472,16 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    BoolExpression *get_condition_expression() { return m_condition_exp; }
-    Statement *get_body_statement() { return m_body_statement; }
+    BoolExpression *
+    get_condition_expression()
+    {
+        return m_condition_exp;
+    }
+    Statement *
+    get_body_statement()
+    {
+        return m_body_statement;
+    }
 
 private:
     BoolExpression *m_condition_exp;
@@ -444,11 +493,14 @@ class BreakStatement : public Statement
 public:
     BreakStatement() = default;
 
-    bool is_break_statement() const override { return true; }
+    bool
+    is_break_statement() const override
+    {
+        return true;
+    }
     void dump(unsigned indent) const override;
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
-
 };
 
 //===----------------------------------------------------------------------===//
@@ -457,7 +509,8 @@ class StatementList : public Statement
 {
 public:
     StatementList() = default;
-    void add_statement(Statement *stmt_ptr)
+    void
+    add_statement(Statement *stmt_ptr)
     {
         m_statements.push_back(stmt_ptr);
     }
@@ -466,7 +519,8 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    std::vector<Statement *> &get_statements()
+    std::vector<Statement *> &
+    get_statements()
     {
         return m_statements;
     }
@@ -483,17 +537,20 @@ public:
     {
     }
 
-    void add_case(Number case_num, StatementList *case_statements)
+    void
+    add_case(Number case_num, StatementList *case_statements)
     {
         m_cases.emplace_back(case_num, case_statements);
     }
 
-    void set_expression(Expression *exp)
+    void
+    set_expression(Expression *exp)
     {
         m_exp = exp;
     }
 
-    void set_default_case(StatementList *default_case_stmt_list)
+    void
+    set_default_case(StatementList *default_case_stmt_list)
     {
         m_default_case = default_case_stmt_list;
     }
@@ -502,9 +559,21 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    Expression *get_expression() { return m_exp; }
-    std::vector<std::pair<Number, Statement *>>& get_cases() { return m_cases; }
-    Statement *get_default_case() { return m_default_case; }
+    Expression *
+    get_expression()
+    {
+        return m_exp;
+    }
+    std::vector<std::pair<Number, Statement *>> &
+    get_cases()
+    {
+        return m_cases;
+    }
+    Statement *
+    get_default_case()
+    {
+        return m_default_case;
+    }
 
 private:
     Expression                                 *m_exp;
@@ -517,12 +586,14 @@ class Program : public AstNode
 public:
     Program() = default;
 
-    void set_declaration_block(DeclarationBlock *db)
+    void
+    set_declaration_block(DeclarationBlock *db)
     {
         m_declaration_block = db;
     }
 
-    void set_program_statements(Statement *statement)
+    void
+    set_program_statements(Statement *statement)
     {
         m_program_statements = statement;
     }
@@ -531,11 +602,13 @@ public:
     void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
     void accept_code_generator(CodeGenerator &cg) override;
 
-    DeclarationBlock *get_declaration_block()
+    DeclarationBlock *
+    get_declaration_block()
     {
         return m_declaration_block;
     }
-    Statement *get_statemenets()
+    Statement *
+    get_statemenets()
     {
         return m_program_statements;
     }

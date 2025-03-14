@@ -6,5 +6,6 @@ enum class ModuleStatus
     FileNotFound,
     InvalidExtension,
     SyntaxError,
-    SemanticError
+    SemanticError,
+    OSError,
 };

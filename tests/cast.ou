@@ -1,0 +1,4 @@
+real: float;
+{
+    real = cast<float>(69);
+}

@@ -1,9 +1,8 @@
 #include "Print.hpp"
 #include <cstdarg>
 
-__attribute__((format(printf, 3, 4))) void fprintf_color(FILE       *f,
-                                                         const char *color,
-                                                         const char *fmt, ...)
+__attribute__((format(printf, 3, 4))) void
+fprintf_color(FILE *f, const char *color, const char *fmt, ...)
 {
     // Print the color
     fprintf(f, "%s", color);

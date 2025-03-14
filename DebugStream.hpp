@@ -1,7 +1,9 @@
 #pragma once
 
 #ifdef DEBUG
-    #define DBG(x) std::cout << "\033[90m" << __FILE__ "::" << __PRETTY_FUNCTION__ << "] " << x << "\033[0m\n";
+#define DBG(x)                                                              \
+    std::cout << "\033[90m" << __FILE__ "::" << __PRETTY_FUNCTION__ << "] " \
+              << x << "\033[0m\n";
 #else
-    #define DBG(x)
+#define DBG(x)
 #endif

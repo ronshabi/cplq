@@ -1,5 +1,6 @@
 BasedOnStyle: Microsoft
 
+AlwaysBreakAfterDefinitionReturnType: true
 ColumnLimit: 80
 TabWidth: 4
 LineEnding: LF

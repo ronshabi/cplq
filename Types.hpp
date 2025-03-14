@@ -35,11 +35,17 @@ struct Number
         double d;
     };
 
-    std::optional<double> get_value_float() const {
-        if (has_value) {
-            if (type == NumberType::INT) {
+    std::optional<double>
+    get_value_float() const
+    {
+        if (has_value)
+        {
+            if (type == NumberType::INT)
+            {
                 return static_cast<double>(i);
-            } else {
+            }
+            else
+            {
                 return d;
             }
         }

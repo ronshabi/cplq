@@ -2,10 +2,12 @@
 #include "Print.hpp"
 
 #include <cstdarg>
+#include <fstream>
 
 Module::Module(std::string const &file_name)
     : m_file_name(file_name)
     , m_semantic_analyzer(*this)
+    , m_code_generator(*this)
 {
     check_correct_file_extension();
 
@@ -33,7 +35,8 @@ Module::~Module()
     }
 }
 
-void Module::emit_error(const char *fmt, ...)
+void
+Module::emit_error(const char *fmt, ...)
 {
     fprintf_color(stderr, kAnsiBold, "%s:%d: ", m_file_name.c_str(),
                   m_current_line_no);
@@ -49,7 +52,8 @@ void Module::emit_error(const char *fmt, ...)
     set_status(ModuleStatus::SemanticError);
 }
 
-void Module::emit_fatal_error(const char *fmt, ...)
+void
+Module::emit_fatal_error(const char *fmt, ...)
 {
     fprintf_color(stdout, kAnsiBold, "%s: ", m_file_name.c_str());
     fprintf_color(stdout, kAnsiBoldRed, "fatal: ");
@@ -60,23 +64,52 @@ void Module::emit_fatal_error(const char *fmt, ...)
     printf("\n");
 }
 
-void Module::semantic_analyze()
+void
+Module::semantic_analyze()
 {
     if (!is_ok())
     {
         return; // No need to analyze syntactically malformed code.
     }
 
-    printf("Calling semantic analyzer on Module's ast\n");
+    DBG("Calling Semantic Analyzer");
     m_semantic_analyzer.analyze(reinterpret_cast<Program *>(m_ast));
 }
 
-std::string& Module::add_assembly_line(std::string const& line) {
+void Module::codegen() {
+    if (!is_ok()) {
+        return; // No need to generate assembly for invalid source code
+    }
+
+    DBG("Calling CodeGen");
+    m_code_generator.codegen(reinterpret_cast<Program *>(m_ast));
+
+    // Create the file
+    const std::string output_file_name = m_file_name.substr(0, m_file_name.size() - 2) + "qud";
+    std::ofstream output_file(output_file_name);
+    if (output_file.bad()) {
+        emit_fatal_error("Can't create an output file '%s' due to OS error", output_file_name.c_str());
+        m_status = ModuleStatus::OSError;
+        return;
+    }
+
+    for (const auto& line : m_assembly) {
+        output_file << line << "\n";
+    }
+
+    output_file.close();
+    DBG("Created output file");
+}
+
+std::string &
+Module::add_assembly_line(std::string const &line)
+{
     m_assembly.push_back(line);
     return m_assembly.back();
 }
 
-void Module::check_correct_file_extension()
+void
+Module::check_correct_file_extension()
 {
     auto const dot = m_file_name.find_last_of('.');
     if (dot == std::string::npos)
@@ -92,7 +125,8 @@ void Module::check_correct_file_extension()
     }
 }
 
-void Module::try_to_open_file()
+void
+Module::try_to_open_file()
 {
     m_file_ptr = fopen(m_file_name.c_str(), "r");
     if (m_file_ptr == nullptr)

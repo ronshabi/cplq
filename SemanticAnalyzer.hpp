@@ -31,6 +31,6 @@ public:
     void analyze(IdExpression *node);
 
 private:
-    bool        m_allow_break_stmts = false;
-    Module     &m_module;
+    bool    m_allow_break_stmts = false;
+    Module &m_module;
 };

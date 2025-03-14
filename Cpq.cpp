@@ -6,7 +6,8 @@ extern FILE *yyin;
 
 Module *g_module;
 
-void usage(int exit_code = 1)
+void
+usage(int exit_code = 1)
 {
     std::cerr << "cplq compiler\nusage: ./cplq <source-file.ou> [command]\n\n";
     std::cerr << "available commands:\n";
@@ -14,7 +15,8 @@ void usage(int exit_code = 1)
     exit(exit_code);
 }
 
-int main(int argc, const char *argv[])
+int
+main(int argc, const char *argv[])
 {
     if (argc != 2)
     {
@@ -32,6 +34,7 @@ int main(int argc, const char *argv[])
         main_module.dump_ast();
         main_module.semantic_analyze();
         main_module.dump_symbol_table();
+        main_module.codegen();
     }
 
     return main_module.get_error_code();
