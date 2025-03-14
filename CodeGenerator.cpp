@@ -44,25 +44,35 @@ CodeGenerator::codegen(AssignStatement *node)
     auto const rhs_expr = node->get_expression();
     auto const rhs_type = rhs_expr->get_type(symbol_table());
 
+    Register convert_result;
+
     if (id_symbol->value.type == NumberType::INT)
     {
         // Check RHS expression type, convert it to int if needed
-        emit_line("IASN", id_symbol->reg,
-                  node->get_expression()->get_register());
-    }
-    else
-    {
-        Register convert_result;
-
-        // Check RHS expression type, convert it to float if needed
-        if (rhs_type == NumberType::INT) {
-            emit_line("ITOR", convert_result, rhs_expr->get_register());
-        } else {
+        if (rhs_type == NumberType::INT)
+        {
+            emit_line("RTOI", convert_result, rhs_expr->get_register());
+        }
+        else
+        {
             convert_result = rhs_expr->get_register();
         }
 
-        emit_line("RASN", id_symbol->reg,
-                  convert_result);
+        emit_line("IASN", id_symbol->reg, convert_result);
+    }
+    else
+    {
+        // Check RHS expression type, convert it to float if needed
+        if (rhs_type == NumberType::INT)
+        {
+            emit_line("ITOR", convert_result, rhs_expr->get_register());
+        }
+        else
+        {
+            convert_result = rhs_expr->get_register();
+        }
+
+        emit_line("RASN", id_symbol->reg, convert_result);
     }
 }
 
