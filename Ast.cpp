@@ -1,6 +1,7 @@
 #include "Ast.hpp"
 
 #include "SemanticAnalyzer.hpp"
+#include "CodeGenerator.hpp"
 #include <unordered_set>
 
 void
@@ -38,6 +39,7 @@ DeclarationBlock::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 DeclarationBlock::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -58,6 +60,7 @@ BinaryBoolExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 BinaryBoolExpression::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -77,6 +80,7 @@ Declaration::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 Declaration::accept_code_generator(CodeGenerator &cg)
 {
+    UNUSED(cg);
 }
 
 void
@@ -96,6 +100,7 @@ NotExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 NotExpression::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -121,6 +126,7 @@ NumberExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 NumberExpression::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -140,6 +146,7 @@ CastExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 CastExpression::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -158,6 +165,7 @@ IdExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 IdExpression::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 NumberType
@@ -194,6 +202,7 @@ BinaryExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 BinaryExpression::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 NumberType
@@ -226,6 +235,7 @@ AssignStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 AssignStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -245,6 +255,7 @@ OutputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 OutputStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -263,6 +274,7 @@ InputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 InputStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -284,6 +296,7 @@ IfStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 IfStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -304,6 +317,7 @@ WhileStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 WhileStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -323,6 +337,7 @@ BreakStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 BreakStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -345,6 +360,7 @@ StatementList::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 StatementList::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -374,6 +390,7 @@ SwitchStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 SwitchStatement::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }
 
 void
@@ -393,4 +410,5 @@ Program::accept_semantic_analyzer(SemanticAnalyzer &sema)
 void
 Program::accept_code_generator(CodeGenerator &cg)
 {
+    cg.codegen(this);
 }

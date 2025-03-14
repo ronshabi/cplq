@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+
 #include "Register.hpp"
 #include "SymbolTable.hpp"
 #include "Types.hpp"
@@ -224,6 +225,10 @@ public:
     {
         UNUSED(symbol_table);
         return m_number.type;
+    }
+
+    Number get_number() const {
+        return m_number;
     }
 
 private:

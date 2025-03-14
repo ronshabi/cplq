@@ -1,4 +1,4 @@
 real: float;
 {
-    real = cast<float>(69);
+    output(cast<float>(69));
 }

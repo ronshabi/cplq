@@ -1,6 +1,8 @@
 #include "CodeGenerator.hpp"
 
 #include "Module.hpp"
+#include <array>
+#include <string>
 
 CodeGenerator::CodeGenerator(Module &mod)
     : m_module(mod)
@@ -46,6 +48,13 @@ CodeGenerator::codegen(InputStatement *node)
 void
 CodeGenerator::codegen(OutputStatement *node)
 {
+    node->get_expression()->accept_code_generator(*this);
+    auto const type = node->get_expression()->get_type(symbol_table());
+    if (type == NumberType::INT) {
+        emit_line("IPRT", node->get_expression()->get_register());
+    } else {
+        emit_line("RPRT", node->get_expression()->get_register());
+    }
 }
 
 void
@@ -66,6 +75,7 @@ CodeGenerator::codegen(WhileStatement *node)
 void
 CodeGenerator::codegen(CastExpression *node)
 {
+    node->get_expression()->accept_code_generator(*this);
     const auto cast_type = node->get_type(symbol_table());
 
     if (cast_type == NumberType::INT) {
@@ -106,6 +116,19 @@ CodeGenerator::codegen(IdExpression *node)
     // std::cout << "IdExpr CodeGen: " << node->m_code.code;
 }
 
+void CodeGenerator::codegen(NumberExpression *node) {
+    const auto type = node->get_type(symbol_table());
+    if (type == NumberType::INT) {
+        emit_line("IASN", node->get_register(), node->get_number().i);
+    } else {
+        emit_line("RASN", node->get_register(), node->get_number().d);
+    }
+}
+
+void CodeGenerator::codegen(BreakStatement *node) {
+    
+}
+
 void CodeGenerator::emit_line(std::string const& opcode) {
     DBG(opcode);
     m_module.add_assembly_line(opcode);
@@ -119,6 +142,18 @@ void CodeGenerator::emit_line(std::string const& opcode, Register r) {
 void CodeGenerator::emit_line(std::string const& opcode, Register r1, Register r2) {
     DBG(opcode << " " << r1.name() << ", " << r2.name());
     m_module.add_assembly_line(opcode + " " + r1.name() + " " + r2.name());
+}
+
+void CodeGenerator::emit_line(std::string const& opcode, Register r, int val) {
+    DBG(opcode << " " << r.name() << ", " << val);
+    m_module.add_assembly_line(opcode + " " + r.name() + " " + std::to_string(val));
+}
+
+void CodeGenerator::emit_line(std::string const& opcode, Register r, double val) {
+    std::array<char, 128> buf{};
+    std::snprintf(buf.data(), buf.size(), "%.2f", val);
+    DBG(opcode << " " << r.name() << ", " << buf.data());
+    m_module.add_assembly_line(opcode + " " + r.name() + " " + std::string(buf.data()));
 }
 
 SymbolTable& CodeGenerator::symbol_table() {
