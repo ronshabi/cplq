@@ -1,14 +1,22 @@
 #include "SymbolTable.hpp"
+#include "DebugStream.hpp"
 #include <iostream>
+
+// void SymbolTable::set_register(std::string const &symbol_name, Register reg) {
+//     m_table[symbol_name].reg = reg;
+// }
 
 std::optional<Symbol>
 SymbolTable::get(std::string const &symbol_name) const
 {
+    DBG("tryna get the symbol " << symbol_name);
     auto const it = m_table.find(symbol_name);
     if (it == m_table.end())
     {
         return {};
     }
+
+    DBG("Found " << symbol_name);
 
     return {it->second};
 }
@@ -16,6 +24,7 @@ SymbolTable::get(std::string const &symbol_name) const
 void
 SymbolTable::add(std::string const &symbol_name, Symbol sym)
 {
+    DBG("inserting the symbol " << symbol_name);
     m_table.insert({symbol_name, sym});
 }
 

@@ -1,0 +1,5 @@
+var1: int;
+{
+    input(var1);
+    output(var1);
+}

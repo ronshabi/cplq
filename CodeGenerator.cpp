@@ -43,6 +43,15 @@ CodeGenerator::codegen(AssignStatement *node)
 void
 CodeGenerator::codegen(InputStatement *node)
 {
+    // Get the symbol properties to know which opcode to use
+    auto const sym = symbol_table().get(*node->get_id());
+    auto const type = sym->value.type;
+
+    if (type == NumberType::INT) {
+        emit_line("IINP", sym->reg);
+    } else {
+        emit_line("RINP", sym->reg);
+    }
 }
 
 void
@@ -105,15 +114,12 @@ CodeGenerator::codegen(BinaryExpression *node)
 void
 CodeGenerator::codegen(IdExpression *node)
 {
-    // const auto val = symbol_table().get(*node->get_id());
-    // if (val->value.type == NumberType::INT) {
-        
-        // node-> = std::to_string(val->value.i);
-    // } else {
-    //     node->m_code.code = std::to_string(val->value.d);
-    // }
-
-    // std::cout << "IdExpr CodeGen: " << node->m_code.code;
+    DBG("CodeGen ID Expr");
+    // I want to SET the ID register to the symbol register, to sync them.
+    const auto sym = symbol_table().get(*node->get_id());
+    node->m_register = sym->reg;
+    
+    // Now we can continue with no worries the ID will not refer to the symbol
 }
 
 void CodeGenerator::codegen(NumberExpression *node) {

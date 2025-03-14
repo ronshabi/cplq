@@ -1,5 +1,6 @@
 #pragma once
 #include "Types.hpp"
+#include "Register.hpp"
 #include <map>
 #include <optional>
 #include <string>
@@ -7,7 +8,8 @@
 struct Symbol
 {
     Symbol(Number val, unsigned line_no)
-        : value(val)
+        : reg()
+        , value(val)
         , line_number(line_no)
     {
     }
@@ -23,6 +25,7 @@ struct Symbol
     static std::string get_asm_name(std::string const &symbol_name);
     std::string        to_string() const;
 
+    Register reg;
     Number   value;
     unsigned line_number;
 };
@@ -32,8 +35,10 @@ class SymbolTable
 public:
     SymbolTable() = default;
 
+    // void set_register(std::string const &symbol_name, Register reg);
     std::optional<Symbol> get(std::string const &symbol_name) const;
     void                  add(std::string const &symbol_name, Symbol sym);
+
 
     void dump() const;
 

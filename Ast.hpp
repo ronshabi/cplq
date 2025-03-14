@@ -44,8 +44,6 @@ public:
     }
 
     Register get_register() const { return m_register; }
-    unsigned get_register_id() const { return m_register.id(); }
-    std::string get_register_name() const { return m_register.name(); }
 
 friend CodeGenerator;
 
