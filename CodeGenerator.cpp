@@ -296,56 +296,63 @@ CodeGenerator::codegen(BinaryExpression *node)
 {
     node->get_lhs_expr()->accept_code_generator(*this);
     node->get_rhs_expr()->accept_code_generator(*this);
-    const auto my_register  = node->get_register();
-    const auto lhs_register = node->get_lhs_expr()->get_register();
-    const auto rhs_register = node->get_rhs_expr()->get_register();
-    const auto type         = node->get_type(symbol_table());
+    auto const my_register  = node->get_register();
+    auto       lhs_register = node->get_lhs_expr()->get_register();
+    auto       rhs_register = node->get_rhs_expr()->get_register();
+
+    auto const lhs_type = node->get_lhs_expr()->get_type(symbol_table());
+    auto const rhs_type = node->get_rhs_expr()->get_type(symbol_table());
+
+    // If both types are ints:
+    //      - use the I-variation of the instruction.
+    //      - this will be the default
+    // Else (meaning one of the types are floats):
+    //      - convert the other one to float
+    //      - use the R-variation of the instruction
+    bool use_int = true;
+
+    // Check if one of the operands are floats, and convert if needed
+    Register cvt;
+    if (lhs_type == NumberType::INT && rhs_type == NumberType::FLOAT)
+    {
+        use_int = false;
+        emit_line("ITOR", cvt, lhs_register);
+        lhs_register = cvt;
+    }
+
+    if (lhs_type == NumberType::FLOAT && rhs_type == NumberType::INT)
+    {
+        use_int = false;
+        emit_line("ITOR", cvt, rhs_register);
+        rhs_register = cvt;
+    }
+
+    // The opcode naming is quite redundant, so let's not repeat ourselves
+    std::string opcode;
+    opcode.push_back(use_int ? 'I' : 'R'); // Choose the right prefix
+
+    // Choose the instruction based on the operator
 
     switch (node->get_operator())
     {
     case Operator::PLUS:
-        if (type == NumberType::INT)
-        {
-            emit_line("IADD", my_register, lhs_register, rhs_register);
-        }
-        else
-        {
-            emit_line("RADD", my_register, lhs_register, rhs_register);
-        }
+        opcode.append("ADD");
         break;
     case Operator::MINUS:
-        if (type == NumberType::INT)
-        {
-            emit_line("ISUB", my_register, lhs_register, rhs_register);
-        }
-        else
-        {
-            emit_line("RSUB", my_register, lhs_register, rhs_register);
-        }
+        opcode.append("SUB");
         break;
     case Operator::MUL:
-        if (type == NumberType::INT)
-        {
-            emit_line("IMLT", my_register, lhs_register, rhs_register);
-        }
-        else
-        {
-            emit_line("RMLT", my_register, lhs_register, rhs_register);
-        }
+        opcode.append("MLT");
         break;
     case Operator::DIV:
-        if (type == NumberType::INT)
-        {
-            emit_line("IDIV", my_register, lhs_register, rhs_register);
-        }
-        else
-        {
-            emit_line("RDIV", my_register, lhs_register, rhs_register);
-        }
+        opcode.append("DIV");
         break;
     default:
         m_module.emit_fatal_error("invalid operator in binary expression");
     }
+
+    // Generate the code
+    emit_line(opcode, my_register, lhs_register, rhs_register);
 }
 
 void
