@@ -48,16 +48,7 @@ CodeGenerator::codegen(AssignStatement *node)
 
     if (id_symbol->value.type == NumberType::INT)
     {
-        // Check RHS expression type, convert it to int if needed
-        if (rhs_type == NumberType::INT)
-        {
-            emit_line("RTOI", convert_result, rhs_expr->get_register());
-        }
-        else
-        {
-            convert_result = rhs_expr->get_register();
-        }
-
+        convert_result = rhs_expr->get_register();
         emit_line("IASN", id_symbol->reg, convert_result);
     }
     else
@@ -124,10 +115,10 @@ CodeGenerator::codegen(IfStatement *node)
     auto &asm_vec = m_module.m_assembly;
 
     asm_vec.insert(asm_vec.begin() + before_then_branch,
-                   "JMPZ " + std::to_string(before_else_branch + 2) + " " +
+                   "JMPZ " + std::to_string(before_else_branch + 3) + " " +
                        condition_register.name());
     asm_vec.insert(asm_vec.begin() + before_else_branch + 1,
-                   "JMP " + std::to_string(after_if + 2));
+                   "JMP " + std::to_string(after_if + 3));
 }
 
 void
@@ -171,33 +162,110 @@ CodeGenerator::codegen(NotExpression *node)
 void
 CodeGenerator::codegen(BinaryBoolExpression *node)
 {
-    node->get_lhs_expr()->accept_code_generator(*this);
-    node->get_rhs_expr()->accept_code_generator(*this);
-    const auto my_register  = node->get_register();
-    const auto lhs_register = node->get_lhs_expr()->get_register();
-    const auto rhs_register = node->get_rhs_expr()->get_register();
+    auto const my_register = node->get_register();
+    auto const my_operator = node->get_operator();
+    auto const this_line   = current_asm_line_number();
 
-    switch (node->get_operator())
+    if (my_operator == Operator::AND)
     {
-    case Operator::EQ:
+        // Short-circuting AND
+        // If the LHS expression is false, we can skip RHS
+        // So evaluate (codegen) for LHS first
+        node->get_lhs_expr()->accept_code_generator(*this);
+        // Here, if LHS=0, we need to SKIP the RHS evaluation
+        // Let's write the assembly line here to later insert the JMPZ
+        auto const jmpz_line = current_asm_line_number();
+        // Codegen for RHS to evaluate it.
+        node->get_rhs_expr()->accept_code_generator(*this);
+        // Now we need to ask if RHS is 1, and if it is 1, then the whole
+        // binary bool expression is one.
+        emit_line("IEQL", my_register, node->get_rhs_expr()->get_register(), 1);
+        // This is where we go to if the LHS expression was 0
+        auto const lhs_zero_goto = current_asm_line_number() + 1;
+        // So let's generate the code for this
+        auto& asm_vec = m_module.m_assembly;
+        std::string const jmpz_instr = "JMPZ " + std::to_string(lhs_zero_goto) + " " + node->get_lhs_expr()->get_register().name();
+        asm_vec.insert(asm_vec.begin() + jmpz_line, jmpz_instr);
+    }
+    else if (my_operator == Operator::OR)
+    {
+        // Short-circuting OR
         
-        break;
-    case Operator::NEQ:
-        break;
-    case Operator::LT:
-        break;
-    case Operator::GT:
-        break;
-    case Operator::LTE:
-        break;
-    case Operator::GTE:
-        break;
-    case Operator::AND:
-        break;
-    case Operator::OR:
-        break;
-    default:
-        m_module.emit_fatal_error("invalid operator on boolean binary expression");
+    }
+    else
+    {
+        node->get_lhs_expr()->accept_code_generator(*this);
+        node->get_rhs_expr()->accept_code_generator(*this);
+
+        auto       lhs_register = node->get_lhs_expr()->get_register();
+        auto       rhs_register = node->get_rhs_expr()->get_register();
+        auto const lhs_type = node->get_lhs_expr()->get_type(symbol_table());
+        auto const rhs_type = node->get_rhs_expr()->get_type(symbol_table());
+
+        // If both operands are ints, use the int variation by default.
+        bool use_int = true;
+
+        // If one of the operands is a float, convert the other one to int and
+        // use
+        // the float variation
+        Register cvt;
+        if (lhs_type == NumberType::INT && rhs_type == NumberType::FLOAT)
+        {
+            use_int = false;
+            emit_line("ITOR", cvt, lhs_register);
+            lhs_register = cvt;
+        }
+
+        if (lhs_type == NumberType::FLOAT && rhs_type == NumberType::INT)
+        {
+            use_int = false;
+            emit_line("ITOR", cvt, rhs_register);
+            rhs_register = cvt;
+        }
+
+        std::string opcode;
+        opcode.push_back(use_int ? 'I' : 'R'); // Choose the right prefix
+
+        bool invert_logical_condition = false; // If we need to use GTE, LTE ops
+
+        // Now we know what variation we have to use, and we have both registers
+        // in the proper types
+        switch (node->get_operator())
+        {
+        case Operator::EQ:
+            opcode.append("EQL");
+            break;
+        case Operator::NEQ:
+            opcode.append("NQL");
+            break;
+        case Operator::LT:
+            opcode.append("LSS");
+            break;
+        case Operator::GT:
+            opcode.append("GRT");
+            break;
+        case Operator::LTE:
+            opcode.append("GRT");
+            invert_logical_condition = true;
+            break;
+        case Operator::GTE:
+            opcode.append("LSS");
+            invert_logical_condition = true;
+            break;
+        default:
+            m_module.emit_fatal_error(
+                "invalid operator on boolean binary expression");
+        }
+
+        // Now let's generate the code
+        emit_line(opcode, my_register, lhs_register, rhs_register);
+        // If we need to invert the logical condition to get a "*-or-equals" inst
+        // let's emit a NOT also
+        if (invert_logical_condition) {
+            emit_line("INQL", my_register, my_register, 1);
+        }
+
+        // That's it!
     }
 }
 

@@ -1,0 +1,11 @@
+f: float;
+i: int;
+{
+    i = 1;
+    f = 5;
+    if (f > i) {
+        output(f);
+    } else {
+        output(i);
+    }
+}

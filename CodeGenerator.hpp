@@ -9,7 +9,7 @@ class Register;
 class CodeGenerator
 {
 public:
-    CodeGenerator(Module &mod);
+    explicit CodeGenerator(Module &mod);
 
     void codegen(Program *node);
     void codegen(DeclarationBlock *node);
