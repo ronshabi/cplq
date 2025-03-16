@@ -164,7 +164,7 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 {
     auto const my_register = node->get_register();
     auto const my_operator = node->get_operator();
-    auto const this_line   = current_asm_line_number();
+    auto      &asm_vec     = m_module.m_assembly;
 
     if (my_operator == Operator::AND)
     {
@@ -183,14 +183,35 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         // This is where we go to if the LHS expression was 0
         auto const lhs_zero_goto = current_asm_line_number() + 1;
         // So let's generate the code for this
-        auto& asm_vec = m_module.m_assembly;
-        std::string const jmpz_instr = "JMPZ " + std::to_string(lhs_zero_goto) + " " + node->get_lhs_expr()->get_register().name();
+        std::string const jmpz_instr =
+            "JMPZ " + std::to_string(lhs_zero_goto) + " " +
+            node->get_lhs_expr()->get_register().name();
         asm_vec.insert(asm_vec.begin() + jmpz_line, jmpz_instr);
     }
     else if (my_operator == Operator::OR)
     {
         // Short-circuting OR
-        
+        // We need to evaluate LHS first. If LHS=1, we can skip RHS.
+        // How can we skip RHS?
+        //  - If LHS=0 => jump to the evalutation of RHS,
+        //  - Else (LHS=1) => continue to normal code.
+        //
+        //    ~> Therefore, normal code should come RIGHT AFTER LHS evaluation
+
+        // Generate RHS evalutation first, and remember to insert the jump to
+        // the LHS eval before
+        auto const rhs_eval_line = current_asm_line_number();
+        node->get_rhs_expr()->accept_code_generator(*this);
+        auto const lhs_eval_line = current_asm_line_number();
+        node->get_lhs_expr()->accept_code_generator(*this);
+
+        // If LHS=0 => jump to RHS evaluation
+        emit_line("JMPZ " + std::to_string(rhs_eval_line + 1),
+                  node->get_lhs_expr()->get_register());
+
+        // Insert the jump to LHS, right before RHS eval code
+        asm_vec.insert(asm_vec.begin() + rhs_eval_line,
+                       "JUMP " + std::to_string(lhs_eval_line + 1));
     }
     else
     {
@@ -259,9 +280,10 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 
         // Now let's generate the code
         emit_line(opcode, my_register, lhs_register, rhs_register);
-        // If we need to invert the logical condition to get a "*-or-equals" inst
-        // let's emit a NOT also
-        if (invert_logical_condition) {
+        // If we need to invert the logical condition to get a "*-or-equals"
+        // inst let's emit a NOT also
+        if (invert_logical_condition)
+        {
             emit_line("INQL", my_register, my_register, 1);
         }
 
