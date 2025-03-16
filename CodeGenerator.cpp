@@ -169,24 +169,36 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
     if (my_operator == Operator::AND)
     {
         // Short-circuting AND
-        // If the LHS expression is false, we can skip RHS
-        // So evaluate (codegen) for LHS first
+        // We need to evaluate LHS first. If LHS=0, we can skip RHS.
+        // How can we skip RHS?
+        //  - If LHS=0 => continue to regular code
+        //  - Else (LHS=1) => jump to evaluate RHS.
+        //
+        //      ~> Therefore, the LHS evaluation should come first.
+
+        // Set our register to zero
+        emit_line("IASN", my_register, 0);
+
         node->get_lhs_expr()->accept_code_generator(*this);
-        // Here, if LHS=0, we need to SKIP the RHS evaluation
-        // Let's write the assembly line here to later insert the JMPZ
-        auto const jmpz_line = current_asm_line_number();
-        // Codegen for RHS to evaluate it.
+
+        // If LHS=0 => Jump to regular code
+        auto const after_lhs_eval = current_asm_line_number();
+
+        // If LHS=1 => Continue to evaluating RHS
         node->get_rhs_expr()->accept_code_generator(*this);
-        // Now we need to ask if RHS is 1, and if it is 1, then the whole
-        // binary bool expression is one.
+        
+        // If RHS=1 => Set our register to one
         emit_line("IEQL", my_register, node->get_rhs_expr()->get_register(), 1);
-        // This is where we go to if the LHS expression was 0
-        auto const lhs_zero_goto = current_asm_line_number() + 1;
-        // So let's generate the code for this
+
+        // The normal code resumes here
+        auto const normal_code_resumes = current_asm_line_number();
+
         std::string const jmpz_instr =
-            "JMPZ " + std::to_string(lhs_zero_goto) + " " +
+            "JMPZ " + std::to_string(normal_code_resumes + 2) + " " +
             node->get_lhs_expr()->get_register().name();
-        asm_vec.insert(asm_vec.begin() + jmpz_line, jmpz_instr);
+
+        asm_vec.insert(asm_vec.begin() + after_lhs_eval, jmpz_instr);
+
     }
     else if (my_operator == Operator::OR)
     {

@@ -55,8 +55,8 @@ Module::emit_error(const char *fmt, ...)
 void
 Module::emit_fatal_error(const char *fmt, ...)
 {
-    fprintf_color(stdout, kAnsiBold, "%s: ", m_file_name.c_str());
-    fprintf_color(stdout, kAnsiBoldRed, "fatal: ");
+    fprintf_color(stderr, kAnsiBold, "%s: ", m_file_name.c_str());
+    fprintf_color(stderr, kAnsiBoldRed, "fatal: ");
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
