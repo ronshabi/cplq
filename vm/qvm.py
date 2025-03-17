@@ -99,7 +99,10 @@ class VM:
                 self.current_line_num = int(loc) - 1
 
         elif cmd == "IPRT":
-            print(f"[b]{self.registers[args[0]].value}[/b] [gray] // {args[0]}[/gray]")
+            if self.dbg_print_lines:
+                print(f"[b]{self.registers[args[0]].value}[/b] [gray] // {args[0]}[/gray]")
+            else:
+                print(self.registers[args[0]].value)
 
         elif cmd == "ISUB":
             r1, r2, r3 = args
@@ -116,7 +119,9 @@ class VM:
             self.current_line_num = loc - 1
 
         elif cmd == "HALT":
-            print("halted")
+            if self.dbg_print_lines:
+                print("halted")
+                
             self.got_halt = True
 
         else:
@@ -134,22 +139,25 @@ class VM:
 def main():
     parser = ArgumentParser()
     parser.add_argument('source_file')
-    parser.add_argument('-d')
+    parser.add_argument('-L', '--print-lines', action='store_true')
+    parser.add_argument('-P', '--print-post-run', action='store_true')
 
     args = parser.parse_args()
 
     vm = VM()
     vm.load_source_file(args.source_file)
-    vm.dbg_print_lines = args.d
+    vm.dbg_print_lines = args.print_lines
+    # vm.dbg_print_post_run = args.print_post_run
     vm.parse()
 
-    print("\n[b yellow]POST RUN SUMMARY[/b yellow]")
-    print(f"[b]Has Errors?[/b] {vm.is_error}")
-    print(f"[b]Line number:[/b] {vm.current_line_num}")
-    
-    print("[b]Registers:[/b]")
-    for k, v in vm.registers.items():
-        print(f"{k:4} -> {v}")
+    if args.print_post_run:
+        print("\n[b yellow]POST RUN SUMMARY[/b yellow]")
+        print(f"[b]Has Errors?[/b] {vm.is_error}")
+        print(f"[b]Line number:[/b] {vm.current_line_num}")
+        
+        print("[b]Registers:[/b]")
+        for k, v in vm.registers.items():
+            print(f"{k:4} -> {v}")
 
 
 
