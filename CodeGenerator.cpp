@@ -118,7 +118,7 @@ CodeGenerator::codegen(IfStatement *node)
                    "JMPZ " + std::to_string(before_else_branch + 3) + " " +
                        condition_register.name());
     asm_vec.insert(asm_vec.begin() + before_else_branch + 1,
-                   "JMP " + std::to_string(after_if + 3));
+                   "JUMP " + std::to_string(after_if + 3));
 }
 
 void

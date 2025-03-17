@@ -10,7 +10,7 @@ fi
 
 for f in tests/*.ou; do
     PUREFILE=${f%%.ou}
-    echo "--" $PUREFILE
+    echo "--" $f
 
     if [[ "$PUREFILE" =~ "error" ]]; then
         echo "SKIP"
@@ -25,7 +25,7 @@ for f in tests/*.ou; do
 
     python3 vm/qvm.py "$PUREFILE.qud"
     if [[ "$?" != "0" ]]; then
-        echo "FAILED EMULATING"
+        echo "FAILED EMULATING $PUREFILE.qud"
         exit 1
     fi
 

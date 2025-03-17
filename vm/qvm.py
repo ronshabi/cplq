@@ -146,7 +146,6 @@ class VM:
 
         elif cmd == "ITOR":
             lhs, rhs = args
-            self.check_type_int(rhs)
             self.registers[lhs] = Register(REG_REAL, float(self.registers[rhs].value))
 
         elif cmd == "IADD":
@@ -172,6 +171,16 @@ class VM:
             self.check_types_real(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = Register(REG_REAL, v1 - v2)
+
+        elif cmd == "RGRT":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            if v1 > v2:
+                self.registers[r1] = Register(REG_INT, 1)
+            else:
+                self.registers[r1] = Register(REG_INT, 0)
+
 
         elif cmd == "JUMP":
             loc = int(args[0])
