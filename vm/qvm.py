@@ -6,6 +6,14 @@ from rich import print
 REG_INT = 0
 REG_REAL = 1
 
+def is_float(val):
+    try:
+        float(val)
+        return True
+    except ValueError:
+        return False
+
+
 @dataclass
 class Register:
     type: int = REG_INT
@@ -18,7 +26,7 @@ class Register:
         return self.type == REG_INT
 
     def is_real(self) -> bool:
-        return self.type == REG_INT
+        return self.type == REG_REAL
 
 
 class VM:
@@ -30,10 +38,27 @@ class VM:
         self.is_error: bool = False
         self.got_halt: bool = False
         self.dbg_print_lines: bool = False
+        self.output: List[str] = []
+
+    def out(self, msg):
+        self.output.append(msg)
+        print(msg)
 
     def error(self, msg):
         print(f"[b red]error:[/b red] line {self.current_line_num}: {msg}")
         self.is_error = True
+
+
+    def check_type_int(self, r):
+        g = self.registers[r]
+        if not g.is_int():
+            self.error("expected int register")
+
+    def check_type_real(self, r):
+        g = self.registers[r]
+        if not g.is_real():
+            self.error("expected real register")
+
 
     def check_types_int(self, r1, r2):
         g1 = self.registers[r1]
@@ -73,17 +98,29 @@ class VM:
         cmd, *args = self.current_line.split()
 
         if cmd == "IASN":
-            regname, regval = args
+            lhs, rhs = args
 
-            if regval.isnumeric():
+            if rhs.isnumeric():
                 # Direct num
-                self.registers[regname] = Register(REG_INT, int(regval))
+                self.registers[lhs] = Register(REG_INT, int(rhs))
+            else:
+                self.check_type_int(rhs)
+                self.registers[lhs] = self.registers[rhs]
+
+        elif cmd == "RASN":
+            lhs, rhs = args
+
+            if is_float(rhs):
+                # Direct num
+                self.registers[lhs] = Register(REG_REAL, float(rhs))
             else:
                 # Issa register
-                self.registers[regname] = self.registers[regval]
+                self.check_type_real(rhs)
+                self.registers[lhs] = self.registers[rhs]
 
         elif cmd == "INQL":
             r1, r2, r3 = args
+            self.check_types_int(r2, r3)
             if self.registers[r2] != self.registers[r3]:
                 self.registers[r1] = Register(REG_INT, 1)
             else:
@@ -99,10 +136,12 @@ class VM:
                 self.current_line_num = int(loc) - 1
 
         elif cmd == "IPRT":
-            if self.dbg_print_lines:
-                print(f"[b]{self.registers[args[0]].value}[/b] [gray] // {args[0]}[/gray]")
-            else:
-                print(self.registers[args[0]].value)
+            self.check_type_int(args[0])
+            self.out(self.registers[args[0]].value)
+
+        elif cmd == "RPRT":
+            self.check_type_real(args[0])
+            self.out(self.registers[args[0]].value)
 
         elif cmd == "ISUB":
             r1, r2, r3 = args
@@ -121,7 +160,7 @@ class VM:
         elif cmd == "HALT":
             if self.dbg_print_lines:
                 print("halted")
-                
+
             self.got_halt = True
 
         else:
