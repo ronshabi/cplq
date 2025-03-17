@@ -61,12 +61,12 @@ class VM:
     def check_type_int(self, r):
         g = self.registers[r]
         if not g.is_int():
-            self.error("expected int register")
+            self.error(f"expected int register for {r}")
 
     def check_type_real(self, r):
         g = self.registers[r]
         if not g.is_real():
-            self.error("expected real register")
+            self.error(f"expected real register for {r}")
 
 
     def check_types_int(self, r1, r2):
@@ -184,13 +184,11 @@ class VM:
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = create_bool_register(v1 == v2)
 
-
         elif cmd == "ILSS":
             r1, r2, r3 = args
             self.check_types_int(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = create_bool_register(v1 < v2)
-
 
         elif cmd == "RADD":
             r1, r2, r3 = args
@@ -203,6 +201,18 @@ class VM:
             self.check_types_real(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = Register(REG_REAL, v1 - v2)
+
+        elif cmd == "REQL":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = create_bool_register(v1 == v2)
+
+        elif cmd == "RNQL":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = create_bool_register(v1 != v2)
 
         elif cmd == "RGRT":
             r1, r2, r3 = args

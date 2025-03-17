@@ -145,13 +145,14 @@ CodeGenerator::codegen(WhileStatement *node)
     // and loop exit
     m_break_jump_dest = current_asm_line_number();
 
-    auto& asm_vec = m_module.m_assembly;
+    auto &asm_vec = m_module.m_assembly;
 
-    std::string jmpz_exit_loop = "JMPZ " + std::to_string(m_break_jump_dest + 2) + " " + node->get_condition_expression()->get_register().name();
+    std::string jmpz_exit_loop =
+        "JMPZ " + std::to_string(m_break_jump_dest + 2) + " " +
+        node->get_condition_expression()->get_register().name();
 
     asm_vec.insert(asm_vec.begin() + after_checking_cond, jmpz_exit_loop);
     backpatch_break_statements();
-
 }
 
 void
@@ -209,7 +210,7 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 
         // If LHS=1 => Continue to evaluating RHS
         node->get_rhs_expr()->accept_code_generator(*this);
-        
+
         // If RHS=1 => Set our register to one
         emit_line("IEQL", my_register, node->get_rhs_expr()->get_register(), 1);
 
@@ -221,7 +222,6 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
             node->get_lhs_expr()->get_register().name();
 
         asm_vec.insert(asm_vec.begin() + after_lhs_eval, jmpz_instr);
-
     }
     else if (my_operator == Operator::OR)
     {
@@ -259,24 +259,35 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         auto const rhs_type = node->get_rhs_expr()->get_type(symbol_table());
 
         // If both operands are ints, use the int variation by default.
-        bool use_int = true;
-
+        bool use_int        = true;
+        bool should_convert = false;
         // If one of the operands is a float, convert the other one to int and
         // use
         // the float variation
-        Register cvt;
-        if (lhs_type == NumberType::INT)
+        if (lhs_type != rhs_type)
         {
+            should_convert = true;
+        }
+
+        if (should_convert && lhs_type == NumberType::INT)
+        {
+            Register cvt;
             use_int = false;
             emit_line("ITOR", cvt, lhs_register);
             lhs_register = cvt;
         }
 
-        if (rhs_type == NumberType::INT)
+        if (should_convert && rhs_type == NumberType::INT)
         {
+            Register cvt;
             use_int = false;
             emit_line("ITOR", cvt, rhs_register);
             rhs_register = cvt;
+        }
+
+        if (lhs_type == NumberType::FLOAT)
+        {
+            use_int = false;
         }
 
         std::string opcode;
@@ -344,22 +355,35 @@ CodeGenerator::codegen(BinaryExpression *node)
     // Else (meaning one of the types are floats):
     //      - convert the other one to float
     //      - use the R-variation of the instruction
-    bool use_int = true;
-
-    // Check if one of the operands are floats, and convert if needed
-    Register cvt;
-    if (lhs_type == NumberType::INT && rhs_type == NumberType::FLOAT)
+    bool use_int        = true;
+    bool should_convert = false;
+    // If one of the operands is a float, convert the other one to int and
+    // use
+    // the float variation
+    if (lhs_type != rhs_type)
     {
+        should_convert = true;
+    }
+
+    if (should_convert && lhs_type == NumberType::INT)
+    {
+        Register cvt;
         use_int = false;
         emit_line("ITOR", cvt, lhs_register);
         lhs_register = cvt;
     }
 
-    if (lhs_type == NumberType::FLOAT && rhs_type == NumberType::INT)
+    if (should_convert && rhs_type == NumberType::INT)
     {
+        Register cvt;
         use_int = false;
         emit_line("ITOR", cvt, rhs_register);
         rhs_register = cvt;
+    }
+
+    if (lhs_type == NumberType::FLOAT)
+    {
+        use_int = false;
     }
 
     // The opcode naming is quite redundant, so let's not repeat ourselves
@@ -494,10 +518,13 @@ CodeGenerator::symbol_table()
     return m_module.get_symbol_table();
 }
 
-void CodeGenerator::backpatch_break_statements() {
-    auto& asm_vec = m_module.m_assembly;
-    
-    for (unsigned const br : m_break_requests) {
+void
+CodeGenerator::backpatch_break_statements()
+{
+    auto &asm_vec = m_module.m_assembly;
+
+    for (unsigned const br : m_break_requests)
+    {
         asm_vec[br].append(std::to_string(m_break_jump_dest + 1));
     }
 
