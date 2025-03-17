@@ -1,43 +1,74 @@
 from argparse import ArgumentParser
 from typing import List
-from dataclasses import dataclass
 from rich import print
 import sys
 import pathlib
 import difflib
 
-REG_INT = 0
-REG_REAL = 1
+TInt = 0
+TFloat = 1
+TRegister = 2
 
-def is_float(val):
+Register = tuple[int, int | float]
+
+def string_is_float(s: str) -> bool:
     try:
-        float(val)
+        float(s)
         return True
     except ValueError:
         return False
 
 
-@dataclass
-class Register:
-    type: int = REG_INT
-    value: int | float = 0
-
-    def cmp_int(self, val: int) -> bool:
-        return self.type == REG_INT and self.value == val
-
-    def is_int(self) -> bool:
-        return self.type == REG_INT
-
-    def is_real(self) -> bool:
-        return self.type == REG_REAL
+def string_is_int(s: str) -> bool:
+    if not s:
+        return False
+    if s[0] == '+' or s[0] == '-':
+        s = s[1:]
+    
+    return s.isdecimal()
 
 
-def create_bool_register(exp: bool) -> Register:
-    if exp:
-        return Register(REG_INT, 1)
-    else:
-        return Register(REG_INT, 0)
+def string_is_register(s: str) -> bool:
+    if len(s) < 2:
+        return False
+    
+    if s[0] != 't':
+        return False
+    
+    return string_is_int(s[1:])
 
+
+def string_get_type(s: str) -> int:
+    if string_is_register(s):
+        return TRegister
+    if string_is_int(s):
+        return TInt
+    if string_is_float(s):
+        return TFloat
+    
+    raise ValueError(f"Expected {s} to be Int/Float/Register")
+
+def string_is_type(s: str, allowed_types: List[int]):
+    t = string_get_type(s)
+    return t in allowed_types
+
+def register_equals_int(r: Register, i: int) -> bool:
+    return r[0] == TInt and r[1] == i
+
+def register_equals_float(r: Register, f: float) -> bool:
+    return r[0] == TFloat and r[1] == f
+
+def register_equals(r1: Register, r2: Register) -> bool:
+    return r1[0] == r2[0] and r1[1] == r2[1]
+
+def registers_match_types(r1: Register, r2: Register) -> bool:
+    return r1[0] == r2[0]
+
+def registers_match_types_specific(r1: Register, r2: Register, t: int) -> bool:
+    return r1[0] == r2[0] and r1[0] == t
+
+def register_from_boolexp(exp: bool) -> Register:
+    return Register(TInt, 1 if exp else 0)
 
 
 class VM:
@@ -59,29 +90,52 @@ class VM:
         print(f"[b red]error:[/b red] line {self.current_line_num}: {msg}")
         self.is_error = True
 
+    def get_register(self, s: str) -> Register:
+        if s not in self.registers:
+            raise ValueError(f"Register {s} not found")
+        return self.registers[s]
 
-    def check_type_int(self, r):
-        g = self.registers[r]
-        if not g.is_int():
-            self.error(f"expected int register for {r}")
+    def ensure_float(self, s: str):
+        if string_get_type(s) != TFloat:
+            self.error(f"Expected {s} to be a float")
 
-    def check_type_real(self, r):
-        g = self.registers[r]
-        if not g.is_real():
-            self.error(f"expected real register for {r}")
+    def ensure_register(self, s: str):
+        if string_get_type(s) != TRegister:
+            self.error(f"Expected {s} to be a register")
 
+    def ensure_int(self, s: str):
+        if string_get_type(s) != TInt:
+            self.error(f"Expected {s} to be a float")
 
-    def check_types_int(self, r1, r2):
-        g1 = self.registers[r1]
-        g2 = self.registers[r2]
-        if not (g1.is_int() and g2.is_int()):
-            self.error("both arguments should be ints")
+    def ensure_int_or_register(self, s: str):
+        t = string_get_type(s)
+        if t == TFloat:
+            self.error('Expected {s} to be an int or a register')
+            return False
+        
+        if t == TInt:
+            return True
+        
+        r = self.get_register(s)
+        if r[0] == TFloat:
+            self.error('Expected {s} to be an integer register')
 
-    def check_types_real(self, r1, r2):
-        g1 = self.registers[r1]
-        g2 = self.registers[r2]
-        if not (g1.is_real() and g2.is_real()):
-            self.error("both arguments should be reals")
+    def ensure_float_or_register(self, s: str):
+        t = string_get_type(s)
+        if t == TInt:
+            self.error('Expected {s} to be a float or a register')
+            return False
+        
+        if t == TFloat:
+            return True
+        
+        r = self.get_register(s)
+        if r[0] == TInt:
+            self.error('Expected {s} to be a float register')
+
+    def ensure_registers_are_of_type(self, r1: Register, r2: Register, t: int):
+        if not registers_match_types_specific(r1, r2, t):
+            self.error(f"Expected {r1} and {r2} to be of the same type")
 
 
     def load_source_file(self, path):
@@ -110,32 +164,59 @@ class VM:
 
         if cmd == "IASN":
             lhs, rhs = args
+            rhs_type = string_get_type(rhs)
+            self.ensure_int_or_register(lhs)
+            self.ensure_int_or_register(rhs)
 
-            if rhs.isnumeric():
-                # Direct num
-                self.registers[lhs] = Register(REG_INT, int(rhs))
+            if rhs_type == TRegister:
+                self.registers[lhs] = self.get_register(rhs)
             else:
-                self.check_type_int(rhs)
-                self.registers[lhs] = self.registers[rhs]
+                self.registers[lhs] = Register(TInt, int(rhs))
 
         elif cmd == "RASN":
             lhs, rhs = args
+            rhs_type = string_get_type(rhs)
+            self.ensure_float_or_register(lhs)
+            self.ensure_float_or_register(rhs)
 
-            if is_float(rhs):
-                # Direct num
-                self.registers[lhs] = Register(REG_REAL, float(rhs))
+            if rhs_type == TRegister:
+                self.registers[lhs] = self.get_register(rhs)
             else:
-                # Issa register
-                self.check_type_real(rhs)
-                self.registers[lhs] = self.registers[rhs]
+                self.registers[lhs] = Register(TFloat, float(rhs))
+
+        elif cmd == "IINP":
+            # FIXME: will just input 1 for convenience
+            self.registers[args[0]] = Register(TInt, 1)
+
+        elif cmd == "IEQL":
+            r1, r2, r3 = args
+            self.ensure_register(r1)
+            self.ensure_int_or_register(r2)
+            self.ensure_int_or_register(r3)
+            v1 = self.get_register(r2)
+            v2 = self.get_register(r3)
+            self.ensure_registers_are_of_type(v1, v2, TInt)
+            self.registers[r1] = register_from_boolexp(register_equals(v1, v2))
 
         elif cmd == "INQL":
             r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            if self.registers[r2] != self.registers[r3]:
-                self.registers[r1] = Register(REG_INT, 1)
-            else:
-                self.registers[r1] = Register(REG_INT, 0)
+            self.ensure_register(r1)
+            self.ensure_int_or_register(r2)
+            self.ensure_int_or_register(r3)
+            v1 = self.get_register(r2)
+            v2 = self.get_register(r3)
+            self.ensure_registers_are_of_type(v1, v2, TInt)
+            self.registers[r1] = register_from_boolexp(not register_equals(v1, v2))
+
+        elif cmd == "ILSS":
+            r1, r2, r3 = args
+            self.ensure_register(r1)
+            self.ensure_int_or_register(r2)
+            self.ensure_int_or_register(r3)
+            v1 = self.get_register(r2)
+            v2 = self.get_register(r3)
+            self.ensure_registers_are_of_type(v1, v2, TInt)
+            self.registers[r1] = register_from_boolexp(v1[1] < v2[1])
 
         elif cmd == "JMPZ":
             loc, reg = args
@@ -155,103 +236,10 @@ class VM:
             self.out(self.registers[args[0]].value)
 
 
-        elif cmd == "IINP":
-            # FIXME: will just input 1 for convenience
-            self.registers[args[0]] = Register(REG_INT, 1)
-
         elif cmd == "RINP":
             # FIXME: will just input 3.14 for convenience
-            self.registers[args[0]] = Register(REG_REAL, 3.14)
+            self.registers[args[0]] = Register(TFloat, 3.14)
 
-
-        elif cmd == "ITOR":
-            lhs, rhs = args
-            self.registers[lhs] = Register(REG_REAL, float(self.registers[rhs].value))
-
-        elif cmd == "IADD":
-            r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_INT, v1 + v2)
-
-        elif cmd == "ISUB":
-            r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_INT, v1 - v2)
-
-        elif cmd == "IMLT":
-            r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_INT, v1 * v2)
-
-        elif cmd == "IDIV":
-            r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_INT, v1 // v2)
-
-
-        elif cmd == "IEQL":
-            r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = create_bool_register(v1 == v2)
-
-        elif cmd == "ILSS":
-            r1, r2, r3 = args
-            self.check_types_int(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = create_bool_register(v1 < v2)
-
-        elif cmd == "REQL":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = create_bool_register(v1 == v2)
-
-        elif cmd == "RNQL":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = create_bool_register(v1 != v2)
-
-        elif cmd == "RLSS":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = create_bool_register(v1 < v2)
-
-        elif cmd == "RGRT":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = create_bool_register(v1 > v2)
-
-        elif cmd == "RADD":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_REAL, v1 + v2)
-
-        elif cmd == "RSUB":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_REAL, v1 - v2)
-
-        elif cmd == "RMLT":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_REAL, v1 * v2)
-
-        elif cmd == "RSUB":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_REAL, v1 // v2)
 
         elif cmd == "JUMP":
             loc = int(args[0])
@@ -294,13 +282,17 @@ def check_expected_file(filename: str, source_to_compare: List[str]):
     
     diff_ok = all(map(lambda x: x.startswith(' '), result))
 
-    if diff_ok:
-        print("PASSED DIFF")
-    else:
-        print("DIFF FAILED")
+    if not diff_ok:
+        print(f'[b red]exptest:[/b red] {filename} failed diff ')
         for line in result:
-            print(line)
-            return False
+            if line.startswith('+'):
+                print(line, style="green")
+            elif line.startswith('-'):
+                print(line, style="red")
+            else:
+                print(line)
+
+        return False
         
 
     return True
