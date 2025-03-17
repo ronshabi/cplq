@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from typing import List
 from dataclasses import dataclass
 from rich import print
+import sys
 
 REG_INT = 0
 REG_REAL = 1
@@ -198,6 +199,8 @@ def main():
         for k, v in vm.registers.items():
             print(f"{k:4} -> {v}")
 
+    if vm.is_error:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
