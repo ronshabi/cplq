@@ -5,4 +5,5 @@ v1: int;
         output(v1);
         v1 = v1 - 1;
     }
+    output(69);
 }

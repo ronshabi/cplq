@@ -147,7 +147,7 @@ CodeGenerator::codegen(WhileStatement *node)
 
     auto& asm_vec = m_module.m_assembly;
 
-    std::string jmpz_exit_loop = "JMPZ " + std::to_string(m_break_jump_dest + 1) + " " + node->get_condition_expression()->get_register().name();
+    std::string jmpz_exit_loop = "JMPZ " + std::to_string(m_break_jump_dest + 2) + " " + node->get_condition_expression()->get_register().name();
 
     asm_vec.insert(asm_vec.begin() + after_checking_cond, jmpz_exit_loop);
     backpatch_break_statements();
