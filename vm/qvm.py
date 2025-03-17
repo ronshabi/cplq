@@ -178,6 +178,19 @@ class VM:
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = Register(REG_INT, v1 - v2)
 
+        elif cmd == "IMLT":
+            r1, r2, r3 = args
+            self.check_types_int(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = Register(REG_INT, v1 * v2)
+
+        elif cmd == "IDIV":
+            r1, r2, r3 = args
+            self.check_types_int(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = Register(REG_INT, v1 // v2)
+
+
         elif cmd == "IEQL":
             r1, r2, r3 = args
             self.check_types_int(r2, r3)
@@ -189,18 +202,6 @@ class VM:
             self.check_types_int(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = create_bool_register(v1 < v2)
-
-        elif cmd == "RADD":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_REAL, v1 + v2)
-
-        elif cmd == "RSUB":
-            r1, r2, r3 = args
-            self.check_types_real(r2, r3)
-            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            self.registers[r1] = Register(REG_REAL, v1 - v2)
 
         elif cmd == "REQL":
             r1, r2, r3 = args
@@ -214,11 +215,41 @@ class VM:
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = create_bool_register(v1 != v2)
 
+        elif cmd == "RLSS":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = create_bool_register(v1 < v2)
+
         elif cmd == "RGRT":
             r1, r2, r3 = args
             self.check_types_real(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = create_bool_register(v1 > v2)
+
+        elif cmd == "RADD":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = Register(REG_REAL, v1 + v2)
+
+        elif cmd == "RSUB":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = Register(REG_REAL, v1 - v2)
+
+        elif cmd == "RMLT":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = Register(REG_REAL, v1 * v2)
+
+        elif cmd == "RSUB":
+            r1, r2, r3 = args
+            self.check_types_real(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = Register(REG_REAL, v1 // v2)
 
         elif cmd == "JUMP":
             loc = int(args[0])
