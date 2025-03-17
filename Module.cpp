@@ -72,7 +72,6 @@ Module::semantic_analyze()
         return; // No need to analyze syntactically malformed code.
     }
 
-    DBG("Calling Semantic Analyzer");
     m_semantic_analyzer.analyze(reinterpret_cast<Program *>(m_ast));
 }
 
@@ -84,7 +83,6 @@ Module::codegen()
         return; // No need to generate assembly for invalid source code
     }
 
-    DBG("Calling CodeGen");
     m_code_generator.codegen(reinterpret_cast<Program *>(m_ast));
 
     // Create the file
@@ -105,7 +103,6 @@ Module::codegen()
     }
 
     output_file.close();
-    DBG("Created output file");
 }
 
 void

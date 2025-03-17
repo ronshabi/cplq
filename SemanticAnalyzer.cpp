@@ -42,8 +42,6 @@ SemanticAnalyzer::analyze(DeclarationBlock *node)
             {
                 get_symbol_table().add(
                     *id, Symbol(decl->get_type(), decl->get_line_number()));
-
-                DBG("added symbol '" << *id << "' to symbol table");
             }
         }
     }

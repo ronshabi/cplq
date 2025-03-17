@@ -449,28 +449,24 @@ CodeGenerator::codegen(BreakStatement *node)
 void
 CodeGenerator::emit_line(std::string const &opcode)
 {
-    DBG(opcode);
     m_module.m_assembly.push_back(opcode);
 }
 
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r)
 {
-    DBG(opcode << " " << r.name());
     m_module.m_assembly.push_back(opcode + " " + r.name());
 }
 
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2)
 {
-    DBG(opcode << " " << r1.name() << ", " << r2.name());
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name());
 }
 
 void
 CodeGenerator::emit_line(std::string const &opcode, Register r, int val)
 {
-    DBG(opcode << " " << r.name() << ", " << val);
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::to_string(val));
 }
@@ -478,7 +474,6 @@ void
 CodeGenerator::emit_line(std::string const &opcode, Register r, int val1,
                          int val2)
 {
-    DBG(opcode << " " << r.name() << ", " << val1 << ", " << val2);
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::to_string(val1) + " " +
                                   std::to_string(val2));
@@ -488,7 +483,6 @@ void
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
                          int val)
 {
-    DBG(opcode << " " << r1.name() << ", " << r2.name() << ", " << val);
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
                                   " " + std::to_string(val));
 }
@@ -497,7 +491,6 @@ void
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
                          Register r3)
 {
-    DBG(opcode << " " << r1.name() << ", " << r2.name() << ", " << r3.name());
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
                                   " " + r3.name());
 }
@@ -507,7 +500,6 @@ CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
 {
     std::array<char, 128> buf{};
     std::snprintf(buf.data(), buf.size(), "%.2f", val);
-    DBG(opcode << " " << r.name() << ", " << buf.data());
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::string(buf.data()));
 }
