@@ -30,6 +30,14 @@ class Register:
         return self.type == REG_REAL
 
 
+def create_bool_register(exp: bool) -> Register:
+    if exp:
+        return Register(REG_INT, 1)
+    else:
+        return Register(REG_INT, 0)
+
+
+
 class VM:
     def __init__(self):
         self.registers: dict[str, Register] = {}
@@ -144,6 +152,16 @@ class VM:
             self.check_type_real(args[0])
             self.out(self.registers[args[0]].value)
 
+
+        elif cmd == "IINP":
+            # FIXME: will just input 1 for convenience
+            self.registers[args[0]] = Register(REG_INT, 1)
+
+        elif cmd == "RINP":
+            # FIXME: will just input 3.14 for convenience
+            self.registers[args[0]] = Register(REG_REAL, 3.14)
+
+
         elif cmd == "ITOR":
             lhs, rhs = args
             self.registers[lhs] = Register(REG_REAL, float(self.registers[rhs].value))
@@ -159,6 +177,20 @@ class VM:
             self.check_types_int(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
             self.registers[r1] = Register(REG_INT, v1 - v2)
+
+        elif cmd == "IEQL":
+            r1, r2, r3 = args
+            self.check_types_int(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = create_bool_register(v1 == v2)
+
+
+        elif cmd == "ILSS":
+            r1, r2, r3 = args
+            self.check_types_int(r2, r3)
+            v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
+            self.registers[r1] = create_bool_register(v1 < v2)
+
 
         elif cmd == "RADD":
             r1, r2, r3 = args
@@ -176,11 +208,7 @@ class VM:
             r1, r2, r3 = args
             self.check_types_real(r2, r3)
             v1, v2 = map(lambda x: self.registers[x].value, [r2, r3])
-            if v1 > v2:
-                self.registers[r1] = Register(REG_INT, 1)
-            else:
-                self.registers[r1] = Register(REG_INT, 0)
-
+            self.registers[r1] = create_bool_register(v1 > v2)
 
         elif cmd == "JUMP":
             loc = int(args[0])
