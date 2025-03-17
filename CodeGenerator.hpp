@@ -42,7 +42,13 @@ private:
 
     SymbolTable &symbol_table();
 
+
+    void backpatch_break_statements();
+
     unsigned current_asm_line_number() const;
+
+    std::vector<unsigned> m_break_requests{};
+    unsigned m_break_jump_dest = 0;
 
     Module &m_module;
 };

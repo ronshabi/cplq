@@ -129,6 +129,29 @@ CodeGenerator::codegen(SwitchStatement *node)
 void
 CodeGenerator::codegen(WhileStatement *node)
 {
+    // Call the codegen on the condition
+    auto const cond_check_line = current_asm_line_number();
+    node->get_condition_expression()->accept_code_generator(*this);
+
+    // Check the return code, if it is zero, we should resume to normal code
+    auto const after_checking_cond = current_asm_line_number();
+    // BUT WHERE IS THE NORMAL CODE?
+    node->get_body_statement()->accept_code_generator(*this);
+
+    // Jump to the condition check once again
+    emit_line("JUMP " + std::to_string(cond_check_line + 1));
+
+    // This is where the normal code resumes, we need to document this for break
+    // and loop exit
+    m_break_jump_dest = current_asm_line_number();
+
+    auto& asm_vec = m_module.m_assembly;
+
+    std::string jmpz_exit_loop = "JMPZ " + std::to_string(m_break_jump_dest + 1) + " " + node->get_condition_expression()->get_register().name();
+
+    asm_vec.insert(asm_vec.begin() + after_checking_cond, jmpz_exit_loop);
+    backpatch_break_statements();
+
 }
 
 void
@@ -394,6 +417,9 @@ CodeGenerator::codegen(NumberExpression *node)
 void
 CodeGenerator::codegen(BreakStatement *node)
 {
+    UNUSED(node);
+    emit_line("JUMP "); // To be backpatched
+    m_break_requests.push_back(current_asm_line_number());
 }
 
 void
@@ -466,6 +492,16 @@ SymbolTable &
 CodeGenerator::symbol_table()
 {
     return m_module.get_symbol_table();
+}
+
+void CodeGenerator::backpatch_break_statements() {
+    auto& asm_vec = m_module.m_assembly;
+    
+    for (unsigned const br : m_break_requests) {
+        asm_vec[br].append(std::to_string(m_break_jump_dest + 1));
+    }
+
+    m_break_requests.clear();
 }
 
 unsigned

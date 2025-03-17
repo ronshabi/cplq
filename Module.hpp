@@ -105,5 +105,5 @@ private:
     SemanticAnalyzer         m_semantic_analyzer;
     SymbolTable              m_symbol_table;
     CodeGenerator            m_code_generator;
-    std::vector<std::string> m_assembly;
+    std::vector<std::string> m_assembly{};
 };
