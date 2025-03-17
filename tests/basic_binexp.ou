@@ -5,4 +5,5 @@ i1, i2: int;
     i2 = 2;
     f1 = 1;
     f2 = f1 - i1;
+    output(f2);
 }

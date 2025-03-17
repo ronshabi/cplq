@@ -3,6 +3,8 @@ from typing import List
 from dataclasses import dataclass
 from rich import print
 import sys
+import pathlib
+import difflib
 
 REG_INT = 0
 REG_REAL = 1
@@ -50,7 +52,7 @@ class VM:
         self.output: List[str] = []
 
     def out(self, msg):
-        self.output.append(msg)
+        self.output.append(str(msg))
         print(msg)
 
     def error(self, msg):
@@ -276,6 +278,36 @@ class VM:
             print("can't run, error occurred", style="red bold")
             return
 
+def check_expected_file(filename: str, source_to_compare: List[str]):
+    # replace extension with exp
+    exp_filename = filename.replace('.qud', '.exp')
+    exp_file = pathlib.Path(exp_filename)
+    if not exp_file.exists():
+        print(f'[b]exptest:[/b] no exp file for {filename}')
+        return False
+    
+    exp_contents = exp_file.read_text()
+    comparison = "\n".join(source_to_compare)
+
+    d = difflib.Differ()
+    result = list(d.compare(exp_contents, comparison))
+    
+    diff_ok = all(map(lambda x: x.startswith(' '), result))
+
+    if diff_ok:
+        print("PASSED DIFF")
+    else:
+        print("DIFF FAILED")
+        for line in result:
+            print(line)
+            return False
+        
+
+    return True
+    
+
+
+
 
 def main():
     parser = ArgumentParser()
@@ -301,6 +333,9 @@ def main():
             print(f"{k:4} -> {v}")
 
     if vm.is_error:
+        sys.exit(1)
+
+    if not check_expected_file(args.source_file, vm.output):
         sys.exit(1)
 
 
