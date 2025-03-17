@@ -265,14 +265,14 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         // use
         // the float variation
         Register cvt;
-        if (lhs_type == NumberType::INT && rhs_type == NumberType::FLOAT)
+        if (lhs_type == NumberType::INT)
         {
             use_int = false;
             emit_line("ITOR", cvt, lhs_register);
             lhs_register = cvt;
         }
 
-        if (lhs_type == NumberType::FLOAT && rhs_type == NumberType::INT)
+        if (rhs_type == NumberType::INT)
         {
             use_int = false;
             emit_line("ITOR", cvt, rhs_register);
