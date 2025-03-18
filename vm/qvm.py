@@ -232,9 +232,9 @@ class VM:
             rprint(f"[magenta]VMError:[/magenta] expfile {expfile_path} does not match")
 
             rprint("[bold]VM Output[/bold]:")
-            print(f"<<{output_text}>>")
+            print(f"{output_text}")
             rprint("[bold]Expected Output[/bold]:")
-            print(f"<<{expfile_text}>>")
+            print(f"{expfile_text}")
             rprint("[bold]Diff[/bold]:")
             changes = d.compare(expfile_text, output_text)
             for line in changes:
@@ -335,8 +335,8 @@ class VM:
 
     def RPRT(self, b):
         self.require_param(b, [TFloatRegister, TFloat])
-        print(self.get_register_or_imm_value(b))
-        self._output.append(self.get_register_or_imm_value(b))
+        print(float(self.get_register_or_imm_value(b)))
+        self._output.append(f"{float(self.get_register_or_imm_value(b)):.2f}")
 
     def RINP(self, a):
         self.require_param(a, [TFloatRegister])

@@ -29,6 +29,7 @@ public:
     void codegen(BreakStatement *node);
 
 private:
+    void emit_filler(std::string const& comment);
     void emit_line(std::string const &str);
     void emit_line(std::string const &opcode, Register r);
     void emit_line(std::string const &opcode, Register r1, Register r2);

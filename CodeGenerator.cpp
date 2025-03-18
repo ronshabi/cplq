@@ -104,21 +104,28 @@ CodeGenerator::codegen(IfStatement *node)
 {
     node->get_condition_exp()->accept_code_generator(*this);
     auto const condition_register = node->get_condition_exp()->get_register();
-    auto const after_condition = current_asm_line_number();
     // Jmpz to the else branch
+    auto const after_condition = current_asm_line_number();
+    emit_filler("if: after condition, jmpz should be inserted");
+    
     node->get_then_branch()->accept_code_generator(*this);
+    
     // Jmp to after the IF
+    
     auto const after_then = current_asm_line_number();
+    emit_filler("if: after then, a jump to the rest of the code should be inserted");
+
+
     node->get_else_branch()->accept_code_generator(*this);
     auto const after_if = current_asm_line_number();
 
     auto &asm_vec = m_module.m_assembly;
 
-    asm_vec.insert(asm_vec.begin() + after_condition,
-                   "JMPZ " + std::to_string(after_then + 3) + " " +
-                       condition_register.name());
-    asm_vec.insert(asm_vec.begin() + after_then + 1,
-                   "JUMP " + std::to_string(after_if + 3));
+    asm_vec[after_condition] =
+                   "JMPZ " + std::to_string(after_then + 2) + " " +
+                       condition_register.name();
+    asm_vec[after_then] =
+                   "JUMP " + std::to_string(after_if + 1);
 }
 
 void
@@ -134,7 +141,9 @@ CodeGenerator::codegen(WhileStatement *node)
     node->get_condition_expression()->accept_code_generator(*this);
 
     // Check the return code, if it is zero, we should resume to normal code
+
     auto const after_checking_cond = current_asm_line_number();
+    emit_filler("while after condition");
     // BUT WHERE IS THE NORMAL CODE?
     node->get_body_statement()->accept_code_generator(*this);
 
@@ -148,10 +157,10 @@ CodeGenerator::codegen(WhileStatement *node)
     auto &asm_vec = m_module.m_assembly;
 
     std::string jmpz_exit_loop =
-        "JMPZ " + std::to_string(m_break_jump_dest + 2) + " " +
+        "JMPZ " + std::to_string(m_break_jump_dest + 1) + " " +
         node->get_condition_expression()->get_register().name();
 
-    asm_vec.insert(asm_vec.begin() + after_checking_cond, jmpz_exit_loop);
+    asm_vec[after_checking_cond] = jmpz_exit_loop;
     backpatch_break_statements();
 }
 
@@ -445,6 +454,10 @@ CodeGenerator::codegen(BreakStatement *node)
     UNUSED(node);
     emit_line("JUMP "); // To be backpatched
     m_break_requests.push_back(current_asm_line_number());
+}
+
+void CodeGenerator::emit_filler(std::string const& comment) {
+    m_module.m_assembly.push_back("FILLER: " + comment);
 }
 
 void
