@@ -10,6 +10,9 @@ curr: int;
         curr = curr * 10;
         curr = num - curr; /* Modulu 10 */
         num = num / 10;
-        output(curr);
+        sum = sum + 1;
     }
+
+    output(sum);
+
 }
