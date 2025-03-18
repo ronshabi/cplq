@@ -1,0 +1,4 @@
+IASN t3 69
+ITOR t4 t3
+RPRT t4
+HALT

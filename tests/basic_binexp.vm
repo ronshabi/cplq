@@ -1,0 +1,1 @@
+[31mVMError[0m: [1;37mtests/basic_binexp.qu[0m[1;37md:10[0m: Expected types [1m[[0m[32m'TIntRegister'[0m, [32m'TInt'[0m[1m][0m, got [1m[[0m[32m'TFloatRegister'[0m[1m][0m instead

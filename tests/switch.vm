@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/ron/code/quad/vm/qvm.py", line 431, in <module>
+    main()
+  File "/home/ron/code/quad/vm/qvm.py", line 415, in main
+    vm.run()
+  File "/home/ron/code/quad/vm/qvm.py", line 162, in run
+    func(*args)
+  File "/home/ron/code/quad/vm/qvm.py", line 306, in RPRT
+    print(self.get_register_or_imm_value(b))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ron/code/quad/vm/qvm.py", line 210, in get_register_or_imm_value
+    return str(self._registers[exp].val)
+               ~~~~~~~~~~~~~~~^^^^^
+KeyError: 't29'

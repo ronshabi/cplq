@@ -412,6 +412,7 @@ CodeGenerator::codegen(BinaryExpression *node)
 
     // Generate the code
     emit_line(opcode, my_register, lhs_register, rhs_register);
+
 }
 
 void
