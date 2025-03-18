@@ -123,7 +123,7 @@ class VM:
         self._registers: dict[str, Register] = {}
 
     def error(self, message):
-        rprint(f"[red]Error[/red]: {self._filename}:{self._line_no}: {message}")
+        rprint(f"[red]VMError[/red]: [b white]{self._filename}:{self._line_no}[/b white]: {message}")
         self._has_errors = True
 
     def set_source_file(self, srcfile: str):
@@ -144,12 +144,17 @@ class VM:
             # is correct
             func_arg_count = func.__code__.co_argcount
 
-            print("funcname:", func.__code__.co_name)
+            # print("funcname:", func.__code__.co_name)
 
             if func_arg_count - 1 != len(args):
                 self.error(
                     f"Opcode {op} requires {func_arg_count - 1} arguments, {len(args)} given"
                 )
+
+            try:
+                func(*args)
+            except VMException as vme:
+                self.error(vme)
 
     def require_param(self, param: str, ptype):
         recognized = []
@@ -179,7 +184,7 @@ class VM:
                     pass
 
         # Now check if we recognized it
-        if recognized not in ptype:
+        if not set(recognized).intersection(set(ptype)):
             recognized_strings = [type_to_string(x) for x in recognized]
             ptype_strings = [type_to_string(x) for x in ptype]
 
@@ -187,10 +192,189 @@ class VM:
                 f"Expected types {ptype_strings}, got {recognized_strings} instead"
             )
 
+    def as_register(self, tp: int, exp: str) -> Register:
+        # If it's a register name, get its value
+        if exp.startswith("t"):
+            return Register(tp, self._registers[exp].val)
+        return Register(tp, exp)
+
+    def get_register_or_imm_value(self, exp: str) -> str:
+        if exp.startswith("t"):
+            return str(self._registers[exp].val)
+        return exp
+
+    # --- I-Funcs --------------------------------------------------------------
+
     def IASN(self, a, b):
         self.require_param(a, [TIntRegister])
         self.require_param(b, [TIntRegister, TInt])
-        self._registers[a] = Register(TInt, b)
+        self._registers[a] = self.as_register(TInt, b)
+
+    def IPRT(self, b):
+        self.require_param(b, [TIntRegister, TInt])
+        print(self.get_register_or_imm_value(b))
+
+    def IINP(self, a):
+        self.require_param(a, [TIntRegister])
+        self._registers[a] = Register(TInt, 1)
+
+    def IEQL(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = br == cr
+
+    def INQL(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = br != cr
+
+    def ILSS(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = br < cr
+
+    def IGRT(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = br > cr
+
+    def IADD(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = Register(TInt, br.val + cr.val)
+
+    def ISUB(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = Register(TInt, br.val - cr.val)
+
+    def IMLT(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = Register(TInt, br.val * cr.val)
+
+    def IDIV(self, a, b, c):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self.require_param(c, [TIntRegister, TInt])
+        br = self.as_register(TInt, b)
+        cr = self.as_register(TInt, c)
+        self._registers[a] = Register(TInt, br.val // cr.val)
+
+    def ITOR(self, d, b):
+        self.require_param(d, [TFloatRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self._registers[d] = self.as_register(TFloat, b)
+
+    # --- R-Funcs --------------------------------------------------------------
+
+    def RASN(self, a, b):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self._registers[a] = self.as_register(TFloat, b)
+
+    def RPRT(self, b):
+        self.require_param(b, [TFloatRegister, TFloat])
+        print(self.get_register_or_imm_value(b))
+
+    def RINP(self, a):
+        self.require_param(a, [TFloatRegister])
+        self._registers[a] = Register(TFloat, 1)
+
+    def REQL(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = br == cr
+
+    def RNQL(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = br != cr
+
+    def RLSS(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = br < cr
+
+    def RGRT(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = br > cr
+
+    def RADD(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = Register(TFloat, br.val + cr.val)
+
+    def RSUB(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = Register(TFloat, br.val - cr.val)
+
+    def RMLT(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = Register(TFloat, br.val * cr.val)
+
+    def RDIV(self, a, b, c):
+        self.require_param(a, [TFloatRegister])
+        self.require_param(b, [TFloatRegister, TFloat])
+        self.require_param(c, [TFloatRegister, TFloat])
+        br = self.as_register(TFloat, b)
+        cr = self.as_register(TFloat, c)
+        self._registers[a] = Register(TFloat, br.val // cr.val)
+
+    def RTOI(self, a, e):
+        self.require_param(a, [TIntRegister])
+        self.require_param(e, [TFloatRegister, TFloat])
+        self._registers[a] = self.as_register(TInt, e)
+
+    # --- Misc -----------------------------------------------------------------
+    def HALT(self):
+        pass
+
 
 def main():
     parser = ArgumentParser()
