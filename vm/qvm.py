@@ -1,334 +1,221 @@
-from argparse import ArgumentParser
 from typing import List
-from rich import print
+from argparse import ArgumentParser
+from rich import print as rprint
 import sys
-import pathlib
-import difflib
 
 TInt = 0
 TFloat = 1
-TRegister = 2
-
-Register = tuple[int, int | float]
-
-def string_is_float(s: str) -> bool:
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
+TIntRegister = 2
+TFloatRegister = 3
 
 
-def string_is_int(s: str) -> bool:
-    if not s:
-        return False
-    if s[0] == '+' or s[0] == '-':
-        s = s[1:]
-    
-    return s.isdecimal()
+def type_to_string(t):
+    if t == TInt:
+        return "TInt"
+    if t == TFloat:
+        return "TFloat"
+    if t == TIntRegister:
+        return "TIntRegister"
+    if t == TFloatRegister:
+        return "TFloatRegister"
+
+    raise ValueError("Unknown type")
 
 
-def string_is_register(s: str) -> bool:
-    if len(s) < 2:
-        return False
-    
-    if s[0] != 't':
-        return False
-    
-    return string_is_int(s[1:])
+class VMException(Exception):
+    pass
 
 
-def string_get_type(s: str) -> int:
-    if string_is_register(s):
-        return TRegister
-    if string_is_int(s):
-        return TInt
-    if string_is_float(s):
-        return TFloat
-    
-    raise ValueError(f"Expected {s} to be Int/Float/Register")
+def register_type_check(method):
+    def wrapper(self, other):
+        if isinstance(other, Register):
+            if self.T != other.T:
+                raise ValueError("Types of registers do not match")
+            return method(self, other)
+        return NotImplemented
 
-def string_is_type(s: str, allowed_types: List[int]):
-    t = string_get_type(s)
-    return t in allowed_types
+    return wrapper
 
-def register_equals_int(r: Register, i: int) -> bool:
-    return r[0] == TInt and r[1] == i
 
-def register_equals_float(r: Register, f: float) -> bool:
-    return r[0] == TFloat and r[1] == f
+class Register:
+    def __init__(self, tp, val):
+        self._tp = tp
+        self._set_val(val)
 
-def register_equals(r1: Register, r2: Register) -> bool:
-    return r1[0] == r2[0] and r1[1] == r2[1]
+    def _set_val(self, val):
+        self._val = val
 
-def registers_match_types(r1: Register, r2: Register) -> bool:
-    return r1[0] == r2[0]
+        if isinstance(val, str):
+            if self._tp == TInt:
+                try:
+                    self._val = int(val)
+                except ValueError:
+                    raise VMException("Expected an integer-string for register")
+            elif self._tp == TFloat:
+                try:
+                    self._val = float(val)
+                except ValueError:
+                    raise VMException("Expected a float-string for register")
+        elif isinstance(val, float):
+            if self._tp != TFloat:
+                raise VMException("Expected a float for register")
+        elif isinstance(val, int):
+            if self._tp != TInt:
+                raise VMException("Expected an integer for register")
+        elif isinstance(val, bool):
+            if self._tp != TInt:
+                raise VMException("Expected an integer for register from boolean")
+            self._val = 1 if val else 0
+        else:
+            raise VMException("Type of register value is unknown")
 
-def registers_match_types_specific(r1: Register, r2: Register, t: int) -> bool:
-    return r1[0] == r2[0] and r1[0] == t
+    @property
+    def val(self):
+        return self._val
 
-def register_from_boolexp(exp: bool) -> Register:
-    return Register(TInt, 1 if exp else 0)
+    @property
+    def T(self):
+        return self._tp
+
+    @val.setter
+    def val(self, new_val):
+        self._set_val(new_val)
+
+    @register_type_check
+    def __lt__(self, other):
+        return self.val < other.val
+
+    @register_type_check
+    def __le__(self, other):
+        return self.val <= other.val
+
+    @register_type_check
+    def __eq__(self, other):
+        return self.val == other.val
+
+    @register_type_check
+    def __ne__(self, other):
+        return self.val != other.val
+
+    @register_type_check
+    def __gt__(self, other):
+        return self.val > other.val
+
+    @register_type_check
+    def __ge__(self, other):
+        return self.val >= other.val
+
+    def __repr__(self):
+        if self._tp == TInt:
+            typestring = "TInt"
+        else:
+            typestring = "TFloat"
+
+        return f"Register({typestring}, {self._val})"
 
 
 class VM:
     def __init__(self):
-        self.registers: dict[str, Register] = {}
-        self.source: List[str]
-        self.current_line_num: int = 0
-        self.current_line: str
-        self.is_error: bool = False
-        self.got_halt: bool = False
-        self.dbg_print_lines: bool = False
-        self.output: List[str] = []
+        self._filename: str = ""
+        self._source: List[str] = []
+        self._line_no: int = 0
+        self._has_errors: bool = False
+        self._registers: dict[str, Register] = {}
 
-    def out(self, msg):
-        self.output.append(str(msg))
-        print(msg)
+    def error(self, message):
+        rprint(f"[red]Error[/red]: {self._filename}:{self._line_no}: {message}")
+        self._has_errors = True
 
-    def error(self, msg):
-        print(f"[b red]error:[/b red] line {self.current_line_num}: {msg}")
-        self.is_error = True
-
-    def get_register(self, s: str) -> Register:
-        if s not in self.registers:
-            raise ValueError(f"Register {s} not found")
-        return self.registers[s]
-
-    def ensure_float(self, s: str):
-        if string_get_type(s) != TFloat:
-            self.error(f"Expected {s} to be a float")
-
-    def ensure_register(self, s: str):
-        if string_get_type(s) != TRegister:
-            self.error(f"Expected {s} to be a register")
-
-    def ensure_int(self, s: str):
-        if string_get_type(s) != TInt:
-            self.error(f"Expected {s} to be a float")
-
-    def ensure_int_or_register(self, s: str):
-        t = string_get_type(s)
-        if t == TFloat:
-            self.error('Expected {s} to be an int or a register')
-            return False
-        
-        if t == TInt:
-            return True
-        
-        r = self.get_register(s)
-        if r[0] == TFloat:
-            self.error('Expected {s} to be an integer register')
-
-    def ensure_float_or_register(self, s: str):
-        t = string_get_type(s)
-        if t == TInt:
-            self.error('Expected {s} to be a float or a register')
-            return False
-        
-        if t == TFloat:
-            return True
-        
-        r = self.get_register(s)
-        if r[0] == TInt:
-            self.error('Expected {s} to be a float register')
-
-    def ensure_registers_are_of_type(self, r1: Register, r2: Register, t: int):
-        if not registers_match_types_specific(r1, r2, t):
-            self.error(f"Expected {r1} and {r2} to be of the same type")
-
-
-    def load_source_file(self, path):
-        try:
-            with open(path, 'r') as f:
-                self.source = f.read().splitlines()
-        except Exception:
-            self.error("can't open file")
-
-    def parse(self):
-        if self.dbg_print_lines:
-            print(f"[{self.current_line_num}] ({self.current_line})")
-
-        while self.current_line_num < len(self.source) and not self.is_error and not self.got_halt:
-            self.current_line = self.source[self.current_line_num]
-            self.current_line_num += 1
-
-            self.parse_line()
-
-        if self.current_line_num == len(self.source):
-            if not self.got_halt:
-                self.error("didn't get halt at end")
-
-    def parse_line(self):
-        cmd, *args = self.current_line.split()
-
-        if cmd == "IASN":
-            lhs, rhs = args
-            rhs_type = string_get_type(rhs)
-            self.ensure_int_or_register(lhs)
-            self.ensure_int_or_register(rhs)
-
-            if rhs_type == TRegister:
-                self.registers[lhs] = self.get_register(rhs)
-            else:
-                self.registers[lhs] = Register(TInt, int(rhs))
-
-        elif cmd == "RASN":
-            lhs, rhs = args
-            rhs_type = string_get_type(rhs)
-            self.ensure_float_or_register(lhs)
-            self.ensure_float_or_register(rhs)
-
-            if rhs_type == TRegister:
-                self.registers[lhs] = self.get_register(rhs)
-            else:
-                self.registers[lhs] = Register(TFloat, float(rhs))
-
-        elif cmd == "IINP":
-            # FIXME: will just input 1 for convenience
-            self.registers[args[0]] = Register(TInt, 1)
-
-        elif cmd == "IEQL":
-            r1, r2, r3 = args
-            self.ensure_register(r1)
-            self.ensure_int_or_register(r2)
-            self.ensure_int_or_register(r3)
-            v1 = self.get_register(r2)
-            v2 = self.get_register(r3)
-            self.ensure_registers_are_of_type(v1, v2, TInt)
-            self.registers[r1] = register_from_boolexp(register_equals(v1, v2))
-
-        elif cmd == "INQL":
-            r1, r2, r3 = args
-            self.ensure_register(r1)
-            self.ensure_int_or_register(r2)
-            self.ensure_int_or_register(r3)
-            v1 = self.get_register(r2)
-            v2 = self.get_register(r3)
-            self.ensure_registers_are_of_type(v1, v2, TInt)
-            self.registers[r1] = register_from_boolexp(not register_equals(v1, v2))
-
-        elif cmd == "ILSS":
-            r1, r2, r3 = args
-            self.ensure_register(r1)
-            self.ensure_int_or_register(r2)
-            self.ensure_int_or_register(r3)
-            v1 = self.get_register(r2)
-            v2 = self.get_register(r3)
-            self.ensure_registers_are_of_type(v1, v2, TInt)
-            self.registers[r1] = register_from_boolexp(v1[1] < v2[1])
-
-        elif cmd == "JMPZ":
-            loc, reg = args
-            if int(loc) > len(self.source) + 1:
-                self.error("line is out of bounds")
-                return
-            
-            if self.registers[reg].cmp_int(0):
-                self.current_line_num = int(loc) - 1
-
-        elif cmd == "IPRT":
-            self.check_type_int(args[0])
-            self.out(self.registers[args[0]].value)
-
-        elif cmd == "RPRT":
-            self.check_type_real(args[0])
-            self.out(self.registers[args[0]].value)
-
-
-        elif cmd == "RINP":
-            # FIXME: will just input 3.14 for convenience
-            self.registers[args[0]] = Register(TFloat, 3.14)
-
-
-        elif cmd == "JUMP":
-            loc = int(args[0])
-            if loc > len(self.source) + 1:
-                self.error("line is out of bounds")
-                return
-            
-            self.current_line_num = loc - 1
-
-        elif cmd == "HALT":
-            if self.dbg_print_lines:
-                print("halted")
-
-            self.got_halt = True
-
-        else:
-            self.error(f"unknown command {cmd}")
-
-
-
+    def set_source_file(self, srcfile: str):
+        self._filename = srcfile
+        with open(srcfile, "r") as f:
+            self._source = f.read().splitlines()
 
     def run(self):
-        if self.is_error:
-            print("can't run, error occurred", style="red bold")
-            return
+        while self._line_no < len(self._source) and not self._has_errors:
+            line = self._source[self._line_no]
+            self._line_no += 1
+            op, *args = line.split()
 
-def check_expected_file(filename: str, source_to_compare: List[str]):
-    # replace extension with exp
-    exp_filename = filename.replace('.qud', '.exp')
-    exp_file = pathlib.Path(exp_filename)
-    if not exp_file.exists():
-        print(f'[b]exptest:[/b] no exp file for {filename}')
-        return False
-    
-    exp_contents = exp_file.read_text()
-    comparison = "\n".join(source_to_compare)
+            # Find the function implementing this opcode
+            func = getattr(self, op)
 
-    d = difflib.Differ()
-    result = list(d.compare(exp_contents, comparison))
-    
-    diff_ok = all(map(lambda x: x.startswith(' '), result))
+            # Check that the argument count for this function
+            # is correct
+            func_arg_count = func.__code__.co_argcount
 
-    if not diff_ok:
-        print(f'[b red]exptest:[/b red] {filename} failed diff ')
-        for line in result:
-            if line.startswith('+'):
-                print(line, style="green")
-            elif line.startswith('-'):
-                print(line, style="red")
+            print("funcname:", func.__code__.co_name)
+
+            if func_arg_count - 1 != len(args):
+                self.error(
+                    f"Opcode {op} requires {func_arg_count - 1} arguments, {len(args)} given"
+                )
+
+    def require_param(self, param: str, ptype):
+        recognized = []
+
+        if param.startswith("t") and param[1:].isdigit():
+            # Try and search that register
+            if param in self._registers:
+                reg = self._registers[param]
+                if reg.T == TInt:
+                    recognized.append(TIntRegister)
+                else:
+                    recognized.append(TFloatRegister)
             else:
-                print(line)
+                # Append both, we allow it because the reg isn't known
+                recognized.append(TIntRegister)
+                recognized.append(TFloatRegister)
+        else:
+            try:
+                int(param)
+                recognized.append(TInt)
+                recognized.append(TFloat)
+            except ValueError:
+                try:
+                    float(param)
+                    recognized.append(TFloat)
+                except ValueError:
+                    pass
 
-        return False
-        
+        # Now check if we recognized it
+        if recognized not in ptype:
+            recognized_strings = [type_to_string(x) for x in recognized]
+            ptype_strings = [type_to_string(x) for x in ptype]
 
-    return True
-    
+            raise VMException(
+                f"Expected types {ptype_strings}, got {recognized_strings} instead"
+            )
 
-
-
+    def IASN(self, a, b):
+        self.require_param(a, [TIntRegister])
+        self.require_param(b, [TIntRegister, TInt])
+        self._registers[a] = Register(TInt, b)
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument('source_file')
-    parser.add_argument('-L', '--print-lines', action='store_true')
-    parser.add_argument('-P', '--print-post-run', action='store_true')
+    parser.add_argument("source_file")
+    parser.add_argument("-L", "--print-lines", action="store_true")
+    parser.add_argument("-P", "--print-post-run", action="store_true")
 
     args = parser.parse_args()
 
     vm = VM()
-    vm.load_source_file(args.source_file)
-    vm.dbg_print_lines = args.print_lines
+    vm.set_source_file(args.source_file)
     # vm.dbg_print_post_run = args.print_post_run
-    vm.parse()
+    vm.run()
 
-    if args.print_post_run:
-        print("\n[b yellow]POST RUN SUMMARY[/b yellow]")
-        print(f"[b]Has Errors?[/b] {vm.is_error}")
-        print(f"[b]Line number:[/b] {vm.current_line_num}")
-        
-        print("[b]Registers:[/b]")
-        for k, v in vm.registers.items():
-            print(f"{k:4} -> {v}")
+    # if args.print_post_run:
+    #     print("\n[b yellow]POST RUN SUMMARY[/b yellow]")
+    #     print(f"[b]Has Errors?[/b] {vm.is_error}")
+    #     print(f"[b]Line number:[/b] {vm.current_line_num}")
 
-    if vm.is_error:
-        sys.exit(1)
+    #     print("[b]Registers:[/b]")
+    #     for k, v in vm._registers.items():
+    #         print(f"{k:4} -> {v}")
 
-    if not check_expected_file(args.source_file, vm.output):
-        sys.exit(1)
+    # if vm.is_error:
+    #     sys.exit(1)
 
 
 if __name__ == "__main__":
