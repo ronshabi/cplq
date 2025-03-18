@@ -1,0 +1,14 @@
+a, b: int;
+{
+    a = 3;
+    b = 4;
+    if ((a + b) == (b + a)) {
+        output(a);
+        output(b);
+    } else {
+        a = 2;
+        a = b;
+        output(a);
+        output(b);
+    }
+}

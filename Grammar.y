@@ -63,13 +63,13 @@ int yylex(YYSTYPE *, YYLTYPE*);
 %type <ast_statement_list> stmtlist;
 %type <ast_program> program;
 
-%right '=';
+/* %right '=';
 %left OR;
 %left AND;
 %left RELOP;
 %left ADDOP;
 %left MULOP;
-%right CAST NOT;
+%right CAST NOT; */
 
 %%
 program: 
