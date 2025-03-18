@@ -2,7 +2,6 @@
 
 #include "CodeGenerator.hpp"
 #include "SemanticAnalyzer.hpp"
-#include <unordered_set>
 
 void
 AstNode::dump(unsigned indent) const

@@ -2,6 +2,8 @@ from typing import List
 from argparse import ArgumentParser
 from rich import print as rprint
 import sys
+import pathlib
+import difflib
 
 TInt = 0
 TFloat = 1
@@ -122,6 +124,7 @@ class VM:
         self._has_errors: bool = False
         self._registers: dict[str, Register] = {}
         self._is_running = True
+        self._output: List[str] = list()
 
     def error(self, message):
         rprint(
@@ -164,6 +167,7 @@ class VM:
                 self.error(vme)
             except KeyError as ke:
                 self.error(f"register not found: {ke}")
+                rprint("Registers:", self._registers)
 
     def require_param(self, param: str, ptype):
         recognized = []
@@ -212,6 +216,25 @@ class VM:
             return str(self._registers[exp].val)
         return exp
 
+    def compare_to_expected(self):
+        expfile = self._filename.replace('.qud', '.exp')
+        
+        expfile_path = pathlib.Path(expfile)
+        if not expfile_path.exists():
+            rprint(f"[magenta]VMError:[/magenta] expfile {expfile_path} does not exist")
+            sys.exit(1)
+
+        expfile_text = expfile_path.read_text()
+        output_text =  '\n'.join(self._output)
+
+        if expfile_text != output_text:
+            d = difflib.Differ()
+            rprint(f"[magenta]VMError:[/magenta] expfile {expfile_path} does not match")
+            changes = d.compare(expfile_text, output_text)
+            for line in changes:
+                rprint(line) 
+            sys.exit(1)
+
     # --- I-Funcs --------------------------------------------------------------
 
     def IASN(self, a, b):
@@ -222,6 +245,7 @@ class VM:
     def IPRT(self, b):
         self.require_param(b, [TIntRegister, TInt])
         print(self.get_register_or_imm_value(b))
+        self._output.append(self.get_register_or_imm_value(b))
 
     def IINP(self, a):
         self.require_param(a, [TIntRegister])
@@ -306,10 +330,11 @@ class VM:
     def RPRT(self, b):
         self.require_param(b, [TFloatRegister, TFloat])
         print(self.get_register_or_imm_value(b))
+        self._output.append(self.get_register_or_imm_value(b))
 
     def RINP(self, a):
         self.require_param(a, [TFloatRegister])
-        self._registers[a] = Register(TFloat, 1)
+        self._registers[a] = Register(TFloat, 3.14)
 
     def REQL(self, a, b, c):
         self.require_param(a, [TFloatRegister])
@@ -403,6 +428,9 @@ class VM:
         self._line_no = int(ln) - 1
 
 
+
+
+
 def main():
     parser = ArgumentParser()
     parser.add_argument("source_file")
@@ -416,14 +444,7 @@ def main():
     # vm.dbg_print_post_run = args.print_post_run
     vm.run()
 
-    # if args.print_post_run:
-    #     print("\n[b yellow]POST RUN SUMMARY[/b yellow]")
-    #     print(f"[b]Has Errors?[/b] {vm.is_error}")
-    #     print(f"[b]Line number:[/b] {vm.current_line_num}")
-
-    #     print("[b]Registers:[/b]")
-    #     for k, v in vm._registers.items():
-    #         print(f"{k:4} -> {v}")
+    vm.compare_to_expected()
 
     if vm._has_errors:
         sys.exit(1)

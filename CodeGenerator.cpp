@@ -104,20 +104,20 @@ CodeGenerator::codegen(IfStatement *node)
 {
     node->get_condition_exp()->accept_code_generator(*this);
     auto const condition_register = node->get_condition_exp()->get_register();
-    auto const before_then_branch = current_asm_line_number();
+    auto const after_condition = current_asm_line_number();
     // Jmpz to the else branch
     node->get_then_branch()->accept_code_generator(*this);
     // Jmp to after the IF
-    auto const before_else_branch = current_asm_line_number();
+    auto const after_then = current_asm_line_number();
     node->get_else_branch()->accept_code_generator(*this);
     auto const after_if = current_asm_line_number();
 
     auto &asm_vec = m_module.m_assembly;
 
-    asm_vec.insert(asm_vec.begin() + before_then_branch,
-                   "JMPZ " + std::to_string(before_else_branch + 3) + " " +
+    asm_vec.insert(asm_vec.begin() + after_condition,
+                   "JMPZ " + std::to_string(after_then + 3) + " " +
                        condition_register.name());
-    asm_vec.insert(asm_vec.begin() + before_else_branch + 1,
+    asm_vec.insert(asm_vec.begin() + after_then + 1,
                    "JUMP " + std::to_string(after_if + 3));
 }
 
