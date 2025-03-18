@@ -210,7 +210,7 @@ BinaryExpression::get_type(SymbolTable const &symbol_table) const
 {
     auto const exp1_type = m_exp1->get_type(symbol_table);
     auto const exp2_type = m_exp2->get_type(symbol_table);
-    if (exp1_type == NumberType::FLOAT && exp2_type == NumberType::FLOAT)
+    if (exp1_type == NumberType::FLOAT || exp2_type == NumberType::FLOAT)
     {
         return NumberType::FLOAT;
     }

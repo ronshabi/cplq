@@ -423,8 +423,8 @@ def main():
     #     for k, v in vm._registers.items():
     #         print(f"{k:4} -> {v}")
 
-    # if vm.is_error:
-    #     sys.exit(1)
+    if vm._has_errors:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

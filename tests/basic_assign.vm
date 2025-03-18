@@ -1,9 +1,1 @@
-Traceback (most recent call last):
-  File "/home/ron/code/quad/vm/qvm.py", line 431, in <module>
-    main()
-  File "/home/ron/code/quad/vm/qvm.py", line 415, in main
-    vm.run()
-  File "/home/ron/code/quad/vm/qvm.py", line 148, in run
-    func = getattr(self, op)
-           ^^^^^^^^^^^^^^^^^
-AttributeError: 'VM' object has no attribute 'BeforePrint'
+3.14

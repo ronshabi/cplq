@@ -273,6 +273,7 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         {
             Register cvt;
             use_int = false;
+            DBG("CONVERT " << lhs_register.name() << "TO REAL");
             emit_line("ITOR", cvt, lhs_register);
             lhs_register = cvt;
         }
