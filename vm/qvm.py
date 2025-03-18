@@ -60,14 +60,14 @@ class Register:
             if self._tp != TFloat:
                 raise VMException("Expected a float for register")
         elif isinstance(val, int):
-            if self._tp != TInt:
-                raise VMException("Expected an integer for register")
+            # raise VMException(f"Expected an integer for register, got {val} instead")
+            pass
         elif isinstance(val, bool):
             if self._tp != TInt:
                 raise VMException("Expected an integer for register from boolean")
             self._val = 1 if val else 0
         else:
-            raise VMException("Type of register value is unknown")
+            raise VMException(f"Type of register value {val} is unknown")
 
     @property
     def val(self):
@@ -121,9 +121,12 @@ class VM:
         self._line_no: int = 0
         self._has_errors: bool = False
         self._registers: dict[str, Register] = {}
+        self._is_running = True
 
     def error(self, message):
-        rprint(f"[red]VMError[/red]: [b white]{self._filename}:{self._line_no}[/b white]: {message}")
+        rprint(
+            f"[red]VMError[/red]: [b white]{self._filename}:{self._line_no}[/b white]: {message}"
+        )
         self._has_errors = True
 
     def set_source_file(self, srcfile: str):
@@ -132,7 +135,11 @@ class VM:
             self._source = f.read().splitlines()
 
     def run(self):
-        while self._line_no < len(self._source) and not self._has_errors:
+        while (
+            self._line_no < len(self._source)
+            and not self._has_errors
+            and self._is_running
+        ):
             line = self._source[self._line_no]
             self._line_no += 1
             op, *args = line.split()
@@ -224,7 +231,7 @@ class VM:
         self.require_param(c, [TIntRegister, TInt])
         br = self.as_register(TInt, b)
         cr = self.as_register(TInt, c)
-        self._registers[a] = br == cr
+        self._registers[a] = Register(TInt, br == cr)
 
     def INQL(self, a, b, c):
         self.require_param(a, [TIntRegister])
@@ -232,7 +239,7 @@ class VM:
         self.require_param(c, [TIntRegister, TInt])
         br = self.as_register(TInt, b)
         cr = self.as_register(TInt, c)
-        self._registers[a] = br != cr
+        self._registers[a] = Register(TInt, br != cr)
 
     def ILSS(self, a, b, c):
         self.require_param(a, [TIntRegister])
@@ -240,7 +247,7 @@ class VM:
         self.require_param(c, [TIntRegister, TInt])
         br = self.as_register(TInt, b)
         cr = self.as_register(TInt, c)
-        self._registers[a] = br < cr
+        self._registers[a] = Register(TInt, br < cr)
 
     def IGRT(self, a, b, c):
         self.require_param(a, [TIntRegister])
@@ -248,7 +255,7 @@ class VM:
         self.require_param(c, [TIntRegister, TInt])
         br = self.as_register(TInt, b)
         cr = self.as_register(TInt, c)
-        self._registers[a] = br > cr
+        self._registers[a] = Register(TInt, br > cr)
 
     def IADD(self, a, b, c):
         self.require_param(a, [TIntRegister])
@@ -308,7 +315,7 @@ class VM:
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
         cr = self.as_register(TFloat, c)
-        self._registers[a] = br == cr
+        self._registers[a] = Register(TInt, br == cr)
 
     def RNQL(self, a, b, c):
         self.require_param(a, [TFloatRegister])
@@ -316,7 +323,7 @@ class VM:
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
         cr = self.as_register(TFloat, c)
-        self._registers[a] = br != cr
+        self._registers[a] = Register(TInt, br != cr)
 
     def RLSS(self, a, b, c):
         self.require_param(a, [TFloatRegister])
@@ -324,7 +331,7 @@ class VM:
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
         cr = self.as_register(TFloat, c)
-        self._registers[a] = br < cr
+        self._registers[a] = Register(TInt, br < cr)
 
     def RGRT(self, a, b, c):
         self.require_param(a, [TFloatRegister])
@@ -332,7 +339,7 @@ class VM:
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
         cr = self.as_register(TFloat, c)
-        self._registers[a] = br > cr
+        self._registers[a] = Register(TInt, br > cr)
 
     def RADD(self, a, b, c):
         self.require_param(a, [TFloatRegister])
@@ -373,7 +380,25 @@ class VM:
 
     # --- Misc -----------------------------------------------------------------
     def HALT(self):
-        pass
+        self._is_running = False
+
+    def JMPZ(self, ln, a):
+        self.require_param(ln, [TInt])
+        self.require_param(a, [TIntRegister])
+        if int(ln) > len(self._source) + 1:
+            raise VMException(f"Jump-target {ln} is out of bounds")
+
+        a_val = self._registers[a].val
+
+        if a_val == 0:
+            self._line_no = int(ln) - 1
+
+    def JUMP(self, ln):
+        self.require_param(ln, [TInt])
+        if int(ln) > len(self._source) + 1:
+            raise VMException(f"Jump-target {ln} is out of bounds")
+
+        self._line_no = int(ln) - 1
 
 
 def main():
