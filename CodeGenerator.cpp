@@ -121,6 +121,7 @@ CodeGenerator::codegen(IfStatement *node)
 
     auto &asm_vec = m_module.m_assembly;
 
+    printf("IFSTMT JUMPZ @ %d\n", after_condition + 1);
     asm_vec[after_condition] =
                    "JMPZ " + std::to_string(after_then + 2) + " " +
                        condition_register.name();
@@ -187,7 +188,7 @@ CodeGenerator::codegen(CastExpression *node)
 void
 CodeGenerator::codegen(NotExpression *node)
 {
-    node->accept_code_generator(*this);
+    node->get_expression()->accept_code_generator(*this);
     emit_line("INQL", node->get_register(),
               node->get_expression()->get_register(), 1);
 }
@@ -245,8 +246,10 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         // Generate RHS evalutation first, and remember to insert the jump to
         // the LHS eval before
         auto const rhs_eval_line = current_asm_line_number();
+        emit_filler("Boolean OR: RHS Eval Line");
         node->get_rhs_expr()->accept_code_generator(*this);
         auto const lhs_eval_line = current_asm_line_number();
+        // emit_filler("Boolean OR: LHS Eval Line");
         node->get_lhs_expr()->accept_code_generator(*this);
 
         // If LHS=0 => jump to RHS evaluation
@@ -254,8 +257,7 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
                   node->get_lhs_expr()->get_register());
 
         // Insert the jump to LHS, right before RHS eval code
-        asm_vec.insert(asm_vec.begin() + rhs_eval_line,
-                       "JUMP " + std::to_string(lhs_eval_line + 1));
+        asm_vec.at(rhs_eval_line) = "JUMP " + std::to_string(lhs_eval_line + 1);
     }
     else
     {

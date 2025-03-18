@@ -24,6 +24,10 @@ void
 SymbolTable::dump() const
 {
     std::cout << "\033[1;33mSymbol Table:\033[0m\n";
+    if (m_table.empty()) {
+        std::cout << "Empty\n";
+        return;
+    }
     for (auto const &[symbol_name, symbol_value] : m_table)
     {
         std::cout << "'" << symbol_name << "' -> " << symbol_value.to_string()

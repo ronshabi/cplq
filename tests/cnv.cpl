@@ -1,0 +1,33 @@
+/* test implicit/explicit type conversions */
+
+int  i, j;
+float a, b;
+
+{
+   read (a);
+   read (i);
+
+   if (a >= i)  {
+
+       b = a - i;
+       write(b);
+   }
+   else {
+       write(i * a);
+   }
+
+   i = (int) (3.0 + 5.8);
+   write (i);
+
+   i = (int) (3 + 5); /* this is legal - may elicit a warning */
+   write(i);
+
+   a = (float) (3 + 5);
+   write(a);
+
+   a = (float) (3.0 + 5.0); /* this is legal- may elicit a warning */
+   write(a);
+
+   /* i = (float)(17);  this is an error: cannot assign float value to int variable */
+
+}
