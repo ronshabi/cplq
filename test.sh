@@ -8,7 +8,7 @@ if [[ "$?" != "0" ]]; then
 fi
 
 
-for f in tests/*.ou; do
+for f in tests/{,basic/}*.ou; do
     PUREFILE=${f%%.ou}
     echo "--" $f
 

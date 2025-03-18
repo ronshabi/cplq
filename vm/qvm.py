@@ -162,6 +162,8 @@ class VM:
                 func(*args)
             except VMException as vme:
                 self.error(vme)
+            except KeyError as ke:
+                self.error(f"register not found: {ke}")
 
     def require_param(self, param: str, ptype):
         recognized = []

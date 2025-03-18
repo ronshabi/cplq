@@ -63,8 +63,15 @@ int yylex(YYSTYPE *, YYLTYPE*);
 %type <ast_statement_list> stmtlist;
 %type <ast_program> program;
 
-%%
+%right '=';
+%left OR;
+%left AND;
+%left RELOP;
+%left ADDOP;
+%left MULOP;
+%right CAST NOT;
 
+%%
 program: 
         declarations stmt_block
         {

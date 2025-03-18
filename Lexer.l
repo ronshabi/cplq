@@ -7,6 +7,8 @@
 letter  [a-zA-Z]
 digit   [0-9]
 
+%x COMMENT_MODE
+
 
 %option noyywrap
 %option yylineno
@@ -41,7 +43,19 @@ digit   [0-9]
 "cast<int>"     { yylval->number_type = NumberType::INT;   return CAST; }
 "cast<float>"   { yylval->number_type = NumberType::FLOAT; return CAST; }
 
-"/*"(.|\n)+"*/" ;
+        /* Taken from the Flex Manual: "How can I match C-style comments?" */
+
+<INITIAL>{
+        "/*" BEGIN(COMMENT_MODE);
+}
+
+<COMMENT_MODE>{
+        "*/" {BEGIN(INITIAL);}
+        [^*\n]+ ;
+        "*" ;
+        \n ;
+
+}
 
 {letter}({letter}|{digit})*    {
         yylval->str = new std::string(yytext);

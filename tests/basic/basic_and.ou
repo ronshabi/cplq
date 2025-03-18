@@ -1,0 +1,26 @@
+/* And with 4 operands */
+x: float;
+y: float;
+z: float;
+w: float;
+vec: float;
+{
+    vec = 3;    
+    x = vec;        /* x = 3 */
+    y = x + 1;      /* y = 4 */
+    z = y + 2;      /* z = 6 */
+    w = z + 3;      /* w = 9 */
+
+    if (x == 3 && y == 4 && z == 6 && w == 9)
+    {
+        output(900);
+    } else {
+        output(1);
+    }
+
+    if (x == 3 && y != 3 && z != y && w != z) {
+        output(500);
+    } else {
+        output(2);
+    }
+}
