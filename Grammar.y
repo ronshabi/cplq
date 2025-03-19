@@ -46,12 +46,26 @@ int yylex(YYSTYPE *, YYLTYPE*);
     std::string *str;
 }
 
-%token BREAK CASE DEFAULT ELSE IF INPUT OUTPUT SWITCH WHILE OR AND NOT;
-%token <number_type> INT FLOAT;
-%token <operator_type> RELOP ADDOP MULOP; 
-%token <number_type> CAST;
-%token <str> ID;
-%token <number> NUM;
+%token BREAK "'break'";
+%token CASE "'case'";
+%token DEFAULT "'default'";
+%token ELSE "'else'";
+%token IF "'if'";
+%token INPUT "'input'";
+%token OUTPUT "'output'";
+%token SWITCH "'switch'";
+%token WHILE "'while'";
+%token OR "'or'";
+%token AND "'and'";
+%token NOT "'not'";
+%token <number_type> INT "'int'";
+%token <number_type> FLOAT "'float'"
+%token <operator_type> RELOP "'==', '!=', '<', '>', '<=' or '>='"; 
+%token <operator_type> ADDOP "'+' or '-'"; 
+%token <operator_type> MULOP "'*' or '/'"; 
+%token <number_type> CAST "'cast<int>' or 'cast<float>'";
+%token <str> ID "identifier";
+%token <number> NUM "number";
 
 %type <number_type> type;
 %type <ast_declaration> idlist declaration;

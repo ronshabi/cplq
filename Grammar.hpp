@@ -71,26 +71,26 @@ extern Module *g_module;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    BREAK = 258,                   /* BREAK  */
-    CASE = 259,                    /* CASE  */
-    DEFAULT = 260,                 /* DEFAULT  */
-    ELSE = 261,                    /* ELSE  */
-    IF = 262,                      /* IF  */
-    INPUT = 263,                   /* INPUT  */
-    OUTPUT = 264,                  /* OUTPUT  */
-    SWITCH = 265,                  /* SWITCH  */
-    WHILE = 266,                   /* WHILE  */
-    OR = 267,                      /* OR  */
-    AND = 268,                     /* AND  */
-    NOT = 269,                     /* NOT  */
-    INT = 270,                     /* INT  */
-    FLOAT = 271,                   /* FLOAT  */
-    RELOP = 272,                   /* RELOP  */
-    ADDOP = 273,                   /* ADDOP  */
-    MULOP = 274,                   /* MULOP  */
-    CAST = 275,                    /* CAST  */
-    ID = 276,                      /* ID  */
-    NUM = 277                      /* NUM  */
+    BREAK = 258,                   /* "'break'"  */
+    CASE = 259,                    /* "'case'"  */
+    DEFAULT = 260,                 /* "'default'"  */
+    ELSE = 261,                    /* "'else'"  */
+    IF = 262,                      /* "'if'"  */
+    INPUT = 263,                   /* "'input'"  */
+    OUTPUT = 264,                  /* "'output'"  */
+    SWITCH = 265,                  /* "'switch'"  */
+    WHILE = 266,                   /* "'while'"  */
+    OR = 267,                      /* "'or'"  */
+    AND = 268,                     /* "'and'"  */
+    NOT = 269,                     /* "'not'"  */
+    INT = 270,                     /* "'int'"  */
+    FLOAT = 271,                   /* "'float'"  */
+    RELOP = 272,                   /* "'==', '!=', '<', '>', '<=' or '>='"  */
+    ADDOP = 273,                   /* "'+' or '-'"  */
+    MULOP = 274,                   /* "'*' or '/'"  */
+    CAST = 275,                    /* "'cast<int>' or 'cast<float>'"  */
+    ID = 276,                      /* "identifier"  */
+    NUM = 277                      /* "number"  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
