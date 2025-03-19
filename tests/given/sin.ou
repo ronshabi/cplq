@@ -3,24 +3,24 @@
 /*  of the number entered (in degrees)                   */
 /*********************************************************/
 
-  float input, cursine, prevsine, loopnum;
-  float power, sign;
+INP, cursine, prevsine, loopnum : float;
+power, sign : float;
 
 {
-  read (input);
-  input = input*3.14159/180;
+  INP = 70.0;
+  INP = INP*3.14159/180;
   prevsine = 0;
-  cursine = input;
+  cursine = INP;
   loopnum = 1;
-  power = input;
+  power = INP;
   sign = 1;
   while (0.0001 < power && loopnum < 200) {
    loopnum = loopnum + 2;
-   power = power*input*input/(loopnum*(loopnum-1));
+   power = power*INP*INP/(loopnum*(loopnum-1));
    prevsine = cursine;
    sign = sign * (0-1);
    cursine = cursine + sign*power;
   }
-  write(cursine);
+  output(cursine);
 
 }
