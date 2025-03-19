@@ -198,7 +198,12 @@ SemanticAnalyzer::analyze(SwitchStatement *node)
     }
 
     // Check that the default statement is okay
+    bool got_called_by_switch = m_allow_break_stmts;
+    m_allow_break_stmts = true; // Allow break statements.
     node->get_default_case()->accept_semantic_analyzer(*this);
+    if (!got_called_by_switch) {
+        m_allow_break_stmts = false; // Disallow break statements.
+    }
 }
 
 void

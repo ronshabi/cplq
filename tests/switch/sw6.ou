@@ -15,9 +15,11 @@
         }
         case 2 : {
             output(2);
+            break;
         }
         default : {
             output(999);
+            break;
         }
     }
 }
