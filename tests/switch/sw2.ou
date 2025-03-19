@@ -1,0 +1,12 @@
+i, j: int;
+{
+    i = 20;
+    j = 30;
+
+    switch (i + j) {
+        case 20: { output(20); }
+        case 30: { output(20); }
+        case 50: { output(50); }
+        default: { output(999); }
+    }
+}
