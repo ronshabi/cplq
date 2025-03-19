@@ -199,36 +199,29 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 
     if (my_operator == Operator::AND)
     {
-        // Short-circuting AND
-        // We need to evaluate LHS first. If LHS=0, we can skip RHS.
-        // How can we skip RHS?
-        //  - If LHS=0 => continue to regular code
-        //  - Else (LHS=1) => jump to evaluate RHS.
-        //
-        //      ~> Therefore, the LHS evaluation should come first.
+        // The algorithm of AND expr generation with short-circuting
 
-        // Set our register to zero
-        emit_line("IASN", my_register, 0);
+        // Let M be my register
+
+        //          Check LHS
+        //          Set M = LHS
+        //          If M == 0: Jump to L1
+        //          Check RHS
+        //          Set M = RHS
+        //  L1:     ... Rest of the code ...
 
         node->get_lhs_expr()->accept_code_generator(*this);
+        emit_line("IASN", my_register, node->get_lhs_expr()->get_register());
 
-        // If LHS=0 => Jump to regular code
-        auto const after_lhs_eval = current_asm_line_number();
+        auto const jzl1_filler = emit_filler("AND: if M == 0 jump to L1");
 
-        // If LHS=1 => Continue to evaluating RHS
         node->get_rhs_expr()->accept_code_generator(*this);
+        emit_line("IASN", my_register, node->get_rhs_expr()->get_register());
 
-        // If RHS=1 => Set our register to one
-        emit_line("IEQL", my_register, node->get_rhs_expr()->get_register(), 1);
+        auto const L1 = current_asm_line_number();
 
-        // The normal code resumes here
-        auto const normal_code_resumes = current_asm_line_number();
-
-        std::string const jmpz_instr =
-            "JMPZ " + std::to_string(normal_code_resumes + 2) + " " +
-            node->get_lhs_expr()->get_register().name();
-
-        asm_vec.insert(asm_vec.begin() + after_lhs_eval, jmpz_instr);
+        // Backpatch
+        asm_vec[jzl1_filler] = "JMPZ " + std::to_string(L1 + 1) + " " + my_register.name();
     }
     else if (my_operator == Operator::OR)
     {

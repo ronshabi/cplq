@@ -1,19 +1,19 @@
    /* should print 3  8   16.0   17.0  18.0 (or 19.0 if RTOI rounds up) */    
-float a, b;
-int i, j;
+a, b: float;
+i, j: int;
 
 {
    a = 3.2;
    j = 8;
    
-   i = cast<int>a;
+   i = cast<int>(a);
    output(i);
    
-   i = cast<int> j;
+   i = cast<int> (j);
    output(i);
    
    i = 16;
-   a = cast<float>i;
+   a = cast<float>(i);
    output(a);
    
    b = 17.0;
@@ -23,7 +23,7 @@ int i, j;
    output(a);
    
    b = 18.9;
-   a = cast<int> b;
+   a = cast<int> (b);
    
    output(a);
 

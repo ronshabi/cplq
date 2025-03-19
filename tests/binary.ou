@@ -1,7 +1,7 @@
 /*convert from decimal to binary */
 
-int a, b;
-int temp, ten;
+a, b: int;
+temp, ten: int;
 
 {
 
