@@ -39,3 +39,5 @@ for f in tests/{,basic/}*.ou; do
     # # fi
 
 done
+
+echo -e "\033[1;32m --- ALL TESTS PASSED --- \033[0m"
