@@ -337,7 +337,7 @@ class VM:
     def RPRT(self, b):
         self.require_param(b, [TFloatRegister, TFloat])
         flt = float(self.get_register_or_imm_value(b))
-        print(flt, f"will output {flt:2f}")
+        print(flt, f"(NOTE: will output {flt:.2f})")
         self._output.append(f"{flt:.2f}")
 
     def RINP(self, a):
