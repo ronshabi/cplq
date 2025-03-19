@@ -522,7 +522,7 @@ void
 CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
 {
     std::array<char, 128> buf{};
-    std::snprintf(buf.data(), buf.size(), "%.2f", val);
+    std::snprintf(buf.data(), buf.size(), "%.5f", val);
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::string(buf.data()));
 }

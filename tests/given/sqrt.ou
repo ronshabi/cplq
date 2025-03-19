@@ -15,7 +15,6 @@ iter: int;
 
          if(delta < 0)  { delta = 0 - delta;} else { }
          if (delta < 0.0001)  { stop = 1;} else { }
-         output(delta);
        }
        output(a);
        output(x);
