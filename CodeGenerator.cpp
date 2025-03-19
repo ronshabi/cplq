@@ -107,26 +107,23 @@ CodeGenerator::codegen(IfStatement *node)
     // Jmpz to the else branch
     auto const after_condition = current_asm_line_number();
     emit_filler("if: after condition, jmpz should be inserted");
-    
-    node->get_then_branch()->accept_code_generator(*this);
-    
-    // Jmp to after the IF
-    
-    auto const after_then = current_asm_line_number();
-    emit_filler("if: after then, a jump to the rest of the code should be inserted");
 
+    node->get_then_branch()->accept_code_generator(*this);
+
+    // Jmp to after the IF
+
+    auto const after_then = current_asm_line_number();
+    emit_filler(
+        "if: after then, a jump to the rest of the code should be inserted");
 
     node->get_else_branch()->accept_code_generator(*this);
     auto const after_if = current_asm_line_number();
 
     auto &asm_vec = m_module.m_assembly;
 
-    printf("IFSTMT JUMPZ @ %d\n", after_condition + 1);
-    asm_vec[after_condition] =
-                   "JMPZ " + std::to_string(after_then + 2) + " " +
-                       condition_register.name();
-    asm_vec[after_then] =
-                   "JUMP " + std::to_string(after_if + 1);
+    asm_vec[after_condition] = "JMPZ " + std::to_string(after_then + 2) + " " +
+                               condition_register.name();
+    asm_vec[after_then] = "JUMP " + std::to_string(after_if + 1);
 }
 
 void
@@ -235,29 +232,39 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
     }
     else if (my_operator == Operator::OR)
     {
-        // Short-circuting OR
-        // We need to evaluate LHS first. If LHS=1, we can skip RHS.
-        // How can we skip RHS?
-        //  - If LHS=0 => jump to the evalutation of RHS,
-        //  - Else (LHS=1) => continue to normal code.
-        //
-        //    ~> Therefore, normal code should come RIGHT AFTER LHS evaluation
+        // The algorithm of OR expr generation with short-circuting
 
-        // Generate RHS evalutation first, and remember to insert the jump to
-        // the LHS eval before
-        auto const rhs_eval_line = current_asm_line_number();
-        emit_filler("Boolean OR: RHS Eval Line");
+        // Let M be my register.
+
+        //          Jump to L1
+        //  L2:     Check RHS
+        //          M = RHS
+        //          Jump to L3
+        //  L1:     Check LHS
+        //          M = LHS
+        //          If LHS == 0, Jump to L2 (Check RHS)
+        //  L3:     ... Rest of the code ...
+
+        auto const jtl1_filler = emit_filler("OR: Jump to L1");
+
+        auto const L2 = current_asm_line_number();
         node->get_rhs_expr()->accept_code_generator(*this);
-        auto const lhs_eval_line = current_asm_line_number();
-        // emit_filler("Boolean OR: LHS Eval Line");
+        emit_line("IASN", my_register, node->get_rhs_expr()->get_register());
+        auto const jtl3_filler = emit_filler("OR: Jump to L3");
+
+        auto const L1 = current_asm_line_number();
         node->get_lhs_expr()->accept_code_generator(*this);
+        emit_line("IASN", my_register, node->get_lhs_expr()->get_register());
 
-        // If LHS=0 => jump to RHS evaluation
-        emit_line("JMPZ " + std::to_string(rhs_eval_line + 1),
-                  node->get_lhs_expr()->get_register());
+        auto const jzl2_filler = emit_filler("OR: Jumpz to L2 if LHS=0");
 
-        // Insert the jump to LHS, right before RHS eval code
-        asm_vec.at(rhs_eval_line) = "JUMP " + std::to_string(lhs_eval_line + 1);
+        auto const L3 = current_asm_line_number();
+
+        // Backpatch
+        asm_vec[jtl1_filler] = "JUMP " + std::to_string(L1 + 1);
+        asm_vec[jtl3_filler] = "JUMP " + std::to_string(L3 + 1);
+        asm_vec[jzl2_filler] = "JMPZ " + std::to_string(L2 + 1) + " " + my_register.name();
+
     }
     else
     {
@@ -423,7 +430,6 @@ CodeGenerator::codegen(BinaryExpression *node)
 
     // Generate the code
     emit_line(opcode, my_register, lhs_register, rhs_register);
-
 }
 
 void
@@ -458,8 +464,11 @@ CodeGenerator::codegen(BreakStatement *node)
     m_break_requests.push_back(current_asm_line_number());
 }
 
-void CodeGenerator::emit_filler(std::string const& comment) {
+unsigned
+CodeGenerator::emit_filler(std::string const &comment)
+{
     m_module.m_assembly.push_back("FILLER: " + comment);
+    return m_module.m_assembly.size() - 1;
 }
 
 void

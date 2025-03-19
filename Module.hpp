@@ -92,7 +92,8 @@ public:
         return m_symbol_table;
     }
 
-friend CodeGenerator;
+    friend CodeGenerator;
+
 private:
     void check_correct_file_extension();
     void try_to_open_file();

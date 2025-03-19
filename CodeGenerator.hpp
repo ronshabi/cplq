@@ -29,7 +29,7 @@ public:
     void codegen(BreakStatement *node);
 
 private:
-    void emit_filler(std::string const& comment);
+    unsigned emit_filler(std::string const &comment);
     void emit_line(std::string const &str);
     void emit_line(std::string const &opcode, Register r);
     void emit_line(std::string const &opcode, Register r1, Register r2);
@@ -43,13 +43,12 @@ private:
 
     SymbolTable &symbol_table();
 
-
     void backpatch_break_statements();
 
     unsigned current_asm_line_number() const;
 
     std::vector<unsigned> m_break_requests{};
-    unsigned m_break_jump_dest = 0;
+    unsigned              m_break_jump_dest = 0;
 
     Module &m_module;
 };

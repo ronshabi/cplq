@@ -24,7 +24,8 @@ void
 SymbolTable::dump() const
 {
     std::cout << "\033[1;33mSymbol Table:\033[0m\n";
-    if (m_table.empty()) {
+    if (m_table.empty())
+    {
         std::cout << "Empty\n";
         return;
     }
