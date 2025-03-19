@@ -5,9 +5,14 @@
 
 class Module;
 
+/// \class SemanticAnalyzer
+/// \brief Class responsible for semantic analysis of a module.
 class SemanticAnalyzer
 {
 public:
+    /// \brief Initializes the analyzer with a reference to a module.
+    ///
+    /// \param mod The module to analyze.
     SemanticAnalyzer(Module &mod)
         : m_module(mod)
     {
