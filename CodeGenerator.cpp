@@ -248,6 +248,8 @@ CodeGenerator::codegen(WhileStatement *node)
     // Backpatch
     patch_jmpz(jzl2_filler, L2 + 1, condition_register);
     patch_jump(jtl1_filler, L1 + 1);
+
+    patch_breaks();
 }
 
 void

@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-
 #include <iostream>
 
 #include "Register.hpp"
@@ -10,6 +9,7 @@
 #include "Types.hpp"
 #include "Utils.hpp"
 
+// Forward decls.
 class AstNode;
 class Statement;
 class StatementList;
@@ -20,6 +20,8 @@ class CodeGenerator;
 
 //===----------------------------------------------------------------------===//
 
+/// \class AstNode
+/// \brief Base class for all AST nodes.
 class AstNode
 {
 public:
@@ -59,6 +61,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class Declaration
+/// \brief Represents a variable declaration.
 class Declaration : public AstNode
 {
 public:
@@ -97,6 +101,10 @@ private:
     NumberType                 m_type;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class DeclarationBlock
+/// \brief Represents a block of variable declarations.
 class DeclarationBlock : public AstNode
 {
 public:
@@ -119,6 +127,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class Expression
+/// \brief Base class for expressions.
 class Expression : public AstNode
 {
 public:
@@ -137,6 +147,8 @@ public:
 
 //===----------------------------------------------------------------------===//
 
+/// \class BoolExpression
+/// \brief Base class for boolean expressions.
 class BoolExpression : public Expression
 {
 public:
@@ -147,6 +159,8 @@ public:
     }
 };
 
+/// \class NotExpression
+/// \brief Represents a logical NOT expression.
 class NotExpression : public BoolExpression
 {
 public:
@@ -170,6 +184,10 @@ private:
     BoolExpression *m_exp;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class BinaryBoolExpression
+/// \brief Represents a binary boolean expression.
 class BinaryBoolExpression : public BoolExpression
 {
 public:
@@ -209,6 +227,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class NumberExpression
+/// \brief Represents a number literal expression.
 class NumberExpression : public Expression
 {
 public:
@@ -241,6 +261,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class CastExpression
+/// \brief Represents a type cast expression.
 class CastExpression : public Expression
 {
 public:
@@ -275,6 +297,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class IdExpression
+/// \brief Represents an identifier expression.
 class IdExpression : public Expression
 {
 public:
@@ -302,6 +326,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class BinaryExpression
+/// \brief Represents a binary arithmetic expression.
 class BinaryExpression : public Expression
 {
 public:
@@ -343,6 +369,8 @@ private:
 
 //===----------------------------------------------------------------------===//
 
+/// \class Statement
+/// \brief Base class for statements.
 class Statement : public AstNode
 {
 public:
@@ -355,6 +383,8 @@ public:
 
 //===----------------------------------------------------------------------===//
 
+/// \class AssignStatement
+/// \brief Represents an assignment statement.
 class AssignStatement : public Statement
 {
 public:
@@ -384,6 +414,10 @@ private:
     Expression  *m_exp;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class OutputStatement
+/// \brief Represents an output statement.
 class OutputStatement : public Statement
 {
 public:
@@ -407,6 +441,10 @@ private:
     Expression *m_exp;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class InputStatement
+/// \brief Represents an input statement.
 class InputStatement : public Statement
 {
 public:
@@ -429,6 +467,10 @@ private:
     std::string *m_id;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class IfStatement
+/// \brief Represents an if statement.
 class IfStatement : public Statement
 {
 public:
@@ -467,6 +509,10 @@ private:
     Statement      *m_else_branch;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class WhileStatement
+/// \brief Represents a while statement.
 class WhileStatement : public Statement
 {
 public:
@@ -514,6 +560,8 @@ public:
 
 //===----------------------------------------------------------------------===//
 
+/// \class StatementList
+/// \brief Represents a list of statements.
 class StatementList : public Statement
 {
 public:
@@ -538,6 +586,10 @@ private:
     std::vector<Statement *> m_statements;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class SwitchStatement
+/// \brief Represents a switch statement.
 class SwitchStatement : public Statement
 {
 public:
@@ -546,18 +598,25 @@ public:
     {
     }
 
+    /// \brief Add a case to the switch statement.
+    /// \param case_num The case number.
+    /// \param case_statements The statements for the case.
     void
     add_case(Number case_num, StatementList *case_statements)
     {
         m_cases.emplace_back(case_num, case_statements);
     }
 
+    /// \brief Set the expression for the switch statement.
+    /// \param exp The expression.
     void
     set_expression(Expression *exp)
     {
         m_exp = exp;
     }
 
+    /// \brief Set the default case for the switch statement.
+    /// \param default_case_stmt_list The statements for the default case.
     void
     set_default_case(StatementList *default_case_stmt_list)
     {
@@ -585,22 +644,40 @@ public:
     }
 
 private:
-    Expression                                 *m_exp;
+    /// \brief The expression being switched on.
+    /// This expression's value is compared against the case values.
+    /// It must evaluate to a number type.
+    Expression *m_exp;
+
+    /// \brief The vector of cases in the switch statement.
+    /// Each case consists of a number value and a list of statements.
+    /// The cases are stored in the order they were added.
     std::vector<std::pair<Number, Statement *>> m_cases;
-    Statement                                  *m_default_case = nullptr;
+
+    /// \brief The default case for the switch statement.
+    /// This case is executed if no other case matches the expression value.
+    Statement *m_default_case = nullptr;
 };
 
+//===----------------------------------------------------------------------===//
+
+/// \class Program
+/// \brief Represents a complete program.
 class Program : public AstNode
 {
 public:
     Program() = default;
 
+    /// \brief Set the declaration block for the program.
+    /// \param db The declaration block.
     void
     set_declaration_block(DeclarationBlock *db)
     {
         m_declaration_block = db;
     }
 
+    /// \brief Set the program statements.
+    /// \param statement The program statements.
     void
     set_program_statements(Statement *statement)
     {
