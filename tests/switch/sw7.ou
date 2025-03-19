@@ -4,11 +4,13 @@ mult: float;
     input(var);
     switch (var) {
         case 0:
-            mult = 3.14;
-            output(mult);
+            mult = 70.70;
+            output(var);
+            break;
 
         case 1: {
             mult = 4.20;
+            break;
         }
 
         case 2: {
@@ -17,6 +19,8 @@ mult: float;
 
         default: {
             mult = 999;
+            break;
+            break;
         }
     }
 

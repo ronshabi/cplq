@@ -82,6 +82,8 @@ CodeGenerator::codegen(InputStatement *node)
     {
         emit_line("RINP", sym->reg);
     }
+
+    node->m_register = sym->reg;
 }
 
 void
@@ -158,8 +160,7 @@ CodeGenerator::codegen(SwitchStatement *node)
     //
     //      LExit:      [... rest of the code after the switch ...]
 
-    auto const rexpr = node->get_expression()->get_register();
-    auto const expr  = node->get_expression();
+    auto const expr = node->get_expression();
 
     auto       rcmp  = Register();
     auto const cases = node->get_cases(); // First - the case number
@@ -169,22 +170,25 @@ CodeGenerator::codegen(SwitchStatement *node)
     std::vector<unsigned> case_implicit_jump_to_next_backpatch_lines{};
 
     expr->accept_code_generator(*this);
+    auto const rexpr = node->get_expression()->get_register();
 
     // Generate code for regular cases
     for (std::size_t i = 0; i < cases.size(); ++i)
     {
         auto const case_number = cases.at(i).first.i;
-        auto const case_code = cases.at(i).second;
+        auto const case_code   = cases.at(i).second;
 
         case_labels.push_back(current_asm_line_number());
         emit_line("IEQL", rcmp, rexpr, case_number);
-        
-        auto const lcnext = emit_filler("Switch: if rcmp==0, jump to next case");
+
+        auto const lcnext =
+            emit_filler("Switch: if rcmp==0, jump to next case");
         case_backpatch_lines.push_back(lcnext);
 
         case_code->accept_code_generator(*this);
 
-        auto const jt_implicit_next = emit_filler("switch: jump implicit to next");
+        auto const jt_implicit_next =
+            emit_filler("switch: jump implicit to next");
         case_implicit_jump_to_next_backpatch_lines.push_back(jt_implicit_next);
     }
 
@@ -202,13 +206,17 @@ CodeGenerator::codegen(SwitchStatement *node)
     patch_breaks();
 
     // Patch regular cases
-    for (std::size_t i = 0; i < case_labels.size(); ++i) {
+    for (std::size_t i = 0; i < case_labels.size(); ++i)
+    {
         auto const case_backpatch_line = case_backpatch_lines.at(i);
 
-        auto const case_backpatch_next_imp = case_implicit_jump_to_next_backpatch_lines.at(i);
+        auto const case_backpatch_next_imp =
+            case_implicit_jump_to_next_backpatch_lines.at(i);
 
-        auto LCNext = (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 1 : LD + 1;
-        auto LCNextImplicit = (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 2 : LD + 1;
+        auto LCNext =
+            (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 1 : LD + 1;
+        auto LCNextImplicit =
+            (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 2 : LD + 1;
 
         patch_jmpz(case_backpatch_line, LCNext, rcmp);
         patch_jump(case_backpatch_next_imp, LCNextImplicit);
