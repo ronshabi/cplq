@@ -635,7 +635,7 @@ unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
 {
     std::array<char, 128> buf{};
-    std::snprintf(buf.data(), buf.size(), "%.5f", val);
+    std::snprintf(buf.data(), buf.size(), "%.5g", val);
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::string(buf.data()));
     return m_module.m_assembly.size() - 1;

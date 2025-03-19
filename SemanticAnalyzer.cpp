@@ -172,14 +172,14 @@ SemanticAnalyzer::analyze(SwitchStatement *node)
         if (case_num.type != NumberType::INT)
         {
             m_module.emit_error(
-                "type mismatch: case number '%f' must be an integer",
+                "type mismatch: case number '%.5g' must be an integer",
                 case_num.d);
         }
 
         if (all_case_numbers.contains(case_num.i))
         {
             m_module.emit_error(
-                "switch contains ambiguous case for number '%d'", case_num.i);
+                "switch contains ambiguous cases");
         }
 
         all_case_numbers.insert(case_num.i);
