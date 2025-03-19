@@ -121,9 +121,9 @@ CodeGenerator::codegen(IfStatement *node)
 
     auto &asm_vec = m_module.m_assembly;
 
-    asm_vec[after_condition] = "JMPZ " + std::to_string(after_then + 2) + " " +
+    asm_vec.at(after_condition) = "JMPZ " + std::to_string(after_then + 2) + " " +
                                condition_register.name();
-    asm_vec[after_then] = "JUMP " + std::to_string(after_if + 1);
+    asm_vec.at(after_then) = "JUMP " + std::to_string(after_if + 1);
 }
 
 void
@@ -225,7 +225,7 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         auto const L1 = current_asm_line_number();
 
         // Backpatch
-        asm_vec[jzl1_filler] =
+        asm_vec.at(jzl1_filler) =
             "JMPZ " + std::to_string(L1 + 1) + " " + my_register.name();
     }
     else if (my_operator == Operator::OR)
@@ -259,9 +259,9 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         auto const L3 = current_asm_line_number();
 
         // Backpatch
-        asm_vec[jtl1_filler] = "JUMP " + std::to_string(L1 + 1);
-        asm_vec[jtl3_filler] = "JUMP " + std::to_string(L3 + 1);
-        asm_vec[jzl2_filler] =
+        asm_vec.at(jtl1_filler) = "JUMP " + std::to_string(L1 + 1);
+        asm_vec.at(jtl3_filler) = "JUMP " + std::to_string(L3 + 1);
+        asm_vec.at(jzl2_filler) =
             "JMPZ " + std::to_string(L2 + 1) + " " + my_register.name();
     }
     else
@@ -540,7 +540,7 @@ CodeGenerator::backpatch_break_statements()
 
     for (unsigned const br : m_break_requests)
     {
-        asm_vec[br].append(std::to_string(m_break_jump_dest + 1));
+        asm_vec.at(br).append(std::to_string(m_break_jump_dest + 1));
     }
 
     m_break_requests.clear();
