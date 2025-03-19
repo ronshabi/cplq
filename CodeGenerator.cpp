@@ -134,32 +134,28 @@ CodeGenerator::codegen(SwitchStatement *node)
 void
 CodeGenerator::codegen(WhileStatement *node)
 {
-    // Call the codegen on the condition
-    auto const cond_check_line = current_asm_line_number();
+    // The algorithm of while statement generation
+
+    //      L1:     Condition code
+    //              If condition==0: jump to L2 (exit loop)
+    //              Body code
+    //              Jump to L1 (check condition again)
+    //      L2:     ... Rest of code ...
+
+    auto const condition_register = node->get_condition_expression()->get_register();
+
+
+    auto const L1 = current_asm_line_number();
     node->get_condition_expression()->accept_code_generator(*this);
-
-    // Check the return code, if it is zero, we should resume to normal code
-
-    auto const after_checking_cond = current_asm_line_number();
-    emit_filler("while after condition");
-    // BUT WHERE IS THE NORMAL CODE?
+    auto const jzl2_filler = emit_filler("While: If condition is zero, exit loop");
     node->get_body_statement()->accept_code_generator(*this);
+    auto const jtl1_filler = emit_filler("While: Check condition again");
+    auto const L2 = current_asm_line_number();
 
-    // Jump to the condition check once again
-    emit_line("JUMP " + std::to_string(cond_check_line + 1));
-
-    // This is where the normal code resumes, we need to document this for break
-    // and loop exit
-    m_break_jump_dest = current_asm_line_number();
-
-    auto &asm_vec = m_module.m_assembly;
-
-    std::string jmpz_exit_loop =
-        "JMPZ " + std::to_string(m_break_jump_dest + 1) + " " +
-        node->get_condition_expression()->get_register().name();
-
-    asm_vec[after_checking_cond] = jmpz_exit_loop;
-    backpatch_break_statements();
+    // Backpatch
+    m_module.m_assembly.at(jzl2_filler) = "JMPZ " + std::to_string(L2 + 1) + " " + condition_register.name();
+    m_module.m_assembly.at(jtl1_filler) = "JUMP " + std::to_string(L1 + 1);
+    
 }
 
 void
