@@ -32,6 +32,7 @@ private:
     unsigned emit_filler(std::string const &comment);
     void patch_jmpz(unsigned line_no, unsigned jump_target, Register r);
     void patch_jump(unsigned line_no, unsigned jump_target);
+    void patch_breaks();
     unsigned emit_line(std::string const &str);
     unsigned emit_line(std::string const &opcode, Register r);
     unsigned emit_line(std::string const &opcode, Register r1, Register r2);
@@ -45,7 +46,6 @@ private:
 
     SymbolTable &symbol_table();
 
-    void backpatch_break_statements();
 
     unsigned current_asm_line_number() const;
 

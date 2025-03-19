@@ -110,7 +110,7 @@ CodeGenerator::codegen(IfStatement *node)
     //              Jump to L2 (skip else-block, exit the if)
     //      L1:     [Else-block code]
     //      L2:     [... Rest of code ...]
-    
+
     auto const condition_register = node->get_condition_exp()->get_register();
 
     node->get_condition_exp()->accept_code_generator(*this);
@@ -130,12 +130,87 @@ CodeGenerator::codegen(IfStatement *node)
     // Backpatch
     patch_jmpz(jzl1_filler, L1 + 1, condition_register);
     patch_jump(jtl2_filler, L2 + 1);
-
 }
 
 void
 CodeGenerator::codegen(SwitchStatement *node)
 {
+    // The algorithm of switch-statement code generation.
+
+    // Let m be the number of cases.
+    // Let RExpr be the expression result register.
+    // Let RCmp be a temporary register for case comparison.
+    // Let Nx be the case num register.
+
+    //                  [checked expression code]
+    //      LC1:        Set RCmp = (RExpr != Nx)
+    //                  If RCmp == 0: Jump to LC2
+    //                  [case 1 code]
+    //                  Jump to the end of the switch
+    //      ...
+    //
+    //      LCm:        Set RCmp = (RExpr != Nm)
+    //                  If RCmp == 0: Jump to LD (D for default)
+    //                  [case m code]
+    //                  Jump to the end of the switch
+    //
+    //      LD:         [default case code]
+    //
+    //      LExit:      [... rest of the code after the switch ...]
+
+    auto const rexpr = node->get_expression()->get_register();
+    auto const expr  = node->get_expression();
+
+    auto       rcmp  = Register();
+    auto const cases = node->get_cases(); // First - the case number
+                                          // Second - the case statement list
+    std::vector<unsigned> case_labels{};
+    std::vector<unsigned> case_backpatch_lines{};
+    std::vector<unsigned> case_jump_to_end_backpatch_lines{};
+
+    expr->accept_code_generator(*this);
+
+    // Generate code for regular cases
+    for (std::size_t i = 0; i < cases.size(); ++i)
+    {
+        auto const case_number = cases.at(i).first.i;
+        auto const case_code = cases.at(i).second;
+
+        case_labels.push_back(current_asm_line_number());
+        emit_line("INQL", rcmp, rexpr, case_number);
+        
+        auto const lcnext = emit_filler("Switch: if rcmp==0, jump to next case");
+        case_backpatch_lines.push_back(lcnext);
+
+        case_code->accept_code_generator(*this);
+
+        auto const jtend = emit_filler("switch: jump to end");
+        case_jump_to_end_backpatch_lines.push_back(jtend);
+    }
+
+    // Generate code for the default case
+    auto const LD = current_asm_line_number();
+    node->get_default_case()->accept_code_generator(*this);
+
+    auto const LExit = current_asm_line_number();
+
+    // ---------------
+    // Backpatch
+    // ---------------
+    // Don't forget the breaks
+    m_break_jump_dest = LExit;
+    patch_breaks();
+
+    // Patch regular cases
+    for (std::size_t i = 0; i < case_labels.size(); ++i) {
+        auto const case_backpatch_line = case_backpatch_lines.at(i);
+        auto const case_backpatch_end_line = case_jump_to_end_backpatch_lines.at(i);
+
+        auto LCNext = (i + 1 != case_labels.size()) ? case_labels.at(i + 1) : LD;
+
+        patch_jmpz(case_backpatch_line, LCNext + 1, rcmp);
+        patch_jump(case_backpatch_end_line, LExit + 1);
+    }
 }
 
 void
@@ -561,7 +636,7 @@ CodeGenerator::symbol_table()
 }
 
 void
-CodeGenerator::backpatch_break_statements()
+CodeGenerator::patch_breaks()
 {
     for (unsigned const br : m_break_requests)
     {
