@@ -166,7 +166,7 @@ CodeGenerator::codegen(SwitchStatement *node)
                                           // Second - the case statement list
     std::vector<unsigned> case_labels{};
     std::vector<unsigned> case_backpatch_lines{};
-    std::vector<unsigned> case_jump_to_end_backpatch_lines{};
+    std::vector<unsigned> case_implicit_jump_to_next_backpatch_lines{};
 
     expr->accept_code_generator(*this);
 
@@ -184,8 +184,8 @@ CodeGenerator::codegen(SwitchStatement *node)
 
         case_code->accept_code_generator(*this);
 
-        auto const jtend = emit_filler("switch: jump to end");
-        case_jump_to_end_backpatch_lines.push_back(jtend);
+        auto const jt_implicit_next = emit_filler("switch: jump implicit to next");
+        case_implicit_jump_to_next_backpatch_lines.push_back(jt_implicit_next);
     }
 
     // Generate code for the default case
@@ -204,12 +204,14 @@ CodeGenerator::codegen(SwitchStatement *node)
     // Patch regular cases
     for (std::size_t i = 0; i < case_labels.size(); ++i) {
         auto const case_backpatch_line = case_backpatch_lines.at(i);
-        auto const case_backpatch_end_line = case_jump_to_end_backpatch_lines.at(i);
 
-        auto LCNext = (i + 1 != case_labels.size()) ? case_labels.at(i + 1) : LD;
+        auto const case_backpatch_next_imp = case_implicit_jump_to_next_backpatch_lines.at(i);
 
-        patch_jmpz(case_backpatch_line, LCNext + 1, rcmp);
-        patch_jump(case_backpatch_end_line, LExit + 1);
+        auto LCNext = (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 1 : LD + 1;
+        auto LCNextImplicit = (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 2 : LD + 1;
+
+        patch_jmpz(case_backpatch_line, LCNext, rcmp);
+        patch_jump(case_backpatch_next_imp, LCNextImplicit);
     }
 }
 
@@ -515,7 +517,7 @@ void
 CodeGenerator::codegen(IdExpression *node)
 {
     // I want to SET the ID register to the symbol register, to sync them.
-    const auto sym   = symbol_table().get(*node->get_id());
+    auto const sym   = symbol_table().get(*node->get_id());
     node->m_register = sym->reg;
 
     // Now we can continue with no worries the ID will not refer to the symbol
@@ -524,7 +526,7 @@ CodeGenerator::codegen(IdExpression *node)
 void
 CodeGenerator::codegen(NumberExpression *node)
 {
-    const auto type = node->get_type(symbol_table());
+    auto const type = node->get_type(symbol_table());
     if (type == NumberType::INT)
     {
         emit_line("IASN", node->get_register(), node->get_number().i);

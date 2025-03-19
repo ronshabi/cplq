@@ -23,7 +23,7 @@ DeclarationBlock::dump(unsigned indent) const
 {
     AstNode::dump(indent);
     std::cout << "DeclBlock<" << m_declarations.size() << ">\n";
-    for (const auto &decl : m_declarations)
+    for (auto const &decl : m_declarations)
     {
         decl->dump(indent + 4);
     }

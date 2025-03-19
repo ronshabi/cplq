@@ -5,7 +5,7 @@ i, j: int;
     switch (i * 2 + 30) {
         case 0: { output(0); }
         case 70: { output(i); }
-        case 30: { output(j); }
+        case 30: { output(420); }
         case 1: { output(1); }
         default: { output(999); }
     }

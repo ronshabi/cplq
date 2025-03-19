@@ -1,0 +1,23 @@
+{
+    switch (1) {
+        case 1 : {
+            switch (3) {
+                case 1 : {
+                    output(666);
+                }
+
+                default : {
+                    output(333);
+                }
+            }
+
+            break;
+        }
+        case 2 : {
+            output(2);
+        }
+        default : {
+            output(999);
+        }
+    }
+}

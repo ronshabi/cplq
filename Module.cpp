@@ -97,7 +97,7 @@ Module::codegen()
         return;
     }
 
-    for (const auto &line : m_assembly)
+    for (auto const &line : m_assembly)
     {
         output_file << line << "\n";
     }

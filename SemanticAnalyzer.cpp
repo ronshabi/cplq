@@ -183,9 +183,18 @@ SemanticAnalyzer::analyze(SwitchStatement *node)
         }
 
         all_case_numbers.insert(case_num.i);
+
+
+        // We have been called by a switch/while, so breaks here are OK
+        bool got_called_by_switch = m_allow_break_stmts;
+        
+
         m_allow_break_stmts = true; // Allow break statements.
         case_stmt->accept_semantic_analyzer(*this);
-        m_allow_break_stmts = false; // Disallow break statements.
+
+        if (!got_called_by_switch) {
+            m_allow_break_stmts = false; // Disallow break statements.
+        }
     }
 
     // Check that the default statement is okay
@@ -195,8 +204,15 @@ SemanticAnalyzer::analyze(SwitchStatement *node)
 void
 SemanticAnalyzer::analyze(WhileStatement *node)
 {
+    bool got_called_by_while = m_allow_break_stmts;
+
+    m_allow_break_stmts = true;
     node->get_condition_expression()->accept_semantic_analyzer(*this);
     node->get_body_statement()->accept_semantic_analyzer(*this);
+
+    if (!got_called_by_while) {
+        m_allow_break_stmts = false;
+    }
 }
 
 void
