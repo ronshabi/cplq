@@ -118,11 +118,10 @@ CodeGenerator::codegen(IfStatement *node)
 
     node->get_else_branch()->accept_code_generator(*this);
     auto const after_if = current_asm_line_number();
+    auto      &asm_vec  = m_module.m_assembly;
 
-    auto &asm_vec = m_module.m_assembly;
-
-    asm_vec.at(after_condition) = "JMPZ " + std::to_string(after_then + 2) + " " +
-                               condition_register.name();
+    asm_vec.at(after_condition) = "JMPZ " + std::to_string(after_then + 2) +
+                                  " " + condition_register.name();
     asm_vec.at(after_then) = "JUMP " + std::to_string(after_if + 1);
 }
 
@@ -142,15 +141,16 @@ CodeGenerator::codegen(WhileStatement *node)
     //              Jump to L1 (check condition again)
     //      L2:     ... Rest of code ...
 
-    auto const condition_register = node->get_condition_expression()->get_register();
-
+    auto const condition_register =
+        node->get_condition_expression()->get_register();
 
     auto const L1 = current_asm_line_number();
     node->get_condition_expression()->accept_code_generator(*this);
-    auto const jzl2_filler = emit_filler("While: If condition is zero, exit loop");
+    auto const jzl2_filler =
+        emit_filler("While: If condition is zero, exit loop");
     node->get_body_statement()->accept_code_generator(*this);
     auto const jtl1_filler = emit_filler("While: Check condition again");
-    auto const L2 = current_asm_line_number();
+    auto const L2          = current_asm_line_number();
 
     // Backpatch
     patch_jmpz(jzl2_filler, L2 + 1, condition_register);
@@ -178,7 +178,9 @@ CodeGenerator::codegen(CastExpression *node)
     if (cast_type == inner_expression_type)
     {
         opcode = (cast_type == NumberType::INT) ? "IASN" : "RASN";
-    } else {
+    }
+    else
+    {
         opcode = (cast_type == NumberType::INT) ? "RTOI" : "ITOR";
     }
 
@@ -198,7 +200,6 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 {
     auto const my_register = node->get_register();
     auto const my_operator = node->get_operator();
-    auto      &asm_vec     = m_module.m_assembly;
 
     if (my_operator == Operator::AND)
     {
@@ -225,7 +226,6 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 
         // Backpatch
         patch_jmpz(jzl1_filler, L1 + 1, my_register);
-
     }
     else if (my_operator == Operator::OR)
     {
@@ -456,8 +456,8 @@ void
 CodeGenerator::codegen(BreakStatement *node)
 {
     UNUSED(node);
-    emit_line("JUMP "); // To be backpatched
-    m_break_requests.push_back(current_asm_line_number());
+    auto const filler_line = emit_filler("BREAK: backpatch here");
+    m_break_requests.push_back(filler_line);
 }
 
 unsigned
@@ -467,70 +467,83 @@ CodeGenerator::emit_filler(std::string const &comment)
     return m_module.m_assembly.size() - 1;
 }
 
-void CodeGenerator::patch_jmpz(unsigned line_no, unsigned jump_target, Register r) {
-    m_module.m_assembly.at(line_no) = "JMPZ " + std::to_string(jump_target) + " " + r.name();
+void
+CodeGenerator::patch_jmpz(unsigned line_no, unsigned jump_target, Register r)
+{
+    m_module.m_assembly.at(line_no) =
+        "JMPZ " + std::to_string(jump_target) + " " + r.name();
 }
 
-void CodeGenerator::patch_jump(unsigned line_no, unsigned jump_target) {
+void
+CodeGenerator::patch_jump(unsigned line_no, unsigned jump_target)
+{
     m_module.m_assembly.at(line_no) = "JUMP " + std::to_string(jump_target);
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode)
 {
     m_module.m_assembly.push_back(opcode);
+    return m_module.m_assembly.size() - 1;
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r)
 {
     m_module.m_assembly.push_back(opcode + " " + r.name());
+    return m_module.m_assembly.size() - 1;
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2)
 {
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name());
+    return m_module.m_assembly.size() - 1;
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r, int val)
 {
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::to_string(val));
+    return m_module.m_assembly.size() - 1;
 }
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r, int val1,
                          int val2)
 {
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::to_string(val1) + " " +
                                   std::to_string(val2));
+    return m_module.m_assembly.size() - 1;
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
                          int val)
 {
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
                                   " " + std::to_string(val));
+    return m_module.m_assembly.size() - 1;
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
                          Register r3)
 {
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
                                   " " + r3.name());
+    return m_module.m_assembly.size() - 1;
 }
 
-void
+unsigned
 CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
 {
     std::array<char, 128> buf{};
     std::snprintf(buf.data(), buf.size(), "%.5f", val);
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::string(buf.data()));
+    return m_module.m_assembly.size() - 1;
 }
 
 SymbolTable &
@@ -542,11 +555,9 @@ CodeGenerator::symbol_table()
 void
 CodeGenerator::backpatch_break_statements()
 {
-    auto &asm_vec = m_module.m_assembly;
-
     for (unsigned const br : m_break_requests)
     {
-        asm_vec.at(br).append(std::to_string(m_break_jump_dest + 1));
+        patch_jump(br, m_break_jump_dest + 1);
     }
 
     m_break_requests.clear();
