@@ -30,6 +30,8 @@ public:
 
 private:
     unsigned emit_filler(std::string const &comment);
+    void patch_jmpz(unsigned line_no, unsigned jump_target, Register r);
+    void patch_jump(unsigned line_no, unsigned jump_target);
     void emit_line(std::string const &str);
     void emit_line(std::string const &opcode, Register r);
     void emit_line(std::string const &opcode, Register r1, Register r2);

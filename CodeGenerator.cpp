@@ -153,9 +153,8 @@ CodeGenerator::codegen(WhileStatement *node)
     auto const L2 = current_asm_line_number();
 
     // Backpatch
-    m_module.m_assembly.at(jzl2_filler) = "JMPZ " + std::to_string(L2 + 1) + " " + condition_register.name();
-    m_module.m_assembly.at(jtl1_filler) = "JUMP " + std::to_string(L1 + 1);
-    
+    patch_jmpz(jzl2_filler, L2 + 1, condition_register);
+    patch_jump(jtl1_filler, L1 + 1);
 }
 
 void
@@ -225,8 +224,8 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         auto const L1 = current_asm_line_number();
 
         // Backpatch
-        asm_vec.at(jzl1_filler) =
-            "JMPZ " + std::to_string(L1 + 1) + " " + my_register.name();
+        patch_jmpz(jzl1_filler, L1 + 1, my_register);
+
     }
     else if (my_operator == Operator::OR)
     {
@@ -259,10 +258,9 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         auto const L3 = current_asm_line_number();
 
         // Backpatch
-        asm_vec.at(jtl1_filler) = "JUMP " + std::to_string(L1 + 1);
-        asm_vec.at(jtl3_filler) = "JUMP " + std::to_string(L3 + 1);
-        asm_vec.at(jzl2_filler) =
-            "JMPZ " + std::to_string(L2 + 1) + " " + my_register.name();
+        patch_jump(jtl1_filler, L1 + 1);
+        patch_jump(jtl3_filler, L3 + 1);
+        patch_jmpz(jzl2_filler, L2 + 1, my_register);
     }
     else
     {
@@ -467,6 +465,14 @@ CodeGenerator::emit_filler(std::string const &comment)
 {
     m_module.m_assembly.push_back("FILLER: " + comment);
     return m_module.m_assembly.size() - 1;
+}
+
+void CodeGenerator::patch_jmpz(unsigned line_no, unsigned jump_target, Register r) {
+    m_module.m_assembly.at(line_no) = "JMPZ " + std::to_string(jump_target) + " " + r.name();
+}
+
+void CodeGenerator::patch_jump(unsigned line_no, unsigned jump_target) {
+    m_module.m_assembly.at(line_no) = "JUMP " + std::to_string(jump_target);
 }
 
 void
