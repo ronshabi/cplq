@@ -1,12 +1,12 @@
 /* print fibonacci sequence */
-int a, b, c;
+a, b, c: int;
 {
     a = 0;
     b = 1;
 
     while (a <= 1000) {
 
-       write(a);
+       output(a);
        c = a + b;
        a = b;
        b = c;

@@ -1,9 +1,9 @@
-int count, first;
-int second;
+count, first : int ;
+second: int;
 
 {
-     read (first);
-     read (second);
+     input (first);
+     input (second);
      count = 0;
 
      while (first >= second) {
@@ -11,5 +11,5 @@ int second;
        count = count+1;
      }
 
-     write(count);
+     output(count);
 }
