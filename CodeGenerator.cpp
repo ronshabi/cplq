@@ -143,13 +143,13 @@ CodeGenerator::codegen(SwitchStatement *node)
     // Let Nx be the case num register.
 
     //                  [checked expression code]
-    //      LC1:        Set RCmp = (RExpr != Nx)
+    //      LC1:        Set RCmp = (RExpr == Nx)
     //                  If RCmp == 0: Jump to LC2
     //                  [case 1 code]
     //                  Jump to the end of the switch
     //      ...
     //
-    //      LCm:        Set RCmp = (RExpr != Nm)
+    //      LCm:        Set RCmp = (RExpr == Nm)
     //                  If RCmp == 0: Jump to LD (D for default)
     //                  [case m code]
     //                  Jump to the end of the switch
@@ -177,7 +177,7 @@ CodeGenerator::codegen(SwitchStatement *node)
         auto const case_code = cases.at(i).second;
 
         case_labels.push_back(current_asm_line_number());
-        emit_line("INQL", rcmp, rexpr, case_number);
+        emit_line("IEQL", rcmp, rexpr, case_number);
         
         auto const lcnext = emit_filler("Switch: if rcmp==0, jump to next case");
         case_backpatch_lines.push_back(lcnext);

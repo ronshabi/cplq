@@ -1,0 +1,13 @@
+{
+    switch (1) {
+        case 1 : {
+            output(1);
+        }
+        case 2 : {
+            output(2);
+        }
+        default : {
+            output(999);
+        }
+    }
+}
