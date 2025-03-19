@@ -90,6 +90,7 @@ declarations:
 
 declaration:
         idlist ':' type ';' { $1->assign_number_type($3); $$ = $1; }
+        | idlist ':' error ';' { $$ = nullptr; }
         ;
 
 type:   INT | FLOAT;
@@ -112,15 +113,21 @@ stmt:
 
 assignment_stmt:    ID '=' expression ';' 
                     { $$ = new AssignStatement($1, $3); $$->set_line_number(@$.first_line); }
+                    | ID '=' error ';' 
+                    { $$ = nullptr; }
 
 input_stmt:         INPUT '(' ID ')' ';' 
                     { $$ = new InputStatement($3); $$->set_line_number(@$.first_line); }
 
 output_stmt:        OUTPUT '(' expression ')' ';' 
                     { $$ = new OutputStatement($3); $$->set_line_number(@$.first_line); }
+                    | OUTPUT '(' error ')' ';' 
+                    { $$ = nullptr; }
 
 if_stmt:            IF '(' boolexpr ')' stmt ELSE stmt
                     { $$ = new IfStatement($3, $5, $7); $$->set_line_number(@$.first_line); }
+                    | IF '(' error ')' stmt ELSE stmt
+                    { $$ = nullptr; }
 
 while_stmt:         WHILE '(' boolexpr ')' stmt 
                     { $$ = new WhileStatement($3, $5); $$->set_line_number(@$.first_line); }
@@ -152,6 +159,8 @@ stmtlist:
         
         | stmtlist stmt 
         { $1->add_statement($2); $$ = $1; }
+
+        | stmtlist error
         ;
                         
 boolexpr:               

@@ -454,16 +454,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   107
+#define YYLAST   146
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  31
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  23
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  43
+#define YYNRULES  48
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  97
+#define YYNSTATES  110
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   277
@@ -514,11 +514,11 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    76,    76,    87,    88,    92,    95,    95,    98,    99,
-     103,   104,   105,   106,   107,   108,   109,   110,   113,   116,
-     119,   122,   125,   128,   137,   139,   143,   146,   150,   153,
-     158,   159,   163,   164,   168,   172,   179,   180,   184,   185,
-     189,   190,   191,   192
+       0,    76,    76,    87,    88,    92,    93,    96,    96,    99,
+     100,   104,   105,   106,   107,   108,   109,   110,   111,   114,
+     116,   119,   122,   124,   127,   129,   132,   135,   144,   146,
+     150,   153,   157,   160,   163,   167,   168,   172,   173,   177,
+     181,   188,   189,   193,   194,   198,   199,   200,   201
 };
 #endif
 
@@ -548,12 +548,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-53)
+#define YYPACT_NINF (-64)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-1)
+#define YYTABLE_NINF (-30)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -562,16 +562,17 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -53,     1,    33,   -53,   -53,   -53,   -53,    48,   -53,    -3,
-      60,   -11,    16,    -2,    22,    29,    43,    45,    37,   -53,
-     -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,   -53,
-     -53,    53,   -53,   -53,    39,    63,    47,    47,    39,    47,
-     -53,    58,    59,   -53,   -53,    47,     4,    74,   -53,    61,
-      69,   -53,    62,   -16,   -15,    23,    40,    39,    47,    -4,
-      39,    36,    39,    47,    47,    47,    65,    67,    64,    36,
-     -53,    24,    20,   -53,    74,    86,   -53,    77,    69,   -53,
-     -53,   -53,   -53,   -53,   -53,   -53,    36,    76,   -53,    72,
-      73,    75,   -53,   -53,    12,    36,   -53
+     -64,   104,    18,   -64,   -64,   -64,   -64,    25,   -64,     8,
+      30,     4,   -64,    85,    78,    84,    86,    87,    88,    80,
+     -64,   -64,   -64,   -64,   -64,   -64,   -64,   -64,   -64,   -64,
+      92,   -64,   -64,    93,   -64,   -64,    60,    91,    69,     0,
+      81,    72,   -64,   -64,    90,    94,    95,   -64,   -64,     0,
+      -5,   106,   -64,    54,   101,   -64,    96,    97,   -15,    70,
+      -4,    99,    61,    57,    81,     0,    79,    81,    57,    81,
+       0,     0,     0,   102,   103,   105,   107,    57,   -64,   -64,
+     122,    -2,    82,   -64,   106,   124,   -64,   113,   101,   -64,
+     -64,   -64,   -64,   -64,   -64,    57,   -64,   -64,    57,    71,
+     -64,   -64,   110,   111,   112,   -64,   -64,    33,    48,   -64
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -579,32 +580,33 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,     0,     1,     9,    28,     4,     0,     2,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    27,
-      29,    10,    11,    12,    13,    14,    15,    16,    17,     6,
-       7,     0,     8,    26,     0,     0,     0,     0,     0,     0,
-       5,     0,     0,    42,    43,     0,     0,    31,    33,     0,
-      37,    39,     0,     0,     0,     0,     0,     0,     0,     0,
+       3,     0,     0,     1,    10,    32,     4,     0,     2,     0,
+       0,     0,    34,     0,     0,     0,     0,     0,     0,     0,
+      31,    33,    11,    12,    13,    14,    15,    16,    17,    18,
+       0,     7,     8,     0,     9,    30,     0,     0,     0,     0,
+       0,     0,     6,     5,     0,     0,     0,    47,    48,     0,
+       0,    36,    38,     0,    42,    44,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      18,     0,     0,    40,    30,     0,    32,    35,    36,    38,
-      19,    20,    24,    22,    34,    41,     0,     0,    21,     0,
-       0,     0,    28,    28,     0,    25,    23
+       0,     0,     0,     0,     0,     0,     0,     0,    20,    19,
+       0,     0,     0,    45,    35,     0,    37,    40,    41,    43,
+      21,    23,    22,    28,    26,     0,    39,    46,     0,     0,
+      25,    24,     0,     0,     0,    32,    32,     0,     0,    27
 };
 
 /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int8 yypgoto[] =
+static const yytype_int16 yypgoto[] =
 {
-     -53,   -53,   -53,   -53,   -53,   -53,   -52,   -53,   -53,   -53,
-     -53,   -53,   -53,   -53,   -53,    95,   -10,   -27,    41,    38,
-      -8,    35,    42
+     -64,   -64,   -64,   -64,   -64,   -64,   -63,   -64,   -64,   -64,
+     -64,   -64,   -64,   -64,   -64,   131,   -22,   -34,    73,    68,
+     -37,    67,    74
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     2,     6,    31,     7,    20,    21,    22,    23,
-      24,    25,    26,    87,    27,    28,     9,    46,    47,    48,
-      49,    50,    51
+       0,     1,     2,     6,    33,     7,    21,    22,    23,    24,
+      25,    26,    27,    99,    28,    29,     9,    50,    51,    52,
+      53,    54,    55
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -612,32 +614,40 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      12,     3,    64,    64,    13,    14,    15,    16,    17,    75,
-      32,    55,    67,    68,    64,    12,    60,    83,    18,    13,
-      14,    15,    16,    17,    73,    34,     5,    19,    53,    54,
-      71,    56,    61,    18,    88,    60,    60,    59,    64,    12,
-      33,     5,    96,    13,    14,    15,    16,    17,    85,    35,
-      72,    69,    84,    41,     4,    77,    36,    18,    64,    42,
-      43,    44,     5,    39,    70,     5,    45,    42,    43,    44,
-      37,    10,    38,    11,    45,    29,    30,    40,    63,    64,
-      89,    90,    94,    95,    52,    57,    58,    62,    65,    80,
-      66,    81,    86,    82,    91,    64,    92,     8,    93,    78,
-      76,    74,     0,     0,     0,     0,     0,    79
+      80,    58,    59,    71,    62,    85,    60,    67,    67,    12,
+      67,    13,    66,    75,    94,    14,    15,    16,    17,    18,
+      46,    47,    48,    68,    77,    34,    96,    49,    82,    19,
+      81,    30,   100,    87,    12,   101,    13,     5,    20,     4,
+      14,    15,    16,    17,    18,    31,    32,     5,    10,    12,
+      11,    13,   -29,   -29,    19,    14,    15,    16,    17,    18,
+      13,    44,     5,   109,    14,    15,    16,    17,    18,    19,
+      57,    70,    71,    61,    45,   102,   103,     5,    19,    71,
+      46,    47,    48,   107,   108,    79,     5,    49,    71,    46,
+      47,    48,    46,    47,    48,    45,    49,    71,    76,    49,
+      71,    46,    47,    48,     3,    36,    41,    83,    49,    35,
+      97,    37,    56,    38,    39,    40,    42,    43,    63,    69,
+      72,    64,    65,    78,    73,    74,    90,    91,    95,    92,
+      98,    71,   104,     8,   105,   106,    93,    86,    88,     0,
+      84,     0,     0,     0,     0,     0,    89
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     0,    18,    18,     7,     8,     9,    10,    11,    61,
-      21,    38,    28,    28,    18,     3,    12,    69,    21,     7,
-       8,     9,    10,    11,    28,    27,    29,    30,    36,    37,
-      57,    39,    28,    21,    86,    12,    12,    45,    18,     3,
-      24,    29,    30,     7,     8,     9,    10,    11,    28,    27,
-      58,    28,    28,    14,    21,    63,    27,    21,    18,    20,
-      21,    22,    29,    26,    24,    29,    27,    20,    21,    22,
-      27,    23,    27,    25,    27,    15,    16,    24,    17,    18,
-       4,     5,    92,    93,    21,    27,    27,    13,    19,    24,
-      28,    24,     6,    29,    22,    18,    23,     2,    23,    64,
-      62,    60,    -1,    -1,    -1,    -1,    -1,    65
+      63,    38,    39,    18,    41,    68,    40,    12,    12,     1,
+      12,     3,    49,    28,    77,     7,     8,     9,    10,    11,
+      20,    21,    22,    28,    28,    21,    28,    27,    65,    21,
+      64,     1,    95,    70,     1,    98,     3,    29,    30,    21,
+       7,     8,     9,    10,    11,    15,    16,    29,    23,     1,
+      25,     3,     4,     5,    21,     7,     8,     9,    10,    11,
+       3,     1,    29,    30,     7,     8,     9,    10,    11,    21,
+       1,    17,    18,     1,    14,     4,     5,    29,    21,    18,
+      20,    21,    22,   105,   106,    24,    29,    27,    18,    20,
+      21,    22,    20,    21,    22,    14,    27,    18,    28,    27,
+      18,    20,    21,    22,     0,    27,    26,    28,    27,    24,
+      28,    27,    21,    27,    27,    27,    24,    24,    28,    13,
+      19,    27,    27,    24,    28,    28,    24,    24,     6,    24,
+       6,    18,    22,     2,    23,    23,    29,    69,    71,    -1,
+      67,    -1,    -1,    -1,    -1,    -1,    72
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -645,35 +655,36 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,    32,    33,     0,    21,    29,    34,    36,    46,    47,
-      23,    25,     3,     7,     8,     9,    10,    11,    21,    30,
-      37,    38,    39,    40,    41,    42,    43,    45,    46,    15,
-      16,    35,    21,    24,    27,    27,    27,    27,    27,    26,
-      24,    14,    20,    21,    22,    27,    48,    49,    50,    51,
-      52,    53,    21,    51,    51,    48,    51,    27,    27,    51,
-      12,    28,    13,    17,    18,    19,    28,    28,    28,    28,
-      24,    48,    51,    28,    49,    37,    50,    51,    52,    53,
-      24,    24,    29,    37,    28,    28,     6,    44,    37,     4,
-       5,    22,    23,    23,    47,    47,    30
+      23,    25,     1,     3,     7,     8,     9,    10,    11,    21,
+      30,    37,    38,    39,    40,    41,    42,    43,    45,    46,
+       1,    15,    16,    35,    21,    24,    27,    27,    27,    27,
+      27,    26,    24,    24,     1,    14,    20,    21,    22,    27,
+      48,    49,    50,    51,    52,    53,    21,     1,    51,    51,
+      48,     1,    51,    28,    27,    27,    51,    12,    28,    13,
+      17,    18,    19,    28,    28,    28,    28,    28,    24,    24,
+      37,    48,    51,    28,    49,    37,    50,    51,    52,    53,
+      24,    24,    24,    29,    37,     6,    28,    28,     6,    44,
+      37,    37,     4,     5,    22,    23,    23,    47,    47,    30
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    31,    32,    33,    33,    34,    35,    35,    36,    36,
-      37,    37,    37,    37,    37,    37,    37,    37,    38,    39,
-      40,    41,    42,    43,    44,    44,    45,    46,    47,    47,
-      48,    48,    49,    49,    50,    50,    51,    51,    52,    52,
-      53,    53,    53,    53
+       0,    31,    32,    33,    33,    34,    34,    35,    35,    36,
+      36,    37,    37,    37,    37,    37,    37,    37,    37,    38,
+      38,    39,    40,    40,    41,    41,    42,    43,    44,    44,
+      45,    46,    47,    47,    47,    48,    48,    49,    49,    50,
+      50,    51,    51,    52,    52,    53,    53,    53,    53
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     2,     0,     2,     4,     1,     1,     3,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     4,     5,
-       5,     7,     5,    10,     0,     5,     2,     3,     0,     2,
-       3,     1,     3,     1,     4,     3,     3,     1,     3,     1,
-       3,     4,     1,     1
+       0,     2,     2,     0,     2,     4,     4,     1,     1,     3,
+       1,     1,     1,     1,     1,     1,     1,     1,     1,     4,
+       4,     5,     5,     5,     7,     7,     5,    10,     0,     5,
+       2,     3,     0,     2,     2,     3,     1,     3,     1,     4,
+       3,     3,     1,     3,     1,     3,     4,     1,     1
 };
 
 
@@ -1748,195 +1759,219 @@ yyreduce:
             (yyval.ast_program)->set_program_statements((yyvsp[0].ast_statement));
             g_module->set_ast_root((yyval.ast_program));
         }
-#line 1752 "Grammar.cpp"
+#line 1763 "Grammar.cpp"
     break;
 
   case 3: /* declarations: %empty  */
 #line 87 "Grammar.y"
                { (yyval.ast_declaration_block) = new DeclarationBlock(); }
-#line 1758 "Grammar.cpp"
+#line 1769 "Grammar.cpp"
     break;
 
   case 4: /* declarations: declarations declaration  */
 #line 88 "Grammar.y"
                                    { (yyvsp[-1].ast_declaration_block)->add_declaration((yyvsp[0].ast_declaration)); (yyval.ast_declaration_block) = (yyvsp[-1].ast_declaration_block); }
-#line 1764 "Grammar.cpp"
+#line 1775 "Grammar.cpp"
     break;
 
   case 5: /* declaration: idlist ':' type ';'  */
 #line 92 "Grammar.y"
                             { (yyvsp[-3].ast_declaration)->assign_number_type((yyvsp[-1].number_type)); (yyval.ast_declaration) = (yyvsp[-3].ast_declaration); }
-#line 1770 "Grammar.cpp"
+#line 1781 "Grammar.cpp"
     break;
 
-  case 8: /* idlist: idlist ',' ID  */
-#line 98 "Grammar.y"
-                      { (yyvsp[-2].ast_declaration)->add_id((yyvsp[0].str)); (yyval.ast_declaration) = (yyvsp[-2].ast_declaration); }
-#line 1776 "Grammar.cpp"
+  case 6: /* declaration: idlist ':' error ';'  */
+#line 93 "Grammar.y"
+                               { (yyval.ast_declaration) = nullptr; }
+#line 1787 "Grammar.cpp"
     break;
 
-  case 9: /* idlist: ID  */
+  case 9: /* idlist: idlist ',' ID  */
 #line 99 "Grammar.y"
+                      { (yyvsp[-2].ast_declaration)->add_id((yyvsp[0].str)); (yyval.ast_declaration) = (yyvsp[-2].ast_declaration); }
+#line 1793 "Grammar.cpp"
+    break;
+
+  case 10: /* idlist: ID  */
+#line 100 "Grammar.y"
              { (yyval.ast_declaration) = new Declaration(); (yyval.ast_declaration)->add_id((yyvsp[0].str)); (yyval.ast_declaration)->set_line_number((yyloc).first_line); }
-#line 1782 "Grammar.cpp"
+#line 1799 "Grammar.cpp"
     break;
 
-  case 18: /* assignment_stmt: ID '=' expression ';'  */
-#line 114 "Grammar.y"
+  case 19: /* assignment_stmt: ID '=' expression ';'  */
+#line 115 "Grammar.y"
                     { (yyval.ast_statement) = new AssignStatement((yyvsp[-3].str), (yyvsp[-1].ast_expression)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
-#line 1788 "Grammar.cpp"
+#line 1805 "Grammar.cpp"
     break;
 
-  case 19: /* input_stmt: INPUT '(' ID ')' ';'  */
+  case 20: /* assignment_stmt: ID '=' error ';'  */
 #line 117 "Grammar.y"
-                    { (yyval.ast_statement) = new InputStatement((yyvsp[-2].str)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
-#line 1794 "Grammar.cpp"
+                    { (yyval.ast_statement) = nullptr; }
+#line 1811 "Grammar.cpp"
     break;
 
-  case 20: /* output_stmt: OUTPUT '(' expression ')' ';'  */
+  case 21: /* input_stmt: INPUT '(' ID ')' ';'  */
 #line 120 "Grammar.y"
-                    { (yyval.ast_statement) = new OutputStatement((yyvsp[-2].ast_expression)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
-#line 1800 "Grammar.cpp"
+                    { (yyval.ast_statement) = new InputStatement((yyvsp[-2].str)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
+#line 1817 "Grammar.cpp"
     break;
 
-  case 21: /* if_stmt: IF '(' boolexpr ')' stmt ELSE stmt  */
+  case 22: /* output_stmt: OUTPUT '(' expression ')' ';'  */
 #line 123 "Grammar.y"
+                    { (yyval.ast_statement) = new OutputStatement((yyvsp[-2].ast_expression)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
+#line 1823 "Grammar.cpp"
+    break;
+
+  case 23: /* output_stmt: OUTPUT '(' error ')' ';'  */
+#line 125 "Grammar.y"
+                    { (yyval.ast_statement) = nullptr; }
+#line 1829 "Grammar.cpp"
+    break;
+
+  case 24: /* if_stmt: IF '(' boolexpr ')' stmt ELSE stmt  */
+#line 128 "Grammar.y"
                     { (yyval.ast_statement) = new IfStatement((yyvsp[-4].ast_bool_expression), (yyvsp[-2].ast_statement), (yyvsp[0].ast_statement)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
-#line 1806 "Grammar.cpp"
+#line 1835 "Grammar.cpp"
     break;
 
-  case 22: /* while_stmt: WHILE '(' boolexpr ')' stmt  */
-#line 126 "Grammar.y"
-                    { (yyval.ast_statement) = new WhileStatement((yyvsp[-2].ast_bool_expression), (yyvsp[0].ast_statement)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
-#line 1812 "Grammar.cpp"
-    break;
-
-  case 23: /* switch_stmt: SWITCH '(' expression ')' '{' caselist DEFAULT ':' stmtlist '}'  */
+  case 25: /* if_stmt: IF '(' error ')' stmt ELSE stmt  */
 #line 130 "Grammar.y"
+                    { (yyval.ast_statement) = nullptr; }
+#line 1841 "Grammar.cpp"
+    break;
+
+  case 26: /* while_stmt: WHILE '(' boolexpr ')' stmt  */
+#line 133 "Grammar.y"
+                    { (yyval.ast_statement) = new WhileStatement((yyvsp[-2].ast_bool_expression), (yyvsp[0].ast_statement)); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
+#line 1847 "Grammar.cpp"
+    break;
+
+  case 27: /* switch_stmt: SWITCH '(' expression ')' '{' caselist DEFAULT ':' stmtlist '}'  */
+#line 137 "Grammar.y"
                     {
                         (yyvsp[-4].ast_switch_statement)->set_expression((yyvsp[-7].ast_expression));
                         (yyvsp[-4].ast_switch_statement)->set_default_case((yyvsp[-1].ast_statement_list));
                         (yyval.ast_statement) = (yyvsp[-4].ast_switch_statement);
                     }
-#line 1822 "Grammar.cpp"
+#line 1857 "Grammar.cpp"
     break;
 
-  case 24: /* caselist: %empty  */
-#line 138 "Grammar.y"
+  case 28: /* caselist: %empty  */
+#line 145 "Grammar.y"
         { (yyval.ast_switch_statement) = new SwitchStatement(); (yyval.ast_switch_statement)->set_line_number((yyloc).first_line);  }
-#line 1828 "Grammar.cpp"
+#line 1863 "Grammar.cpp"
     break;
 
-  case 25: /* caselist: caselist CASE NUM ':' stmtlist  */
-#line 140 "Grammar.y"
-        { (yyvsp[-4].ast_switch_statement)->add_case((yyvsp[-2].number), (yyvsp[0].ast_statement_list)); (yyval.ast_switch_statement) = (yyvsp[-4].ast_switch_statement);}
-#line 1834 "Grammar.cpp"
-    break;
-
-  case 26: /* break_stmt: BREAK ';'  */
-#line 144 "Grammar.y"
-                        { (yyval.ast_statement) = new BreakStatement(); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
-#line 1840 "Grammar.cpp"
-    break;
-
-  case 27: /* stmt_block: '{' stmtlist '}'  */
+  case 29: /* caselist: caselist CASE NUM ':' stmtlist  */
 #line 147 "Grammar.y"
-                        { (yyval.ast_statement) = (yyvsp[-1].ast_statement_list); }
-#line 1846 "Grammar.cpp"
+        { (yyvsp[-4].ast_switch_statement)->add_case((yyvsp[-2].number), (yyvsp[0].ast_statement_list)); (yyval.ast_switch_statement) = (yyvsp[-4].ast_switch_statement);}
+#line 1869 "Grammar.cpp"
     break;
 
-  case 28: /* stmtlist: %empty  */
+  case 30: /* break_stmt: BREAK ';'  */
 #line 151 "Grammar.y"
-        { (yyval.ast_statement_list) = new StatementList(); (yyval.ast_statement_list)->set_line_number((yyloc).first_line); }
-#line 1852 "Grammar.cpp"
+                        { (yyval.ast_statement) = new BreakStatement(); (yyval.ast_statement)->set_line_number((yyloc).first_line); }
+#line 1875 "Grammar.cpp"
     break;
 
-  case 29: /* stmtlist: stmtlist stmt  */
+  case 31: /* stmt_block: '{' stmtlist '}'  */
 #line 154 "Grammar.y"
-        { (yyvsp[-1].ast_statement_list)->add_statement((yyvsp[0].ast_statement)); (yyval.ast_statement_list) = (yyvsp[-1].ast_statement_list); }
-#line 1858 "Grammar.cpp"
+                        { (yyval.ast_statement) = (yyvsp[-1].ast_statement_list); }
+#line 1881 "Grammar.cpp"
     break;
 
-  case 30: /* boolexpr: boolexpr OR boolterm  */
+  case 32: /* stmtlist: %empty  */
 #line 158 "Grammar.y"
+        { (yyval.ast_statement_list) = new StatementList(); (yyval.ast_statement_list)->set_line_number((yyloc).first_line); }
+#line 1887 "Grammar.cpp"
+    break;
+
+  case 33: /* stmtlist: stmtlist stmt  */
+#line 161 "Grammar.y"
+        { (yyvsp[-1].ast_statement_list)->add_statement((yyvsp[0].ast_statement)); (yyval.ast_statement_list) = (yyvsp[-1].ast_statement_list); }
+#line 1893 "Grammar.cpp"
+    break;
+
+  case 35: /* boolexpr: boolexpr OR boolterm  */
+#line 167 "Grammar.y"
                              { (yyval.ast_bool_expression) = new BinaryBoolExpression((yyvsp[-2].ast_bool_expression), (yyvsp[0].ast_bool_expression), Operator::OR); (yyval.ast_bool_expression)->set_line_number((yyloc).first_line); }
-#line 1864 "Grammar.cpp"
+#line 1899 "Grammar.cpp"
     break;
 
-  case 32: /* boolterm: boolterm AND boolfactor  */
-#line 163 "Grammar.y"
+  case 37: /* boolterm: boolterm AND boolfactor  */
+#line 172 "Grammar.y"
                                 { (yyval.ast_bool_expression) = new BinaryBoolExpression((yyvsp[-2].ast_bool_expression), (yyvsp[0].ast_bool_expression), Operator::AND); (yyval.ast_bool_expression)->set_line_number((yyloc).first_line); }
-#line 1870 "Grammar.cpp"
+#line 1905 "Grammar.cpp"
     break;
 
-  case 34: /* boolfactor: NOT '(' boolexpr ')'  */
-#line 168 "Grammar.y"
+  case 39: /* boolfactor: NOT '(' boolexpr ')'  */
+#line 177 "Grammar.y"
                              {
                 (yyval.ast_bool_expression) = new NotExpression((yyvsp[-1].ast_bool_expression));
                 (yyval.ast_bool_expression)->set_line_number((yyloc).first_line); 
         }
-#line 1879 "Grammar.cpp"
+#line 1914 "Grammar.cpp"
     break;
 
-  case 35: /* boolfactor: expression RELOP expression  */
-#line 172 "Grammar.y"
+  case 40: /* boolfactor: expression RELOP expression  */
+#line 181 "Grammar.y"
                                       {
                 (yyval.ast_bool_expression) = new BinaryBoolExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type));
                 (yyval.ast_bool_expression)->set_line_number((yyloc).first_line); 
         }
-#line 1888 "Grammar.cpp"
+#line 1923 "Grammar.cpp"
     break;
 
-  case 36: /* expression: expression ADDOP term  */
-#line 179 "Grammar.y"
+  case 41: /* expression: expression ADDOP term  */
+#line 188 "Grammar.y"
                               { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type)); (yyval.ast_expression)->set_line_number((yyloc).first_line);  }
-#line 1894 "Grammar.cpp"
+#line 1929 "Grammar.cpp"
     break;
 
-  case 37: /* expression: term  */
-#line 180 "Grammar.y"
-               { (yyval.ast_expression) = (yyvsp[0].ast_expression); }
-#line 1900 "Grammar.cpp"
-    break;
-
-  case 38: /* term: term MULOP factor  */
-#line 184 "Grammar.y"
-                          { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
-#line 1906 "Grammar.cpp"
-    break;
-
-  case 39: /* term: factor  */
-#line 185 "Grammar.y"
-                 { (yyval.ast_expression) = (yyvsp[0].ast_expression); }
-#line 1912 "Grammar.cpp"
-    break;
-
-  case 40: /* factor: '(' expression ')'  */
+  case 42: /* expression: term  */
 #line 189 "Grammar.y"
+               { (yyval.ast_expression) = (yyvsp[0].ast_expression); }
+#line 1935 "Grammar.cpp"
+    break;
+
+  case 43: /* term: term MULOP factor  */
+#line 193 "Grammar.y"
+                          { (yyval.ast_expression) = new BinaryExpression((yyvsp[-2].ast_expression), (yyvsp[0].ast_expression), (yyvsp[-1].operator_type)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
+#line 1941 "Grammar.cpp"
+    break;
+
+  case 44: /* term: factor  */
+#line 194 "Grammar.y"
+                 { (yyval.ast_expression) = (yyvsp[0].ast_expression); }
+#line 1947 "Grammar.cpp"
+    break;
+
+  case 45: /* factor: '(' expression ')'  */
+#line 198 "Grammar.y"
                            { (yyval.ast_expression) = (yyvsp[-1].ast_expression); }
-#line 1918 "Grammar.cpp"
+#line 1953 "Grammar.cpp"
     break;
 
-  case 41: /* factor: CAST '(' expression ')'  */
-#line 190 "Grammar.y"
+  case 46: /* factor: CAST '(' expression ')'  */
+#line 199 "Grammar.y"
                                   { (yyval.ast_expression) = new CastExpression((yyvsp[-3].number_type), (yyvsp[-1].ast_expression)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
-#line 1924 "Grammar.cpp"
+#line 1959 "Grammar.cpp"
     break;
 
-  case 42: /* factor: ID  */
-#line 191 "Grammar.y"
+  case 47: /* factor: ID  */
+#line 200 "Grammar.y"
              { (yyval.ast_expression) = new IdExpression((yyvsp[0].str)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
-#line 1930 "Grammar.cpp"
+#line 1965 "Grammar.cpp"
     break;
 
-  case 43: /* factor: NUM  */
-#line 192 "Grammar.y"
+  case 48: /* factor: NUM  */
+#line 201 "Grammar.y"
               { (yyval.ast_expression) = new NumberExpression((yyvsp[0].number)); (yyval.ast_expression)->set_line_number((yyloc).first_line); }
-#line 1936 "Grammar.cpp"
+#line 1971 "Grammar.cpp"
     break;
 
 
-#line 1940 "Grammar.cpp"
+#line 1975 "Grammar.cpp"
 
         default: break;
       }
@@ -2176,7 +2211,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 195 "Grammar.y"
+#line 204 "Grammar.y"
 
 
 void yyerror(YYLTYPE *locp, const char *s)
