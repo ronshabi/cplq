@@ -102,27 +102,35 @@ CodeGenerator::codegen(OutputStatement *node)
 void
 CodeGenerator::codegen(IfStatement *node)
 {
-    node->get_condition_exp()->accept_code_generator(*this);
+    // The algorithm of if statement generation
+
+    //              [Condition code]
+    //              If condition_register==0: jump to L1 (else-block)
+    //              [Then-block code]
+    //              Jump to L2 (skip else-block, exit the if)
+    //      L1:     [Else-block code]
+    //      L2:     [... Rest of code ...]
+    
     auto const condition_register = node->get_condition_exp()->get_register();
-    // Jmpz to the else branch
-    auto const after_condition = current_asm_line_number();
-    emit_filler("if: after condition, jmpz should be inserted");
+
+    node->get_condition_exp()->accept_code_generator(*this);
+
+    auto const jzl1_filler = emit_filler("If: Jump to else block");
 
     node->get_then_branch()->accept_code_generator(*this);
 
-    // Jmp to after the IF
+    auto const jtl2_filler = emit_filler("If: Skip else block");
 
-    auto const after_then = current_asm_line_number();
-    emit_filler(
-        "if: after then, a jump to the rest of the code should be inserted");
+    auto const L1 = current_asm_line_number();
 
     node->get_else_branch()->accept_code_generator(*this);
-    auto const after_if = current_asm_line_number();
-    auto      &asm_vec  = m_module.m_assembly;
 
-    asm_vec.at(after_condition) = "JMPZ " + std::to_string(after_then + 2) +
-                                  " " + condition_register.name();
-    asm_vec.at(after_then) = "JUMP " + std::to_string(after_if + 1);
+    auto const L2 = current_asm_line_number();
+
+    // Backpatch
+    patch_jmpz(jzl1_filler, L1 + 1, condition_register);
+    patch_jump(jtl2_filler, L2 + 1);
+
 }
 
 void
