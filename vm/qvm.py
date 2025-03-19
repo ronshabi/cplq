@@ -203,7 +203,7 @@ class VM:
             ptype_strings = [type_to_string(x) for x in ptype]
 
             raise VMException(
-                f"Expected types {ptype_strings}, got {recognized_strings} instead"
+                f"Expected types for {param}: {ptype_strings}, got {recognized_strings} instead"
             )
 
     def as_register(self, tp: int, exp: str) -> Register:
@@ -336,15 +336,16 @@ class VM:
 
     def RPRT(self, b):
         self.require_param(b, [TFloatRegister, TFloat])
-        print(float(self.get_register_or_imm_value(b)))
-        self._output.append(f"{float(self.get_register_or_imm_value(b)):.2f}")
+        flt = float(self.get_register_or_imm_value(b))
+        print(flt, f"will output {flt:2f}")
+        self._output.append(f"{flt:.2f}")
 
     def RINP(self, a):
         self.require_param(a, [TFloatRegister])
         self._registers[a] = Register(TFloat, 3.14)
 
     def REQL(self, a, b, c):
-        self.require_param(a, [TFloatRegister])
+        self.require_param(a, [TIntRegister])
         self.require_param(b, [TFloatRegister, TFloat])
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
@@ -352,7 +353,7 @@ class VM:
         self._registers[a] = Register(TInt, br == cr)
 
     def RNQL(self, a, b, c):
-        self.require_param(a, [TFloatRegister])
+        self.require_param(a, [TIntRegister])
         self.require_param(b, [TFloatRegister, TFloat])
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
@@ -360,7 +361,7 @@ class VM:
         self._registers[a] = Register(TInt, br != cr)
 
     def RLSS(self, a, b, c):
-        self.require_param(a, [TFloatRegister])
+        self.require_param(a, [TIntRegister])
         self.require_param(b, [TFloatRegister, TFloat])
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
@@ -368,7 +369,7 @@ class VM:
         self._registers[a] = Register(TInt, br < cr)
 
     def RGRT(self, a, b, c):
-        self.require_param(a, [TFloatRegister])
+        self.require_param(a, [TIntRegister])
         self.require_param(b, [TFloatRegister, TFloat])
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
@@ -405,7 +406,7 @@ class VM:
         self.require_param(c, [TFloatRegister, TFloat])
         br = self.as_register(TFloat, b)
         cr = self.as_register(TFloat, c)
-        self._registers[a] = Register(TFloat, br.val // cr.val)
+        self._registers[a] = Register(TFloat, br.val / cr.val)
 
     def RTOI(self, a, e):
         self.require_param(a, [TIntRegister])
