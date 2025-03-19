@@ -60,7 +60,7 @@ class Register:
                     raise VMException("Expected a float-string for register")
         elif isinstance(val, float):
             if self._tp != TFloat:
-                raise VMException("Expected a float for register")
+                raise VMException(f"Can't assign a float to a non-float register, got {val}, my type is {type_to_string(self.T)}")
         elif isinstance(val, int):
             # raise VMException(f"Expected an integer for register, got {val} instead")
             pass
@@ -165,6 +165,7 @@ class VM:
                 func(*args)
             except VMException as vme:
                 self.error(vme)
+                rprint("Registers:", self._registers)
             except KeyError as ke:
                 self.error(f"register not found: {ke}")
                 rprint("Registers:", self._registers)
@@ -409,7 +410,14 @@ class VM:
     def RTOI(self, a, e):
         self.require_param(a, [TIntRegister])
         self.require_param(e, [TFloatRegister, TFloat])
-        self._registers[a] = self.as_register(TInt, e)
+
+        if e.startswith('t'):
+            e_reg = self._registers[e]
+            e_val = e_reg.val
+        else:
+            e_val = e
+
+        self._registers[a] = Register(TInt, int(e_val))
 
     # --- Misc -----------------------------------------------------------------
     def HALT(self):

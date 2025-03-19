@@ -166,20 +166,28 @@ void
 CodeGenerator::codegen(CastExpression *node)
 {
     node->get_expression()->accept_code_generator(*this);
-    const auto cast_type = node->get_type(symbol_table());
+    auto const cast_type    = node->get_type(symbol_table());
+    auto const my_register  = node->get_register();
+    auto const exp_register = node->get_expression()->get_register();
 
-    if (cast_type == NumberType::INT)
+    // We need to check that the expression we are casting is a different type
+    // than the cast
+    auto const inner_expression_type =
+        node->get_expression()->get_type(symbol_table());
+
+    // If both the cast type and the inner expression type are the same, we can
+    // just skip the casting, but we should still emit a register from the cast
+    // expression
+
+    std::string opcode;
+    if (cast_type == inner_expression_type)
     {
-        // Cast to int -> RTOI
-        emit_line("RTOI", node->get_register(),
-                  node->get_expression()->get_register());
+        opcode = (cast_type == NumberType::INT) ? "IASN" : "RASN";
+    } else {
+        opcode = (cast_type == NumberType::INT) ? "RTOI" : "ITOR";
     }
-    else
-    {
-        // Cast to real -> ITOR
-        emit_line("ITOR", node->get_register(),
-                  node->get_expression()->get_register());
-    }
+
+    emit_line(opcode, my_register, exp_register);
 }
 
 void
@@ -221,7 +229,8 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         auto const L1 = current_asm_line_number();
 
         // Backpatch
-        asm_vec[jzl1_filler] = "JMPZ " + std::to_string(L1 + 1) + " " + my_register.name();
+        asm_vec[jzl1_filler] =
+            "JMPZ " + std::to_string(L1 + 1) + " " + my_register.name();
     }
     else if (my_operator == Operator::OR)
     {
@@ -256,8 +265,8 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         // Backpatch
         asm_vec[jtl1_filler] = "JUMP " + std::to_string(L1 + 1);
         asm_vec[jtl3_filler] = "JUMP " + std::to_string(L3 + 1);
-        asm_vec[jzl2_filler] = "JMPZ " + std::to_string(L2 + 1) + " " + my_register.name();
-
+        asm_vec[jzl2_filler] =
+            "JMPZ " + std::to_string(L2 + 1) + " " + my_register.name();
     }
     else
     {
