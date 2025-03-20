@@ -68,7 +68,7 @@ Declaration::Dump(unsigned indent) const
 {
     AstNode::Dump(indent);
     std::cout << "Decl<" << NumberTypeToString(m_type) << "> "
-              << vector_to_string(m_ids) << "\n";
+              << VectorToString(m_ids) << "\n";
 }
 
 void
@@ -208,9 +208,9 @@ BinaryExpression::AcceptCodeGenerator(CodeGenerator &cg)
 NumberType
 BinaryExpression::GetType(SymbolTable const &symbol_table) const
 {
-    auto const exp1_type = m_lhsExpr->GetType(symbol_table);
-    auto const exp2_type = m_rhsExpr->GetType(symbol_table);
-    if (exp1_type == NumberType::FLOAT || exp2_type == NumberType::FLOAT)
+    auto const lhsExprType = m_lhsExpr->GetType(symbol_table);
+    auto const rhsExprType = m_rhsExpr->GetType(symbol_table);
+    if (lhsExprType == NumberType::FLOAT || rhsExprType == NumberType::FLOAT)
     {
         return NumberType::FLOAT;
     }
@@ -369,11 +369,11 @@ SwitchStatement::Dump(unsigned indent) const
     AstNode::Dump(indent);
     std::cout << "Switch\n";
     m_expr->Dump(indent + 4);
-    for (auto const &case_pair : m_cases)
+    for (auto const &casePair : m_cases)
     {
-        NumberExpression x(case_pair.first);
+        NumberExpression x(casePair.first);
         x.Dump(indent + 4);
-        (case_pair.second)->Dump(indent + 8);
+        (casePair.second)->Dump(indent + 8);
     }
 
     AstNode::Dump(indent + 4);

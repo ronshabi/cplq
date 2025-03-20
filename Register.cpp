@@ -1,9 +1,9 @@
 #include "Register.hpp"
 
-unsigned Register::s_next_id = 0;
+unsigned Register::s_nextID = 0;
 
 std::string
-Register::name() const
+Register::GetName() const
 {
     std::string out = "t";
     out.append(std::to_string(m_id));

@@ -23,19 +23,19 @@ main(int argc, const char *argv[])
         usage();
     }
 
-    Module main_module(argv[1]);
+    Module mainModule(argv[1]);
 
-    g_module = &main_module;
+    g_module = &mainModule;
 
-    main_module.Parse();
+    mainModule.Parse();
 
-    if (main_module.IsOK())
+    if (mainModule.IsOK())
     {
-        // main_module.dump_ast();
-        main_module.SemanticAnalyze();
-        // main_module.dump_symbol_table();
-        main_module.CodeGen();
+        // mainModule.dump_ast();
+        mainModule.SemanticAnalyze();
+        // mainModule.dump_symbol_table();
+        mainModule.CodeGen();
     }
 
-    return main_module.GetErrorCode();
+    return mainModule.GetErrorCode();
 }

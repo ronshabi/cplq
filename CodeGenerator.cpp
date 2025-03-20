@@ -563,7 +563,7 @@ void
 CodeGenerator::PatchJmpz(unsigned line_no, unsigned jump_target, Register r)
 {
     m_module.m_assembly.at(line_no) =
-        "JMPZ " + std::to_string(jump_target) + " " + r.name();
+        "JMPZ " + std::to_string(jump_target) + " " + r.GetName();
 }
 
 void
@@ -582,21 +582,21 @@ CodeGenerator::EmitLine(std::string const &opcode)
 unsigned
 CodeGenerator::EmitLine(std::string const &opcode, Register r)
 {
-    m_module.m_assembly.push_back(opcode + " " + r.name());
+    m_module.m_assembly.push_back(opcode + " " + r.GetName());
     return m_module.m_assembly.size() - 1;
 }
 
 unsigned
 CodeGenerator::EmitLine(std::string const &opcode, Register r1, Register r2)
 {
-    m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name());
+    m_module.m_assembly.push_back(opcode + " " + r1.GetName() + " " + r2.GetName());
     return m_module.m_assembly.size() - 1;
 }
 
 unsigned
 CodeGenerator::EmitLine(std::string const &opcode, Register r, int val)
 {
-    m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
+    m_module.m_assembly.push_back(opcode + " " + r.GetName() + " " +
                                   std::to_string(val));
     return m_module.m_assembly.size() - 1;
 }
@@ -604,7 +604,7 @@ unsigned
 CodeGenerator::EmitLine(std::string const &opcode, Register r, int val1,
                         int val2)
 {
-    m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
+    m_module.m_assembly.push_back(opcode + " " + r.GetName() + " " +
                                   std::to_string(val1) + " " +
                                   std::to_string(val2));
     return m_module.m_assembly.size() - 1;
@@ -614,7 +614,7 @@ unsigned
 CodeGenerator::EmitLine(std::string const &opcode, Register r1, Register r2,
                         int val)
 {
-    m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
+    m_module.m_assembly.push_back(opcode + " " + r1.GetName() + " " + r2.GetName() +
                                   " " + std::to_string(val));
     return m_module.m_assembly.size() - 1;
 }
@@ -623,8 +623,8 @@ unsigned
 CodeGenerator::EmitLine(std::string const &opcode, Register r1, Register r2,
                         Register r3)
 {
-    m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
-                                  " " + r3.name());
+    m_module.m_assembly.push_back(opcode + " " + r1.GetName() + " " + r2.GetName() +
+                                  " " + r3.GetName());
     return m_module.m_assembly.size() - 1;
 }
 
@@ -633,7 +633,7 @@ CodeGenerator::EmitLine(std::string const &opcode, Register r, double val)
 {
     std::array<char, 128> buf{};
     std::snprintf(buf.data(), buf.size(), "%.5g", val);
-    m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
+    m_module.m_assembly.push_back(opcode + " " + r.GetName() + " " +
                                   std::string(buf.data()));
     return m_module.m_assembly.size() - 1;
 }

@@ -8,7 +8,7 @@ struct Register
 {
 public:
     Register()
-        : m_id(++s_next_id)
+        : m_id(++s_nextID)
     {
     }
 
@@ -36,25 +36,16 @@ public:
         return *this;
     }
 
-    /// \brief Returns the unique ID of the Register.
-    ///
-    /// \return The ID of the Register.
-    unsigned
-    id() const
-    {
-        return m_id;
-    }
-
     /// \brief Returns the name of the Register.
     ///
     /// The name is constructed by appending the Register's ID to the string
     /// "t".
     ///
     /// \return The name of the Register as a string.
-    std::string name() const;
+    std::string GetName() const;
 
 private:
     static unsigned
-             s_next_id; ///< Static member to track the next available ID.
+             s_nextID; ///< Static member to track the next available ID.
     unsigned m_id;      ///< Unique identifier for the Register.
 };

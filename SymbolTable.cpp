@@ -28,9 +28,9 @@ SymbolTable::Dump() const
         std::cout << "Empty\n";
         return;
     }
-    for (auto const &[symbol_name, symbol_value] : m_table)
+    for (auto const &[symbolName, symbolValue] : m_table)
     {
-        std::cout << "'" << symbol_name << "' -> " << symbol_value.ToString()
+        std::cout << "'" << symbolName << "' -> " << symbolValue.ToString()
                   << "\n";
     }
 }
@@ -39,7 +39,7 @@ std::string
 Symbol::ToString() const
 {
     std::string o =
-        "Symbol<Reg: " + reg.name() + ", Line: " + std::to_string(lineNumber);
+        "Symbol<Reg: " + reg.GetName() + ", Line: " + std::to_string(lineNumber);
 
     if (value.type == NumberType::INT)
     {

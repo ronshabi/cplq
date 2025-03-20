@@ -24,13 +24,13 @@ SemanticAnalyzer::Analyze(DeclarationBlock *node)
     {
         m_module.SetCurrentPosition(decl->GetLineNumber());
 
-        auto const decl_ids = decl->GetIDs();
-        for (auto const id : decl_ids)
+        auto const declIds = decl->GetIDs();
+        for (auto const id : declIds)
         {
-            auto const id_optional = GetSymbolTable().Get(*id);
+            auto const idOptional = GetSymbolTable().Get(*id);
 
             // ID already exists in the symbol table. This is an Error.
-            if (id_optional.has_value())
+            if (idOptional.has_value())
             {
                 // Give detailed error based on its type
                 m_module.EmitError("repeated declaration of symbol '%s'",
@@ -66,10 +66,10 @@ void
 SemanticAnalyzer::Analyze(AssignStatement *node)
 {
     // Check that the ID is in the symbol table
-    auto const id_sym = GetSymbolTable().Get(*node->GetID());
+    auto const idSym = GetSymbolTable().Get(*node->GetID());
     m_module.SetCurrentPosition(node->GetLineNumber());
 
-    if (!id_sym.has_value())
+    if (!idSym.has_value())
     {
         m_module.EmitError("unknown indentifier '%s' in assign statement",
                             node->GetID()->c_str());
@@ -89,7 +89,7 @@ SemanticAnalyzer::Analyze(AssignStatement *node)
     // an int, deny
     if (node->GetExpr()->GetType(GetSymbolTable()) ==
             NumberType::FLOAT &&
-        id_sym->value.type == NumberType::INT)
+        idSym->value.type == NumberType::INT)
     {
         m_module.EmitError(
             "type mismatch: can't assign a float to an int variable");
@@ -208,13 +208,13 @@ SemanticAnalyzer::Analyze(SwitchStatement *node)
 void
 SemanticAnalyzer::Analyze(WhileStatement *node)
 {
-    bool got_called_by_while = m_allowBreakStmts;
+    bool gotCalledByBreakAllowedStmt = m_allowBreakStmts;
 
     m_allowBreakStmts = true;
     node->GetConditionExpr()->AcceptSemanticAnalyzer(*this);
     node->GetBodyStatement()->AcceptSemanticAnalyzer(*this);
 
-    if (!got_called_by_while) {
+    if (!gotCalledByBreakAllowedStmt) {
         m_allowBreakStmts = false;
     }
 }

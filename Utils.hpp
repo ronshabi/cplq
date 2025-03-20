@@ -8,7 +8,7 @@
 
 template <typename T, typename ToStringFn>
 std::string
-vector_to_string_impl(std::vector<T> const &vec, ToStringFn fn)
+VectorToStringImpl(std::vector<T> const &vec, ToStringFn fn)
 {
     std::string o = "[";
 
@@ -28,4 +28,4 @@ vector_to_string_impl(std::vector<T> const &vec, ToStringFn fn)
     return o;
 }
 
-std::string vector_to_string(std::vector<std::string *> const &vec);
+std::string VectorToString(std::vector<std::string *> const &vec);

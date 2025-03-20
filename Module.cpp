@@ -38,9 +38,9 @@ Module::~Module()
 void
 Module::EmitError(const char *fmt, ...)
 {
-    fprintf_color(stderr, kAnsiBold, "%s:%d: ", m_fileName.c_str(),
+    FPrintfColor(stderr, kAnsiBold, "%s:%d: ", m_fileName.c_str(),
                   m_currentLineNo);
-    fprintf_color(stderr, kAnsiBoldRed, "error: ");
+    FPrintfColor(stderr, kAnsiBoldRed, "error: ");
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
@@ -55,8 +55,8 @@ Module::EmitError(const char *fmt, ...)
 void
 Module::EmitFatalError(const char *fmt, ...)
 {
-    fprintf_color(stderr, kAnsiBold, "%s: ", m_fileName.c_str());
-    fprintf_color(stderr, kAnsiBoldRed, "fatal: ");
+    FPrintfColor(stderr, kAnsiBold, "%s: ", m_fileName.c_str());
+    FPrintfColor(stderr, kAnsiBoldRed, "fatal: ");
     va_list ap;
     va_start(ap, fmt);
     vfprintf(stderr, fmt, ap);
