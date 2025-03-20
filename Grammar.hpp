@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 1 "Grammar.y"
+#line 7 "Grammar.y"
 
 
 #include <iostream>
@@ -99,7 +99,7 @@ extern Module *g_module;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 28 "Grammar.y"
+#line 34 "Grammar.y"
 
     Number number;
     NumberType numberType;
@@ -148,7 +148,7 @@ struct YYLTYPE
 int yyparse (void);
 
 /* "%code provides" blocks.  */
-#line 17 "Grammar.y"
+#line 23 "Grammar.y"
 
 
 void yyerror(YYLTYPE *locp, const char *s);

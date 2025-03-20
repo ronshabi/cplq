@@ -1,3 +1,9 @@
+//===-- Grammar.y ---------------------------------------------------------===//
+//
+//
+//
+//===----------------------------------------------------------------------===//
+
 %code requires {
 
 #include <iostream>
@@ -142,9 +148,16 @@ if_stmt:            IF '(' boolexpr ')' stmt ELSE stmt
                     { $$ = new IfStatement($3, $5, $7); $$->SetLineNumber(@$.first_line); }
                     | IF '(' error ')' stmt ELSE stmt
                     { $$ = nullptr; }
+                    | IF '(' boolexpr ')' error
+                    { $$ = nullptr; }
 
 while_stmt:         WHILE '(' boolexpr ')' stmt 
                     { $$ = new WhileStatement($3, $5); $$->SetLineNumber(@$.first_line); }
+                    | WHILE '(' error ')' stmt 
+                    { $$ = nullptr; }
+                    | WHILE '(' stmt ')' error
+                    { $$ = nullptr; }
+                    
 
 switch_stmt:        SWITCH '(' expression ')'
                     '{' caselist DEFAULT ':' stmtlist '}'
@@ -153,13 +166,15 @@ switch_stmt:        SWITCH '(' expression ')'
                         $6->SetDefaultCase($9);
                         $$ = $6;
                     }
+                    | SWITCH '(' error ')' '{' caselist DEFAULT ':' stmtlist '}'
+                    { $$ = nullptr; }
 
 caselist:              
         %empty
         { $$ = new SwitchStatement(); $$->SetLineNumber(@$.first_line);  }
         | caselist CASE NUM ':' stmtlist
         { $1->AddCase($3, $5); $$ = $1;}
-        ;
+
                         
 break_stmt:             BREAK ';'
                         { $$ = new BreakStatement(); $$->SetLineNumber(@$.first_line); }

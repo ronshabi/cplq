@@ -1,3 +1,10 @@
+#===-- Makefile ------------------------------------------------------------===#
+#
+#
+#
+#===------------------------------------------------------------------------===#
+
+
 CXX=g++
 DEFINITIONS=-DDEBUG
 CXXFLAGS=-std=c++20 -g -O1 -Wall -Wextra -Wformat $(DEFINITIONS)
@@ -50,6 +57,14 @@ $(FLEX_OBJECTS): $(FLEX_CPP_OUTPUT)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: test
+test:
+	bash test.sh
+
+.PHONY: test-errors
+test-errors:
+	bash test-errors.sh
 
 .PHONY: clean
 clean:

@@ -1,3 +1,8 @@
+//===----------------------------------------------------------------------===//
+// CPL to Quad Transpiler
+// Author: Ron Shabi
+//===----------------------------------------------------------------------===//
+
 #pragma once
 
 #include <string>
@@ -66,6 +71,7 @@ public:
 
     /// \brief Returns true if the module has no errors whatsoever, false
     /// otherwise.
+    
     int
     IsOK() const
     {

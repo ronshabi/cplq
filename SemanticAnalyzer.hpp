@@ -1,3 +1,14 @@
+//===-- SemanticAnalyzer.hpp ----------------------------------------------===//
+//
+// This file defines the SemanticAnalyzer class, which performs semantic
+// analysis on a module.
+//
+//===----------------------------------------------------------------------===//
+//
+// Author: Ron Shabi
+//
+//===----------------------------------------------------------------------===//
+
 #pragma once
 
 #include "Ast.hpp"

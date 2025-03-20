@@ -1,3 +1,9 @@
+//===-- SemanticAnalyzer.cpp-----------------------------------------------===//
+//
+// Author: Ron Shabi
+//
+//===----------------------------------------------------------------------===//
+
 #include "SemanticAnalyzer.hpp"
 
 #include "Module.hpp"

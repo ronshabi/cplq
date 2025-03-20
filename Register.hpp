@@ -1,3 +1,15 @@
+//===-- Register.hpp ------------------------------------------------------===//
+//
+// This file defines the Register structure, which represents a register with a
+// unique identifier
+//
+//===----------------------------------------------------------------------===//
+//
+// Author: Ron Shabi
+//
+//===----------------------------------------------------------------------===//
+
+
 #pragma once
 
 #include <string>
@@ -7,20 +19,8 @@
 struct Register
 {
 public:
-    Register()
-        : m_id(++s_nextID)
-    {
-    }
-
-    /// \brief Copy constructor.
-    ///
-    /// Creates a new Register with the same ID as the given Register.
-    ///
-    /// \param other The Register to copy.
-    Register(Register const &other)
-        : m_id(other.m_id)
-    {
-    }
+    Register();
+    Register(Register const &other);
 
     /// \brief Copy assignment operator.
     ///
@@ -28,13 +28,8 @@ public:
     ///
     /// \param other The Register to copy.
     /// \return A reference to this Register.
-
     Register &
-    operator=(Register const &other)
-    {
-        this->m_id = other.m_id;
-        return *this;
-    }
+    operator=(Register const &other);
 
     /// \brief Returns the name of the Register.
     ///
@@ -45,7 +40,6 @@ public:
     std::string GetName() const;
 
 private:
-    static unsigned
-             s_nextID; ///< Static member to track the next available ID.
-    unsigned m_id;      ///< Unique identifier for the Register.
+    static unsigned s_nextID; ///< Static member to track the next available ID.
+    unsigned        m_id;     ///< Unique identifier for the Register.
 };
