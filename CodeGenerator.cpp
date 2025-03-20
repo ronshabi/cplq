@@ -186,9 +186,9 @@ CodeGenerator::Codegen(SwitchStatement *node)
 
         caseCode->AcceptCodeGenerator(*this);
 
-        auto const jt_implicit_next =
+        auto const jtImplicitNext =
             EmitFiller("switch: jump implicit to next");
-        caseImplicitJumpToNextBackpatchLines.push_back(jt_implicit_next);
+        caseImplicitJumpToNextBackpatchLines.push_back(jtImplicitNext);
     }
 
     // Generate code for the default case
@@ -254,13 +254,13 @@ void
 CodeGenerator::Codegen(CastExpression *node)
 {
     node->GetExpr()->AcceptCodeGenerator(*this);
-    auto const cast_type    = node->GetType(GetSymbolTable());
+    auto const castType    = node->GetType(GetSymbolTable());
     auto const myRegister  = node->GetRegister();
-    auto const exp_register = node->GetExpr()->GetRegister();
+    auto const exprRegister = node->GetExpr()->GetRegister();
 
     // We need to check that the expression we are casting is a different type
     // than the cast
-    auto const inner_expression_type =
+    auto const innerExpressionType =
         node->GetExpr()->GetType(GetSymbolTable());
 
     // If both the cast type and the inner expression type are the same, we can
@@ -268,16 +268,16 @@ CodeGenerator::Codegen(CastExpression *node)
     // expression
 
     std::string opcode;
-    if (cast_type == inner_expression_type)
+    if (castType == innerExpressionType)
     {
-        opcode = (cast_type == NumberType::INT) ? "IASN" : "RASN";
+        opcode = (castType == NumberType::INT) ? "IASN" : "RASN";
     }
     else
     {
-        opcode = (cast_type == NumberType::INT) ? "RTOI" : "ITOR";
+        opcode = (castType == NumberType::INT) ? "RTOI" : "ITOR";
     }
 
-    EmitLine(opcode, myRegister, exp_register);
+    EmitLine(opcode, myRegister, exprRegister);
 }
 
 void
@@ -291,9 +291,9 @@ void
 CodeGenerator::Codegen(BinaryBoolExpression *node)
 {
     auto const myRegister = node->GetRegister();
-    auto const my_operator = node->GetOperator();
+    auto const myOperator = node->GetOperator();
 
-    if (my_operator == Operator::AND)
+    if (myOperator == Operator::AND)
     {
         // The algorithm of AND expr generation with short-circuting
 
@@ -319,7 +319,7 @@ CodeGenerator::Codegen(BinaryBoolExpression *node)
         // Backpatch
         PatchJmpz(jzl1Filler, L1 + 1, myRegister);
     }
-    else if (my_operator == Operator::OR)
+    else if (myOperator == Operator::OR)
     {
         // The algorithm of OR expr generation with short-circuting
 
@@ -334,25 +334,25 @@ CodeGenerator::Codegen(BinaryBoolExpression *node)
         //          If LHS == 0, Jump to L2 (Check RHS)
         //  L3:     ... Rest of the code ...
 
-        auto const jtl1_filler = EmitFiller("OR: Jump to L1");
+        auto const jtl1Filler = EmitFiller("OR: Jump to L1");
 
         auto const L2 = GetCurrentAsmLineNumber();
         node->GetRhsExpr()->AcceptCodeGenerator(*this);
         EmitLine("IASN", myRegister, node->GetRhsExpr()->GetRegister());
-        auto const jtl3_filler = EmitFiller("OR: Jump to L3");
+        auto const jtl3Filler = EmitFiller("OR: Jump to L3");
 
         auto const L1 = GetCurrentAsmLineNumber();
         node->GetLhsExpr()->AcceptCodeGenerator(*this);
         EmitLine("IASN", myRegister, node->GetLhsExpr()->GetRegister());
 
-        auto const jzl2_filler = EmitFiller("OR: Jumpz to L2 if LHS=0");
+        auto const jzl2Filler = EmitFiller("OR: Jumpz to L2 if LHS=0");
 
         auto const L3 = GetCurrentAsmLineNumber();
 
         // Backpatch
-        PatchJump(jtl1_filler, L1 + 1);
-        PatchJump(jtl3_filler, L3 + 1);
-        PatchJmpz(jzl2_filler, L2 + 1, myRegister);
+        PatchJump(jtl1Filler, L1 + 1);
+        PatchJump(jtl3Filler, L3 + 1);
+        PatchJmpz(jzl2Filler, L2 + 1, myRegister);
     }
     else
     {
@@ -449,11 +449,11 @@ CodeGenerator::Codegen(BinaryExpression *node)
     node->GetLhsExpr()->AcceptCodeGenerator(*this);
     node->GetRhsExpr()->AcceptCodeGenerator(*this);
     auto const myRegister  = node->GetRegister();
-    auto       lhs_register = node->GetLhsExpr()->GetRegister();
-    auto       rhs_register = node->GetRhsExpr()->GetRegister();
+    auto       lhsRegister = node->GetLhsExpr()->GetRegister();
+    auto       rhsRegister = node->GetRhsExpr()->GetRegister();
 
-    auto const lhs_type = node->GetLhsExpr()->GetType(GetSymbolTable());
-    auto const rhs_type = node->GetRhsExpr()->GetType(GetSymbolTable());
+    auto const lhsType = node->GetLhsExpr()->GetType(GetSymbolTable());
+    auto const rhsType = node->GetRhsExpr()->GetType(GetSymbolTable());
 
     // If both types are ints:
     //      - use the I-variation of the instruction.
@@ -461,40 +461,40 @@ CodeGenerator::Codegen(BinaryExpression *node)
     // Else (meaning one of the types are floats):
     //      - convert the other one to float
     //      - use the R-variation of the instruction
-    bool use_int        = true;
-    bool should_convert = false;
+    bool useInt        = true;
+    bool shouldConvert = false;
     // If one of the operands is a float, convert the other one to int and
     // use
     // the float variation
-    if (lhs_type != rhs_type)
+    if (lhsType != rhsType)
     {
-        should_convert = true;
+        shouldConvert = true;
     }
 
-    if (should_convert && lhs_type == NumberType::INT)
+    if (shouldConvert && lhsType == NumberType::INT)
     {
         Register cvt;
-        use_int = false;
-        EmitLine("ITOR", cvt, lhs_register);
-        lhs_register = cvt;
+        useInt = false;
+        EmitLine("ITOR", cvt, lhsRegister);
+        lhsRegister = cvt;
     }
 
-    if (should_convert && rhs_type == NumberType::INT)
+    if (shouldConvert && rhsType == NumberType::INT)
     {
         Register cvt;
-        use_int = false;
-        EmitLine("ITOR", cvt, rhs_register);
-        rhs_register = cvt;
+        useInt = false;
+        EmitLine("ITOR", cvt, rhsRegister);
+        rhsRegister = cvt;
     }
 
-    if (lhs_type == NumberType::FLOAT)
+    if (lhsType == NumberType::FLOAT)
     {
-        use_int = false;
+        useInt = false;
     }
 
     // The opcode naming is quite redundant, so let's not repeat ourselves
     std::string opcode;
-    opcode.push_back(use_int ? 'I' : 'R'); // Choose the right prefix
+    opcode.push_back(useInt ? 'I' : 'R'); // Choose the right prefix
 
     // Choose the instruction based on the operator
 
@@ -517,7 +517,7 @@ CodeGenerator::Codegen(BinaryExpression *node)
     }
 
     // Generate the code
-    EmitLine(opcode, myRegister, lhs_register, rhs_register);
+    EmitLine(opcode, myRegister, lhsRegister, rhsRegister);
 }
 
 void
@@ -548,8 +548,8 @@ void
 CodeGenerator::Codegen(BreakStatement *node)
 {
     UNUSED(node);
-    auto const filler_line = EmitFiller("BREAK: backpatch here");
-    m_breakRequests.push_back(filler_line);
+    auto const fillerLine = EmitFiller("BREAK: backpatch here");
+    m_breakRequests.push_back(fillerLine);
 }
 
 unsigned
