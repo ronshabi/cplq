@@ -10,99 +10,99 @@ CodeGenerator::CodeGenerator(Module &mod)
 }
 
 void
-CodeGenerator::codegen(Program *node)
+CodeGenerator::Codegen(Program *node)
 {
-    node->get_statemenets()->accept_code_generator(*this);
-    emit_line("HALT");
+    node->GetStatemenets()->AcceptCodeGenerator(*this);
+    EmitLine("HALT");
 }
 
 void
-CodeGenerator::codegen(DeclarationBlock *node)
+CodeGenerator::Codegen(DeclarationBlock *node)
 {
     UNUSED(node);
 }
 
 void
-CodeGenerator::codegen(StatementList *node)
+CodeGenerator::Codegen(StatementList *node)
 {
-    for (auto const &stmt : node->get_statements())
+    for (auto const &stmt : node->GetStatements())
     {
-        stmt->accept_code_generator(*this);
+        stmt->AcceptCodeGenerator(*this);
     }
 }
 
 void
-CodeGenerator::codegen(AssignStatement *node)
+CodeGenerator::Codegen(AssignStatement *node)
 {
     // Generate code for the RHS expression
     // We do this first because we first need to evaluate RHS when assigning!
-    node->get_expression()->accept_code_generator(*this);
+    node->GetExpr()->AcceptCodeGenerator(*this);
 
     // Get ID of symbol
-    auto const id_symbol = symbol_table().get(*node->get_id());
+    auto const idSymbol = GetSymbolTable().Get(*node->GetID());
 
-    auto const rhs_expr = node->get_expression();
-    auto const rhs_type = rhs_expr->get_type(symbol_table());
+    auto const rhsExpr = node->GetExpr();
+    auto const rhsType = rhsExpr->GetType(GetSymbolTable());
 
-    Register convert_result;
+    Register convertResult;
 
-    if (id_symbol->value.type == NumberType::INT)
+    if (idSymbol->value.type == NumberType::INT)
     {
-        convert_result = rhs_expr->get_register();
-        emit_line("IASN", id_symbol->reg, convert_result);
+        convertResult = rhsExpr->GetRegister();
+        EmitLine("IASN", idSymbol->reg, convertResult);
     }
     else
     {
         // Check RHS expression type, convert it to float if needed
-        if (rhs_type == NumberType::INT)
+        if (rhsType == NumberType::INT)
         {
-            emit_line("ITOR", convert_result, rhs_expr->get_register());
+            EmitLine("ITOR", convertResult, rhsExpr->GetRegister());
         }
         else
         {
-            convert_result = rhs_expr->get_register();
+            convertResult = rhsExpr->GetRegister();
         }
 
-        emit_line("RASN", id_symbol->reg, convert_result);
+        EmitLine("RASN", idSymbol->reg, convertResult);
     }
 }
 
 void
-CodeGenerator::codegen(InputStatement *node)
+CodeGenerator::Codegen(InputStatement *node)
 {
     // Get the symbol properties to know which opcode to use
-    auto const sym  = symbol_table().get(*node->get_id());
+    auto const sym  = GetSymbolTable().Get(*node->GetID());
     auto const type = sym->value.type;
 
     if (type == NumberType::INT)
     {
-        emit_line("IINP", sym->reg);
+        EmitLine("IINP", sym->reg);
     }
     else
     {
-        emit_line("RINP", sym->reg);
+        EmitLine("RINP", sym->reg);
     }
 
     node->m_register = sym->reg;
 }
 
 void
-CodeGenerator::codegen(OutputStatement *node)
+CodeGenerator::Codegen(OutputStatement *node)
 {
-    node->get_expression()->accept_code_generator(*this);
-    auto const type = node->get_expression()->get_type(symbol_table());
+    node->GetExpr()->AcceptCodeGenerator(*this);
+    auto const type = node->GetExpr()->GetType(GetSymbolTable());
     if (type == NumberType::INT)
     {
-        emit_line("IPRT", node->get_expression()->get_register());
+        EmitLine("IPRT", node->GetExpr()->GetRegister());
     }
     else
     {
-        emit_line("RPRT", node->get_expression()->get_register());
+        EmitLine("RPRT", node->GetExpr()->GetRegister());
     }
 }
 
 void
-CodeGenerator::codegen(IfStatement *node)
+CodeGenerator::Codegen(IfStatement *node)
 {
     // The algorithm of if statement generation
 
@@ -113,29 +113,29 @@ CodeGenerator::codegen(IfStatement *node)
     //      L1:     [Else-block code]
     //      L2:     [... Rest of code ...]
 
-    auto const condition_register = node->get_condition_exp()->get_register();
+    auto const conditionRegister = node->GetConditionExpr()->GetRegister();
 
-    node->get_condition_exp()->accept_code_generator(*this);
+    node->GetConditionExpr()->AcceptCodeGenerator(*this);
 
-    auto const jzl1_filler = emit_filler("If: Jump to else block");
+    auto const jzl1Filler = EmitFiller("If: Jump to else block");
 
-    node->get_then_branch()->accept_code_generator(*this);
+    node->GetThenBranch()->AcceptCodeGenerator(*this);
 
-    auto const jtl2_filler = emit_filler("If: Skip else block");
+    auto const jtl2Filler = EmitFiller("If: Skip else block");
 
-    auto const L1 = current_asm_line_number();
+    auto const L1 = GetCurrentAsmLineNumber();
 
-    node->get_else_branch()->accept_code_generator(*this);
+    node->GetElseBranch()->AcceptCodeGenerator(*this);
 
-    auto const L2 = current_asm_line_number();
+    auto const L2 = GetCurrentAsmLineNumber();
 
     // Backpatch
-    patch_jmpz(jzl1_filler, L1 + 1, condition_register);
-    patch_jump(jtl2_filler, L2 + 1);
+    PatchJmpz(jzl1Filler, L1 + 1, conditionRegister);
+    PatchJump(jtl2Filler, L2 + 1);
 }
 
 void
-CodeGenerator::codegen(SwitchStatement *node)
+CodeGenerator::Codegen(SwitchStatement *node)
 {
     // The algorithm of switch-statement code generation.
 
@@ -160,71 +160,70 @@ CodeGenerator::codegen(SwitchStatement *node)
     //
     //      LExit:      [... rest of the code after the switch ...]
 
-    auto const expr = node->get_expression();
+    auto const expr = node->GetExpr();
 
     auto       rcmp  = Register();
-    auto const cases = node->get_cases(); // First - the case number
-                                          // Second - the case statement list
-    std::vector<unsigned> case_labels{};
-    std::vector<unsigned> case_backpatch_lines{};
-    std::vector<unsigned> case_implicit_jump_to_next_backpatch_lines{};
+    auto const cases = node->GetCases(); // First - the case number
+                                         // Second - the case statement list
+    std::vector<unsigned> caseLabels{};
+    std::vector<unsigned> caseBackpatchLines{};
+    std::vector<unsigned> caseImplicitJumpToNextBackpatchLines{};
 
-    expr->accept_code_generator(*this);
-    auto const rexpr = node->get_expression()->get_register();
+    expr->AcceptCodeGenerator(*this);
+    auto const rexpr = node->GetExpr()->GetRegister();
 
     // Generate code for regular cases
     for (std::size_t i = 0; i < cases.size(); ++i)
     {
-        auto const case_number = cases.at(i).first.i;
-        auto const case_code   = cases.at(i).second;
+        auto const caseNumber = cases.at(i).first.i;
+        auto const caseCode   = cases.at(i).second;
 
-        case_labels.push_back(current_asm_line_number());
-        emit_line("IEQL", rcmp, rexpr, case_number);
+        caseLabels.push_back(GetCurrentAsmLineNumber());
+        EmitLine("IEQL", rcmp, rexpr, caseNumber);
 
-        auto const lcnext =
-            emit_filler("Switch: if rcmp==0, jump to next case");
-        case_backpatch_lines.push_back(lcnext);
+        auto const lcnext = EmitFiller("Switch: if rcmp==0, jump to next case");
+        caseBackpatchLines.push_back(lcnext);
 
-        case_code->accept_code_generator(*this);
+        caseCode->AcceptCodeGenerator(*this);
 
         auto const jt_implicit_next =
-            emit_filler("switch: jump implicit to next");
-        case_implicit_jump_to_next_backpatch_lines.push_back(jt_implicit_next);
+            EmitFiller("switch: jump implicit to next");
+        caseImplicitJumpToNextBackpatchLines.push_back(jt_implicit_next);
     }
 
     // Generate code for the default case
-    auto const LD = current_asm_line_number();
-    node->get_default_case()->accept_code_generator(*this);
+    auto const LD = GetCurrentAsmLineNumber();
+    node->GetDefaultCase()->AcceptCodeGenerator(*this);
 
-    auto const LExit = current_asm_line_number();
+    auto const LExit = GetCurrentAsmLineNumber();
 
     // ---------------
     // Backpatch
     // ---------------
     // Don't forget the breaks
-    m_break_jump_dest = LExit;
-    patch_breaks();
+    m_breakJumpDest = LExit;
+    PatchBreaks();
 
     // Patch regular cases
-    for (std::size_t i = 0; i < case_labels.size(); ++i)
+    for (std::size_t i = 0; i < caseLabels.size(); ++i)
     {
-        auto const case_backpatch_line = case_backpatch_lines.at(i);
+        auto const caseBackpatchLine = caseBackpatchLines.at(i);
 
-        auto const case_backpatch_next_imp =
-            case_implicit_jump_to_next_backpatch_lines.at(i);
+        auto const caseBackpatchNextImp =
+            caseImplicitJumpToNextBackpatchLines.at(i);
 
         auto LCNext =
-            (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 1 : LD + 1;
+            (i + 1 != caseLabels.size()) ? caseLabels.at(i + 1) + 1 : LD + 1;
         auto LCNextImplicit =
-            (i + 1 != case_labels.size()) ? case_labels.at(i + 1) + 2 : LD + 1;
+            (i + 1 != caseLabels.size()) ? caseLabels.at(i + 1) + 2 : LD + 1;
 
-        patch_jmpz(case_backpatch_line, LCNext, rcmp);
-        patch_jump(case_backpatch_next_imp, LCNextImplicit);
+        PatchJmpz(caseBackpatchLine, LCNext, rcmp);
+        PatchJump(caseBackpatchNextImp, LCNextImplicit);
     }
 }
 
 void
-CodeGenerator::codegen(WhileStatement *node)
+CodeGenerator::Codegen(WhileStatement *node)
 {
     // The algorithm of while statement generation
 
@@ -234,36 +233,35 @@ CodeGenerator::codegen(WhileStatement *node)
     //              Jump to L1 (check condition again)
     //      L2:     ... Rest of code ...
 
-    auto const condition_register =
-        node->get_condition_expression()->get_register();
+    auto const condition_register = node->GetConditionExpr()->GetRegister();
 
-    auto const L1 = current_asm_line_number();
-    node->get_condition_expression()->accept_code_generator(*this);
-    auto const jzl2_filler =
-        emit_filler("While: If condition is zero, exit loop");
-    node->get_body_statement()->accept_code_generator(*this);
-    auto const jtl1_filler = emit_filler("While: Check condition again");
-    auto const L2          = current_asm_line_number();
+    auto const L1 = GetCurrentAsmLineNumber();
+    node->GetConditionExpr()->AcceptCodeGenerator(*this);
+    auto const jzl2Filler =
+        EmitFiller("While: If condition is zero, exit loop");
+    node->GetBodyStatement()->AcceptCodeGenerator(*this);
+    auto const jtl1Filler = EmitFiller("While: Check condition again");
+    auto const L2         = GetCurrentAsmLineNumber();
 
     // Backpatch
-    patch_jmpz(jzl2_filler, L2 + 1, condition_register);
-    patch_jump(jtl1_filler, L1 + 1);
+    PatchJmpz(jzl2Filler, L2 + 1, condition_register);
+    PatchJump(jtl1Filler, L1 + 1);
 
-    patch_breaks();
+    PatchBreaks();
 }
 
 void
-CodeGenerator::codegen(CastExpression *node)
+CodeGenerator::Codegen(CastExpression *node)
 {
-    node->get_expression()->accept_code_generator(*this);
-    auto const cast_type    = node->get_type(symbol_table());
-    auto const my_register  = node->get_register();
-    auto const exp_register = node->get_expression()->get_register();
+    node->GetExpr()->AcceptCodeGenerator(*this);
+    auto const cast_type    = node->GetType(GetSymbolTable());
+    auto const myRegister  = node->GetRegister();
+    auto const exp_register = node->GetExpr()->GetRegister();
 
     // We need to check that the expression we are casting is a different type
     // than the cast
     auto const inner_expression_type =
-        node->get_expression()->get_type(symbol_table());
+        node->GetExpr()->GetType(GetSymbolTable());
 
     // If both the cast type and the inner expression type are the same, we can
     // just skip the casting, but we should still emit a register from the cast
@@ -279,22 +277,21 @@ CodeGenerator::codegen(CastExpression *node)
         opcode = (cast_type == NumberType::INT) ? "RTOI" : "ITOR";
     }
 
-    emit_line(opcode, my_register, exp_register);
+    EmitLine(opcode, myRegister, exp_register);
 }
 
 void
-CodeGenerator::codegen(NotExpression *node)
+CodeGenerator::Codegen(NotExpression *node)
 {
-    node->get_expression()->accept_code_generator(*this);
-    emit_line("INQL", node->get_register(),
-              node->get_expression()->get_register(), 1);
+    node->GetExpr()->AcceptCodeGenerator(*this);
+    EmitLine("INQL", node->GetRegister(), node->GetExpr()->GetRegister(), 1);
 }
 
 void
-CodeGenerator::codegen(BinaryBoolExpression *node)
+CodeGenerator::Codegen(BinaryBoolExpression *node)
 {
-    auto const my_register = node->get_register();
-    auto const my_operator = node->get_operator();
+    auto const myRegister = node->GetRegister();
+    auto const my_operator = node->GetOperator();
 
     if (my_operator == Operator::AND)
     {
@@ -309,18 +306,18 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         //          Set M = RHS
         //  L1:     ... Rest of the code ...
 
-        node->get_lhs_expr()->accept_code_generator(*this);
-        emit_line("IASN", my_register, node->get_lhs_expr()->get_register());
+        node->GetLhsExpr()->AcceptCodeGenerator(*this);
+        EmitLine("IASN", myRegister, node->GetLhsExpr()->GetRegister());
 
-        auto const jzl1_filler = emit_filler("AND: if M == 0 jump to L1");
+        auto const jzl1Filler = EmitFiller("AND: if M == 0 jump to L1");
 
-        node->get_rhs_expr()->accept_code_generator(*this);
-        emit_line("IASN", my_register, node->get_rhs_expr()->get_register());
+        node->GetRhsExpr()->AcceptCodeGenerator(*this);
+        EmitLine("IASN", myRegister, node->GetRhsExpr()->GetRegister());
 
-        auto const L1 = current_asm_line_number();
+        auto const L1 = GetCurrentAsmLineNumber();
 
         // Backpatch
-        patch_jmpz(jzl1_filler, L1 + 1, my_register);
+        PatchJmpz(jzl1Filler, L1 + 1, myRegister);
     }
     else if (my_operator == Operator::OR)
     {
@@ -337,76 +334,76 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
         //          If LHS == 0, Jump to L2 (Check RHS)
         //  L3:     ... Rest of the code ...
 
-        auto const jtl1_filler = emit_filler("OR: Jump to L1");
+        auto const jtl1_filler = EmitFiller("OR: Jump to L1");
 
-        auto const L2 = current_asm_line_number();
-        node->get_rhs_expr()->accept_code_generator(*this);
-        emit_line("IASN", my_register, node->get_rhs_expr()->get_register());
-        auto const jtl3_filler = emit_filler("OR: Jump to L3");
+        auto const L2 = GetCurrentAsmLineNumber();
+        node->GetRhsExpr()->AcceptCodeGenerator(*this);
+        EmitLine("IASN", myRegister, node->GetRhsExpr()->GetRegister());
+        auto const jtl3_filler = EmitFiller("OR: Jump to L3");
 
-        auto const L1 = current_asm_line_number();
-        node->get_lhs_expr()->accept_code_generator(*this);
-        emit_line("IASN", my_register, node->get_lhs_expr()->get_register());
+        auto const L1 = GetCurrentAsmLineNumber();
+        node->GetLhsExpr()->AcceptCodeGenerator(*this);
+        EmitLine("IASN", myRegister, node->GetLhsExpr()->GetRegister());
 
-        auto const jzl2_filler = emit_filler("OR: Jumpz to L2 if LHS=0");
+        auto const jzl2_filler = EmitFiller("OR: Jumpz to L2 if LHS=0");
 
-        auto const L3 = current_asm_line_number();
+        auto const L3 = GetCurrentAsmLineNumber();
 
         // Backpatch
-        patch_jump(jtl1_filler, L1 + 1);
-        patch_jump(jtl3_filler, L3 + 1);
-        patch_jmpz(jzl2_filler, L2 + 1, my_register);
+        PatchJump(jtl1_filler, L1 + 1);
+        PatchJump(jtl3_filler, L3 + 1);
+        PatchJmpz(jzl2_filler, L2 + 1, myRegister);
     }
     else
     {
-        node->get_lhs_expr()->accept_code_generator(*this);
-        node->get_rhs_expr()->accept_code_generator(*this);
+        node->GetLhsExpr()->AcceptCodeGenerator(*this);
+        node->GetRhsExpr()->AcceptCodeGenerator(*this);
 
-        auto       lhs_register = node->get_lhs_expr()->get_register();
-        auto       rhs_register = node->get_rhs_expr()->get_register();
-        auto const lhs_type = node->get_lhs_expr()->get_type(symbol_table());
-        auto const rhs_type = node->get_rhs_expr()->get_type(symbol_table());
+        auto       lhsRegister = node->GetLhsExpr()->GetRegister();
+        auto       rhsRegister = node->GetRhsExpr()->GetRegister();
+        auto const lhsType = node->GetLhsExpr()->GetType(GetSymbolTable());
+        auto const rhsType = node->GetRhsExpr()->GetType(GetSymbolTable());
 
         // If both operands are ints, use the int variation by default.
-        bool use_int        = true;
-        bool should_convert = false;
+        bool useInt        = true;
+        bool shouldConvert = false;
         // If one of the operands is a float, convert the other one to int and
         // use
         // the float variation
-        if (lhs_type != rhs_type)
+        if (lhsType != rhsType)
         {
-            should_convert = true;
+            shouldConvert = true;
         }
 
-        if (should_convert && lhs_type == NumberType::INT)
+        if (shouldConvert && lhsType == NumberType::INT)
         {
             Register cvt;
-            use_int = false;
-            emit_line("ITOR", cvt, lhs_register);
-            lhs_register = cvt;
+            useInt = false;
+            EmitLine("ITOR", cvt, lhsRegister);
+            lhsRegister = cvt;
         }
 
-        if (should_convert && rhs_type == NumberType::INT)
+        if (shouldConvert && rhsType == NumberType::INT)
         {
             Register cvt;
-            use_int = false;
-            emit_line("ITOR", cvt, rhs_register);
-            rhs_register = cvt;
+            useInt = false;
+            EmitLine("ITOR", cvt, rhsRegister);
+            rhsRegister = cvt;
         }
 
-        if (lhs_type == NumberType::FLOAT)
+        if (lhsType == NumberType::FLOAT)
         {
-            use_int = false;
+            useInt = false;
         }
 
         std::string opcode;
-        opcode.push_back(use_int ? 'I' : 'R'); // Choose the right prefix
+        opcode.push_back(useInt ? 'I' : 'R'); // Choose the right prefix
 
-        bool invert_logical_condition = false; // If we need to use GTE, LTE ops
+        bool invertLogicalCondition = false; // If we need to use GTE, LTE ops
 
         // Now we know what variation we have to use, and we have both registers
         // in the proper types
-        switch (node->get_operator())
+        switch (node->GetOperator())
         {
         case Operator::EQ:
             opcode.append("EQL");
@@ -422,24 +419,24 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
             break;
         case Operator::LTE:
             opcode.append("GRT");
-            invert_logical_condition = true;
+            invertLogicalCondition = true;
             break;
         case Operator::GTE:
             opcode.append("LSS");
-            invert_logical_condition = true;
+            invertLogicalCondition = true;
             break;
         default:
-            m_module.emit_fatal_error(
+            m_module.EmitFatalError(
                 "invalid operator on boolean binary expression");
         }
 
         // Now let's generate the code
-        emit_line(opcode, my_register, lhs_register, rhs_register);
+        EmitLine(opcode, myRegister, lhsRegister, rhsRegister);
         // If we need to invert the logical condition to get a "*-or-equals"
         // inst let's emit a NOT also
-        if (invert_logical_condition)
+        if (invertLogicalCondition)
         {
-            emit_line("INQL", my_register, my_register, 1);
+            EmitLine("INQL", myRegister, myRegister, 1);
         }
 
         // That's it!
@@ -447,16 +444,16 @@ CodeGenerator::codegen(BinaryBoolExpression *node)
 }
 
 void
-CodeGenerator::codegen(BinaryExpression *node)
+CodeGenerator::Codegen(BinaryExpression *node)
 {
-    node->get_lhs_expr()->accept_code_generator(*this);
-    node->get_rhs_expr()->accept_code_generator(*this);
-    auto const my_register  = node->get_register();
-    auto       lhs_register = node->get_lhs_expr()->get_register();
-    auto       rhs_register = node->get_rhs_expr()->get_register();
+    node->GetLhsExpr()->AcceptCodeGenerator(*this);
+    node->GetRhsExpr()->AcceptCodeGenerator(*this);
+    auto const myRegister  = node->GetRegister();
+    auto       lhs_register = node->GetLhsExpr()->GetRegister();
+    auto       rhs_register = node->GetRhsExpr()->GetRegister();
 
-    auto const lhs_type = node->get_lhs_expr()->get_type(symbol_table());
-    auto const rhs_type = node->get_rhs_expr()->get_type(symbol_table());
+    auto const lhs_type = node->GetLhsExpr()->GetType(GetSymbolTable());
+    auto const rhs_type = node->GetRhsExpr()->GetType(GetSymbolTable());
 
     // If both types are ints:
     //      - use the I-variation of the instruction.
@@ -478,7 +475,7 @@ CodeGenerator::codegen(BinaryExpression *node)
     {
         Register cvt;
         use_int = false;
-        emit_line("ITOR", cvt, lhs_register);
+        EmitLine("ITOR", cvt, lhs_register);
         lhs_register = cvt;
     }
 
@@ -486,7 +483,7 @@ CodeGenerator::codegen(BinaryExpression *node)
     {
         Register cvt;
         use_int = false;
-        emit_line("ITOR", cvt, rhs_register);
+        EmitLine("ITOR", cvt, rhs_register);
         rhs_register = cvt;
     }
 
@@ -501,7 +498,7 @@ CodeGenerator::codegen(BinaryExpression *node)
 
     // Choose the instruction based on the operator
 
-    switch (node->get_operator())
+    switch (node->GetOperator())
     {
     case Operator::PLUS:
         opcode.append("ADD");
@@ -516,96 +513,96 @@ CodeGenerator::codegen(BinaryExpression *node)
         opcode.append("DIV");
         break;
     default:
-        m_module.emit_fatal_error("invalid operator in binary expression");
+        m_module.EmitFatalError("invalid operator in binary expression");
     }
 
     // Generate the code
-    emit_line(opcode, my_register, lhs_register, rhs_register);
+    EmitLine(opcode, myRegister, lhs_register, rhs_register);
 }
 
 void
-CodeGenerator::codegen(IdExpression *node)
+CodeGenerator::Codegen(IdExpression *node)
 {
     // I want to SET the ID register to the symbol register, to sync them.
-    auto const sym   = symbol_table().get(*node->get_id());
+    auto const sym   = GetSymbolTable().Get(*node->GetID());
     node->m_register = sym->reg;
 
     // Now we can continue with no worries the ID will not refer to the symbol
 }
 
 void
-CodeGenerator::codegen(NumberExpression *node)
+CodeGenerator::Codegen(NumberExpression *node)
 {
-    auto const type = node->get_type(symbol_table());
+    auto const type = node->GetType(GetSymbolTable());
     if (type == NumberType::INT)
     {
-        emit_line("IASN", node->get_register(), node->get_number().i);
+        EmitLine("IASN", node->GetRegister(), node->GetNumber().i);
     }
     else
     {
-        emit_line("RASN", node->get_register(), node->get_number().d);
+        EmitLine("RASN", node->GetRegister(), node->GetNumber().d);
     }
 }
 
 void
-CodeGenerator::codegen(BreakStatement *node)
+CodeGenerator::Codegen(BreakStatement *node)
 {
     UNUSED(node);
-    auto const filler_line = emit_filler("BREAK: backpatch here");
-    m_break_requests.push_back(filler_line);
+    auto const filler_line = EmitFiller("BREAK: backpatch here");
+    m_breakRequests.push_back(filler_line);
 }
 
 unsigned
-CodeGenerator::emit_filler(std::string const &comment)
+CodeGenerator::EmitFiller(std::string const &comment)
 {
     m_module.m_assembly.push_back("FILLER: " + comment);
     return m_module.m_assembly.size() - 1;
 }
 
 void
-CodeGenerator::patch_jmpz(unsigned line_no, unsigned jump_target, Register r)
+CodeGenerator::PatchJmpz(unsigned line_no, unsigned jump_target, Register r)
 {
     m_module.m_assembly.at(line_no) =
         "JMPZ " + std::to_string(jump_target) + " " + r.name();
 }
 
 void
-CodeGenerator::patch_jump(unsigned line_no, unsigned jump_target)
+CodeGenerator::PatchJump(unsigned line_no, unsigned jump_target)
 {
     m_module.m_assembly.at(line_no) = "JUMP " + std::to_string(jump_target);
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode)
+CodeGenerator::EmitLine(std::string const &opcode)
 {
     m_module.m_assembly.push_back(opcode);
     return m_module.m_assembly.size() - 1;
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r)
+CodeGenerator::EmitLine(std::string const &opcode, Register r)
 {
     m_module.m_assembly.push_back(opcode + " " + r.name());
     return m_module.m_assembly.size() - 1;
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2)
+CodeGenerator::EmitLine(std::string const &opcode, Register r1, Register r2)
 {
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name());
     return m_module.m_assembly.size() - 1;
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r, int val)
+CodeGenerator::EmitLine(std::string const &opcode, Register r, int val)
 {
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::to_string(val));
     return m_module.m_assembly.size() - 1;
 }
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r, int val1,
-                         int val2)
+CodeGenerator::EmitLine(std::string const &opcode, Register r, int val1,
+                        int val2)
 {
     m_module.m_assembly.push_back(opcode + " " + r.name() + " " +
                                   std::to_string(val1) + " " +
@@ -614,8 +611,8 @@ CodeGenerator::emit_line(std::string const &opcode, Register r, int val1,
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
-                         int val)
+CodeGenerator::EmitLine(std::string const &opcode, Register r1, Register r2,
+                        int val)
 {
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
                                   " " + std::to_string(val));
@@ -623,8 +620,8 @@ CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
-                         Register r3)
+CodeGenerator::EmitLine(std::string const &opcode, Register r1, Register r2,
+                        Register r3)
 {
     m_module.m_assembly.push_back(opcode + " " + r1.name() + " " + r2.name() +
                                   " " + r3.name());
@@ -632,7 +629,7 @@ CodeGenerator::emit_line(std::string const &opcode, Register r1, Register r2,
 }
 
 unsigned
-CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
+CodeGenerator::EmitLine(std::string const &opcode, Register r, double val)
 {
     std::array<char, 128> buf{};
     std::snprintf(buf.data(), buf.size(), "%.5g", val);
@@ -642,24 +639,24 @@ CodeGenerator::emit_line(std::string const &opcode, Register r, double val)
 }
 
 SymbolTable &
-CodeGenerator::symbol_table()
+CodeGenerator::GetSymbolTable()
 {
-    return m_module.get_symbol_table();
+    return m_module.GetSymbolTable();
 }
 
 void
-CodeGenerator::patch_breaks()
+CodeGenerator::PatchBreaks()
 {
-    for (unsigned const br : m_break_requests)
+    for (unsigned const br : m_breakRequests)
     {
-        patch_jump(br, m_break_jump_dest + 1);
+        PatchJump(br, m_breakJumpDest + 1);
     }
 
-    m_break_requests.clear();
+    m_breakRequests.clear();
 }
 
 unsigned
-CodeGenerator::current_asm_line_number() const
+CodeGenerator::GetCurrentAsmLineNumber() const
 {
     return m_module.m_assembly.size();
 }

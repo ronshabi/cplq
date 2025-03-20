@@ -2,8 +2,8 @@
 build/
 .vscode/
 *.o
-grammar.cxx
-grammar.hxx
+Grammar.cpp
+Grammar.hpp
 lexer.cxx
 cplq
 TODO.md

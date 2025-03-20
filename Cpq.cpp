@@ -27,15 +27,15 @@ main(int argc, const char *argv[])
 
     g_module = &main_module;
 
-    main_module.parse();
+    main_module.Parse();
 
-    if (main_module.is_ok())
+    if (main_module.IsOK())
     {
         // main_module.dump_ast();
-        main_module.semantic_analyze();
+        main_module.SemanticAnalyze();
         // main_module.dump_symbol_table();
-        main_module.codegen();
+        main_module.CodeGen();
     }
 
-    return main_module.get_error_code();
+    return main_module.GetErrorCode();
 }

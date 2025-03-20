@@ -1,9 +1,9 @@
 #include "Types.hpp"
 
 const char *
-number_type_to_string(NumberType number_type)
+NumberTypeToString(NumberType numberType)
 {
-    if (number_type == NumberType::FLOAT)
+    if (numberType == NumberType::FLOAT)
     {
         return "Float";
     }
@@ -12,7 +12,7 @@ number_type_to_string(NumberType number_type)
 }
 
 const char *
-operator_to_string(Operator op)
+OperatorToString(Operator op)
 {
     switch (op)
     {

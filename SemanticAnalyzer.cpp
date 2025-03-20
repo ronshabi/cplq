@@ -1,240 +1,239 @@
 #include "SemanticAnalyzer.hpp"
 
-#include "DebugStream.hpp"
 #include "Module.hpp"
 #include <unordered_set>
 
 SymbolTable &
-SemanticAnalyzer::get_symbol_table()
+SemanticAnalyzer::GetSymbolTable()
 {
-    return m_module.get_symbol_table();
+    return m_module.GetSymbolTable();
 }
 
 void
-SemanticAnalyzer::analyze(Program *node)
+SemanticAnalyzer::Analyze(Program *node)
 {
-    node->get_declaration_block()->accept_semantic_analyzer(*this);
-    node->get_statemenets()->accept_semantic_analyzer(*this);
+    node->GetDeclarationBlock()->AcceptSemanticAnalyzer(*this);
+    node->GetStatemenets()->AcceptSemanticAnalyzer(*this);
 }
 
 void
-SemanticAnalyzer::analyze(DeclarationBlock *node)
+SemanticAnalyzer::Analyze(DeclarationBlock *node)
 {
-    auto const decls = node->get_declarations();
+    auto const decls = node->GetDeclarations();
     for (auto const decl : decls)
     {
-        m_module.set_current_position(decl->get_line_number());
+        m_module.SetCurrentPosition(decl->GetLineNumber());
 
-        auto const decl_ids = decl->get_ids();
+        auto const decl_ids = decl->GetIDs();
         for (auto const id : decl_ids)
         {
-            auto const id_optional = get_symbol_table().get(*id);
+            auto const id_optional = GetSymbolTable().Get(*id);
 
             // ID already exists in the symbol table. This is an Error.
             if (id_optional.has_value())
             {
                 // Give detailed error based on its type
-                m_module.emit_error("repeated declaration of symbol '%s'",
+                m_module.EmitError("repeated declaration of symbol '%s'",
                                     id->c_str());
             }
             // ID doesn't exist in the symbol table, so add it.
             else
             {
-                get_symbol_table().add(
-                    *id, Symbol(decl->get_type(), decl->get_line_number()));
+                GetSymbolTable().Add(
+                    *id, Symbol(decl->GetType(), decl->GetLineNumber()));
             }
         }
     }
 }
 
 void
-SemanticAnalyzer::analyze(StatementList *node)
+SemanticAnalyzer::Analyze(StatementList *node)
 {
-    for (auto const &stmt : node->get_statements())
+    for (auto const &stmt : node->GetStatements())
     {
-        stmt->accept_semantic_analyzer(*this);
+        stmt->AcceptSemanticAnalyzer(*this);
 
-        if (!m_allow_break_stmts && stmt->is_break_statement())
+        if (!m_allowBreakStmts && stmt->IsBreakStatement())
         {
-            m_module.set_current_position(stmt->get_line_number());
-            m_module.emit_error(
+            m_module.SetCurrentPosition(stmt->GetLineNumber());
+            m_module.EmitError(
                 "break statements can appear only in switch cases");
         }
     }
 }
 
 void
-SemanticAnalyzer::analyze(AssignStatement *node)
+SemanticAnalyzer::Analyze(AssignStatement *node)
 {
     // Check that the ID is in the symbol table
-    auto const id_sym = get_symbol_table().get(*node->get_id());
-    m_module.set_current_position(node->get_line_number());
+    auto const id_sym = GetSymbolTable().Get(*node->GetID());
+    m_module.SetCurrentPosition(node->GetLineNumber());
 
     if (!id_sym.has_value())
     {
-        m_module.emit_error("unknown indentifier '%s' in assign statement",
-                            node->get_id()->c_str());
+        m_module.EmitError("unknown indentifier '%s' in assign statement",
+                            node->GetID()->c_str());
     }
 
     // Check the expression
-    node->get_expression()->accept_semantic_analyzer(*this);
+    node->GetExpr()->AcceptSemanticAnalyzer(*this);
 
     // Check that the expression is not a boolean expression
-    if (node->get_expression()->is_bool_expr())
+    if (node->GetExpr()->IsBoolExpr())
     {
-        m_module.emit_error("a boolean expression cannot be an asignee");
+        m_module.EmitError("a boolean expression cannot be an asignee");
         return;
     }
 
     // Typechecker: Check the type of the expression, if it's a float, and we're
     // an int, deny
-    if (node->get_expression()->get_type(get_symbol_table()) ==
+    if (node->GetExpr()->GetType(GetSymbolTable()) ==
             NumberType::FLOAT &&
         id_sym->value.type == NumberType::INT)
     {
-        m_module.emit_error(
+        m_module.EmitError(
             "type mismatch: can't assign a float to an int variable");
         return;
     }
 }
 
 void
-SemanticAnalyzer::analyze(InputStatement *node)
+SemanticAnalyzer::Analyze(InputStatement *node)
 {
     // Check the indentifier is in the symbol table
-    auto const id  = node->get_id();
-    auto const sym = get_symbol_table().get(*id);
+    auto const id  = node->GetID();
+    auto const sym = GetSymbolTable().Get(*id);
     if (!sym.has_value())
     {
-        m_module.set_current_position(node->get_line_number());
-        m_module.emit_error("unknown indentifier '%s' in input function",
+        m_module.SetCurrentPosition(node->GetLineNumber());
+        m_module.EmitError("unknown indentifier '%s' in input function",
                             id->c_str());
     }
 }
 
 void
-SemanticAnalyzer::analyze(OutputStatement *node)
+SemanticAnalyzer::Analyze(OutputStatement *node)
 {
-    node->get_expression()->accept_semantic_analyzer(*this);
+    node->GetExpr()->AcceptSemanticAnalyzer(*this);
 }
 
 void
-SemanticAnalyzer::analyze(IfStatement *node)
+SemanticAnalyzer::Analyze(IfStatement *node)
 {
-    node->get_condition_exp()->accept_semantic_analyzer(*this);
-    node->get_then_branch()->accept_semantic_analyzer(*this);
-    node->get_else_branch()->accept_semantic_analyzer(*this);
+    node->GetConditionExpr()->AcceptSemanticAnalyzer(*this);
+    node->GetThenBranch()->AcceptSemanticAnalyzer(*this);
+    node->GetElseBranch()->AcceptSemanticAnalyzer(*this);
 }
 
 void
-SemanticAnalyzer::analyze(BinaryExpression *node)
+SemanticAnalyzer::Analyze(BinaryExpression *node)
 {
-    node->get_lhs_expr()->accept_semantic_analyzer(*this);
-    node->get_rhs_expr()->accept_semantic_analyzer(*this);
+    node->GetLhsExpr()->AcceptSemanticAnalyzer(*this);
+    node->GetRhsExpr()->AcceptSemanticAnalyzer(*this);
 }
 
 void
-SemanticAnalyzer::analyze(IdExpression *node)
+SemanticAnalyzer::Analyze(IdExpression *node)
 {
     // Check the ID is in the symbol table
-    auto const sym = get_symbol_table().get(*node->get_id());
+    auto const sym = GetSymbolTable().Get(*node->GetID());
     if (!sym.has_value())
     {
-        m_module.set_current_position(node->get_line_number());
-        m_module.emit_error("unknown variable '%s'", node->get_id()->c_str());
+        m_module.SetCurrentPosition(node->GetLineNumber());
+        m_module.EmitError("unknown variable '%s'", node->GetID()->c_str());
     }
 }
 
 void
-SemanticAnalyzer::analyze(SwitchStatement *node)
+SemanticAnalyzer::Analyze(SwitchStatement *node)
 {
 
     // Check expression
-    m_module.set_current_position(node->get_line_number());
-    node->get_expression()->accept_semantic_analyzer(*this);
-    auto const switched_expr_type =
-        node->get_expression()->get_type(get_symbol_table());
+    m_module.SetCurrentPosition(node->GetLineNumber());
+    node->GetExpr()->AcceptSemanticAnalyzer(*this);
+    auto const switchedExprType =
+        node->GetExpr()->GetType(GetSymbolTable());
 
-    if (switched_expr_type != NumberType::INT)
+    if (switchedExprType != NumberType::INT)
     {
-        m_module.emit_error(
+        m_module.EmitError(
             "type mismatch: switched expression must be an integer");
     }
 
     // Check no ambiguous cases
-    auto const              cases = node->get_cases();
-    std::unordered_set<int> all_case_numbers;
+    auto const              cases = node->GetCases();
+    std::unordered_set<int> allCaseNumbers;
 
-    for (auto const &[case_num, case_stmt] : cases)
+    for (auto const &[caseNum, caseStmt] : cases)
     {
         // Check case didn't occur before. If it did, emit error
-        m_module.set_current_position(case_stmt->get_line_number());
-        if (case_num.type != NumberType::INT)
+        m_module.SetCurrentPosition(caseStmt->GetLineNumber());
+        if (caseNum.type != NumberType::INT)
         {
-            m_module.emit_error(
+            m_module.EmitError(
                 "type mismatch: case number '%.5g' must be an integer",
-                case_num.d);
+                caseNum.d);
         }
 
-        if (all_case_numbers.contains(case_num.i))
+        if (allCaseNumbers.contains(caseNum.i))
         {
-            m_module.emit_error(
+            m_module.EmitError(
                 "switch contains ambiguous cases");
         }
 
-        all_case_numbers.insert(case_num.i);
+        allCaseNumbers.insert(caseNum.i);
 
 
         // We have been called by a switch/while, so breaks here are OK
-        bool got_called_by_switch = m_allow_break_stmts;
+        bool gotCalledBySwitch = m_allowBreakStmts;
         
 
-        m_allow_break_stmts = true; // Allow break statements.
-        case_stmt->accept_semantic_analyzer(*this);
+        m_allowBreakStmts = true; // Allow break statements.
+        caseStmt->AcceptSemanticAnalyzer(*this);
 
-        if (!got_called_by_switch) {
-            m_allow_break_stmts = false; // Disallow break statements.
+        if (!gotCalledBySwitch) {
+            m_allowBreakStmts = false; // Disallow break statements.
         }
     }
 
     // Check that the default statement is okay
-    bool got_called_by_switch = m_allow_break_stmts;
-    m_allow_break_stmts = true; // Allow break statements.
-    node->get_default_case()->accept_semantic_analyzer(*this);
-    if (!got_called_by_switch) {
-        m_allow_break_stmts = false; // Disallow break statements.
+    bool gotCalledBySwitch = m_allowBreakStmts;
+    m_allowBreakStmts = true; // Allow break statements.
+    node->GetDefaultCase()->AcceptSemanticAnalyzer(*this);
+    if (!gotCalledBySwitch) {
+        m_allowBreakStmts = false; // Disallow break statements.
     }
 }
 
 void
-SemanticAnalyzer::analyze(WhileStatement *node)
+SemanticAnalyzer::Analyze(WhileStatement *node)
 {
-    bool got_called_by_while = m_allow_break_stmts;
+    bool got_called_by_while = m_allowBreakStmts;
 
-    m_allow_break_stmts = true;
-    node->get_condition_expression()->accept_semantic_analyzer(*this);
-    node->get_body_statement()->accept_semantic_analyzer(*this);
+    m_allowBreakStmts = true;
+    node->GetConditionExpr()->AcceptSemanticAnalyzer(*this);
+    node->GetBodyStatement()->AcceptSemanticAnalyzer(*this);
 
     if (!got_called_by_while) {
-        m_allow_break_stmts = false;
+        m_allowBreakStmts = false;
     }
 }
 
 void
-SemanticAnalyzer::analyze(CastExpression *node)
+SemanticAnalyzer::Analyze(CastExpression *node)
 {
-    node->get_expression()->accept_semantic_analyzer(*this);
+    node->GetExpr()->AcceptSemanticAnalyzer(*this);
 }
 
 void
-SemanticAnalyzer::analyze(NotExpression *node)
+SemanticAnalyzer::Analyze(NotExpression *node)
 {
-    node->get_expression()->accept_semantic_analyzer(*this);
+    node->GetExpr()->AcceptSemanticAnalyzer(*this);
 }
 
 void
-SemanticAnalyzer::analyze(BinaryBoolExpression *node)
+SemanticAnalyzer::Analyze(BinaryBoolExpression *node)
 {
-    node->get_lhs_expr()->accept_semantic_analyzer(*this);
-    node->get_rhs_expr()->accept_semantic_analyzer(*this);
+    node->GetLhsExpr()->AcceptSemanticAnalyzer(*this);
+    node->GetRhsExpr()->AcceptSemanticAnalyzer(*this);
 }

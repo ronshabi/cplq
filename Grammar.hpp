@@ -102,21 +102,21 @@ union YYSTYPE
 #line 28 "Grammar.y"
 
     Number number;
-    NumberType number_type;
-    Operator operator_type;
+    NumberType numberType;
+    Operator operatorType;
     Declaration *ast_declaration;
-    DeclarationBlock *ast_declaration_block;
+    DeclarationBlock *ast_declarationBlock;
     Expression *ast_expression;
-    BoolExpression *ast_bool_expression;
+    BoolExpression *ast_boolExpression;
     Statement *ast_statement;
-    AssignStatement *ast_assign_statement;
-    OutputStatement *ast_output_statement;
-    InputStatement *ast_input_statement;
-    IfStatement *ast_if_statement;
-    WhileStatement *ast_while_statement;
-    BreakStatement *ast_break_statement;
-    StatementList *ast_statement_list;
-    SwitchStatement *ast_switch_statement;
+    AssignStatement *ast_assignStatement;
+    OutputStatement *ast_outputStatement;
+    InputStatement *ast_inputStatement;
+    IfStatement *ast_ifStatement;
+    WhileStatement *ast_whileStatement;
+    BreakStatement *ast_breakStatement;
+    StatementList *ast_statementList;
+    SwitchStatement *ast_switchStatement;
     Program *ast_program;
     std::string *str;
 

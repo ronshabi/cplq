@@ -1,5 +1,5 @@
 #pragma once
-#include <optional>
+
 enum class Operator
 {
     EQ,
@@ -22,34 +22,17 @@ enum class NumberType
     FLOAT
 };
 
-const char *number_type_to_string(NumberType number_type);
-const char *operator_to_string(Operator op);
+const char *NumberTypeToString(NumberType numberType);
+const char *OperatorToString(Operator op);
 
 struct Number
 {
     NumberType type;
 
-    bool has_value;
+    bool hasValue;
     union {
         int    i;
         double d;
     };
 
-    std::optional<double>
-    get_value_float() const
-    {
-        if (has_value)
-        {
-            if (type == NumberType::INT)
-            {
-                return static_cast<double>(i);
-            }
-            else
-            {
-                return d;
-            }
-        }
-
-        return std::nullopt;
-    }
 };

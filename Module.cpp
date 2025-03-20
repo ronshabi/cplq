@@ -5,41 +5,41 @@
 #include <fstream>
 
 Module::Module(std::string const &file_name)
-    : m_file_name(file_name)
-    , m_semantic_analyzer(*this)
-    , m_code_generator(*this)
+    : m_fileName(file_name)
+    , m_semanticAnalyzer(*this)
+    , m_codeGenerator(*this)
 {
-    check_correct_file_extension();
+    CheckCorrectFileExt();
 
     if (m_status == ModuleStatus::InvalidExtension)
     {
-        emit_fatal_error("unsupported file extension");
+        EmitFatalError("unsupported file extension");
         return;
     }
 
-    try_to_open_file();
+    TryToOpenFile();
 
     if (m_status == ModuleStatus::FileNotFound)
     {
-        emit_fatal_error("file not found");
+        EmitFatalError("file not found");
         return;
     }
 }
 
 Module::~Module()
 {
-    if (m_file_ptr)
+    if (m_filePtr)
     {
-        fclose(m_file_ptr);
-        m_file_ptr = nullptr;
+        fclose(m_filePtr);
+        m_filePtr = nullptr;
     }
 }
 
 void
-Module::emit_error(const char *fmt, ...)
+Module::EmitError(const char *fmt, ...)
 {
-    fprintf_color(stderr, kAnsiBold, "%s:%d: ", m_file_name.c_str(),
-                  m_current_line_no);
+    fprintf_color(stderr, kAnsiBold, "%s:%d: ", m_fileName.c_str(),
+                  m_currentLineNo);
     fprintf_color(stderr, kAnsiBoldRed, "error: ");
     va_list ap;
     va_start(ap, fmt);
@@ -48,14 +48,14 @@ Module::emit_error(const char *fmt, ...)
     printf("\n");
 
     // Semantic Error will be the default error type, if we want to change it
-    // We can just call set_status after emit_error
-    set_status(ModuleStatus::SemanticError);
+    // We can just call SetStatus after EmitError
+    SetStatus(ModuleStatus::SemanticError);
 }
 
 void
-Module::emit_fatal_error(const char *fmt, ...)
+Module::EmitFatalError(const char *fmt, ...)
 {
-    fprintf_color(stderr, kAnsiBold, "%s: ", m_file_name.c_str());
+    fprintf_color(stderr, kAnsiBold, "%s: ", m_fileName.c_str());
     fprintf_color(stderr, kAnsiBoldRed, "fatal: ");
     va_list ap;
     va_start(ap, fmt);
@@ -65,33 +65,33 @@ Module::emit_fatal_error(const char *fmt, ...)
 }
 
 void
-Module::semantic_analyze()
+Module::SemanticAnalyze()
 {
-    if (!is_ok())
+    if (!IsOK())
     {
-        return; // No need to analyze syntactically malformed code.
+        return; // No need to Analyze syntactically malformed code.
     }
 
-    m_semantic_analyzer.analyze(reinterpret_cast<Program *>(m_ast));
+    m_semanticAnalyzer.Analyze(reinterpret_cast<Program *>(m_ast));
 }
 
 void
-Module::codegen()
+Module::CodeGen()
 {
-    if (!is_ok())
+    if (!IsOK())
     {
         return; // No need to generate assembly for invalid source code
     }
 
-    m_code_generator.codegen(reinterpret_cast<Program *>(m_ast));
+    m_codeGenerator.Codegen(reinterpret_cast<Program *>(m_ast));
 
     // Create the file
     const std::string output_file_name =
-        m_file_name.substr(0, m_file_name.size() - 2) + "qud";
+        m_fileName.substr(0, m_fileName.size() - 2) + "qud";
     std::ofstream output_file(output_file_name);
     if (output_file.bad())
     {
-        emit_fatal_error("Can't create an output file '%s' due to OS error",
+        EmitFatalError("Can't create an output file '%s' due to OS error",
                          output_file_name.c_str());
         m_status = ModuleStatus::OSError;
         return;
@@ -106,16 +106,16 @@ Module::codegen()
 }
 
 void
-Module::check_correct_file_extension()
+Module::CheckCorrectFileExt()
 {
-    auto const dot = m_file_name.find_last_of('.');
+    auto const dot = m_fileName.find_last_of('.');
     if (dot == std::string::npos)
     {
         m_status = ModuleStatus::InvalidExtension;
         return;
     }
 
-    auto const extension = m_file_name.substr(dot);
+    auto const extension = m_fileName.substr(dot);
     if (extension != ".ou")
     {
         m_status = ModuleStatus::InvalidExtension;
@@ -123,14 +123,14 @@ Module::check_correct_file_extension()
 }
 
 void
-Module::try_to_open_file()
+Module::TryToOpenFile()
 {
-    m_file_ptr = fopen(m_file_name.c_str(), "r");
-    if (m_file_ptr == nullptr)
+    m_filePtr = fopen(m_fileName.c_str(), "r");
+    if (m_filePtr == nullptr)
     {
         m_status = ModuleStatus::FileNotFound;
         return;
     }
 
-    yyin = m_file_ptr;
+    yyin = m_filePtr;
 }

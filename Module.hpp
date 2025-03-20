@@ -36,7 +36,7 @@ public:
     ///
     /// \param fmt The format string, compatible with printf.
     /// \param ... Additional arguments for the format string.
-    void emit_error(const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+    void EmitError(const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
     /// \brief Emits a fatal error message to stderr.
     ///
@@ -47,36 +47,36 @@ public:
     ///
     /// \param fmt The format string, compatible with printf.
     /// \param ... Additional arguments for the format string.
-    void emit_fatal_error(const char *fmt, ...)
+    void EmitFatalError(const char *fmt, ...)
         __attribute__((format(printf, 2, 3)));
 
     void
-    set_current_position(unsigned line_no)
+    SetCurrentPosition(unsigned line_no)
     {
-        m_current_line_no = line_no;
+        m_currentLineNo = line_no;
     }
 
     /// \brief Gets the error code.
     /// \return 0 if the module is ok, 1 otherwise.
     int
-    get_error_code() const
+    GetErrorCode() const
     {
-        return is_ok() ? 0 : 1;
+        return IsOK() ? 0 : 1;
     }
 
     /// \brief Returns true if the module has no errors whatsoever, false
     /// otherwise.
     int
-    is_ok() const
+    IsOK() const
     {
         return m_status == ModuleStatus::Ok;
     }
 
     /// \brief Parses the input file, calling Bison.
     void
-    parse()
+    Parse()
     {
-        if (is_ok())
+        if (IsOK())
         {
             yyparse();
         }
@@ -85,7 +85,7 @@ public:
     /// \brief Sets the AST root node.
     /// \param root The AST root node.
     void
-    set_ast_root(AstNode *root)
+    SetAstRoot(AstNode *root)
     {
         m_ast = root;
     }
@@ -93,7 +93,7 @@ public:
     /// \brief Sets the module status.
     /// \param status The module status.
     void
-    set_status(ModuleStatus status)
+    SetStatus(ModuleStatus status)
     {
         if (status == ModuleStatus::Ok)
         {
@@ -106,18 +106,18 @@ public:
     /// \brief Dumps the AST.
     ///\note Used for debugging.
     void
-    dump_ast() const
+    DumpAst() const
     {
         DBG("Dump AST");
-        m_ast->dump();
+        m_ast->Dump();
     }
 
     /// \brief Dumps the symbol table.
     ///\note Used for debugging.
     void
-    dump_symbol_table()
+    DumpSymbolTable()
     {
-        m_semantic_analyzer.get_symbol_table().dump();
+        m_semanticAnalyzer.GetSymbolTable().Dump();
     }
 
     /// \brief Performs semantic analysis (calling SemanticAnalyzer) on the
@@ -126,7 +126,7 @@ public:
     /// This function initiates semantic analysis on the module's AST if the
     /// module is in a valid state. If the module is not valid, the function
     /// returns early without performing the analysis.
-    void semantic_analyze();
+    void SemanticAnalyze();
 
     /// \brief Generates code for the module.
     ///
@@ -136,28 +136,28 @@ public:
     ///
     /// If the module is not valid or an OS error occurs while creating the
     /// output file, the function returns early.
-    void codegen();
+    void CodeGen();
 
     SymbolTable &
-    get_symbol_table()
+    GetSymbolTable()
     {
-        return m_symbol_table;
+        return m_symbolTable;
     }
 
     friend CodeGenerator;
 
 private:
-    void check_correct_file_extension();
-    void try_to_open_file();
+    void CheckCorrectFileExt();
+    void TryToOpenFile();
 
     ModuleStatus     m_status = ModuleStatus::Ok;
-    std::string      m_file_name;
-    unsigned         m_current_line_no = 0;
-    FILE            *m_file_ptr        = nullptr;
+    std::string      m_fileName;
+    unsigned         m_currentLineNo = 0;
+    FILE            *m_filePtr        = nullptr;
     AstNode         *m_ast             = nullptr;
-    SemanticAnalyzer m_semantic_analyzer;
-    SymbolTable      m_symbol_table;
-    CodeGenerator    m_code_generator;
+    SemanticAnalyzer m_semanticAnalyzer;
+    SymbolTable      m_symbolTable;
+    CodeGenerator    m_codeGenerator;
 
     /// \brief The generated assembly.
     std::vector<std::string> m_assembly{};

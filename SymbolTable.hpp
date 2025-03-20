@@ -10,24 +10,23 @@ struct Symbol
     Symbol(Number val, unsigned line_no)
         : reg()
         , value(val)
-        , line_number(line_no)
+        , lineNumber(line_no)
     {
     }
 
     Symbol(NumberType type, unsigned line_no)
-        : line_number(line_no)
+        : lineNumber(line_no)
     {
         value           = Number();
-        value.has_value = false;
+        value.hasValue = false;
         value.type      = type;
     }
 
-    static std::string get_asm_name(std::string const &symbol_name);
-    std::string        to_string() const;
+    std::string        ToString() const;
 
     Register reg;
     Number   value;
-    unsigned line_number;
+    unsigned lineNumber;
 };
 
 class SymbolTable
@@ -36,10 +35,10 @@ public:
     SymbolTable() = default;
 
     // void set_register(std::string const &symbol_name, Register reg);
-    std::optional<Symbol> get(std::string const &symbol_name) const;
-    void                  add(std::string const &symbol_name, Symbol sym);
+    std::optional<Symbol> Get(std::string const &symbol_name) const;
+    void                  Add(std::string const &symbol_name, Symbol sym);
 
-    void dump() const;
+    void Dump() const;
 
 private:
     std::map<std::string, Symbol> m_table;

@@ -2,9 +2,10 @@
 
 #include "CodeGenerator.hpp"
 #include "SemanticAnalyzer.hpp"
+#include "DebugStream.hpp"
 
 void
-AstNode::dump(unsigned indent) const
+AstNode::Dump(unsigned indent) const
 {
     for (unsigned i = 0; i < indent; ++i)
     {
@@ -13,99 +14,99 @@ AstNode::dump(unsigned indent) const
 }
 
 void
-DeclarationBlock::add_declaration(Declaration *declaration)
+DeclarationBlock::AddDeclaration(Declaration *declaration)
 {
     m_declarations.emplace_back(declaration);
 }
 
 void
-DeclarationBlock::dump(unsigned indent) const
+DeclarationBlock::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "DeclBlock<" << m_declarations.size() << ">\n";
     for (auto const &decl : m_declarations)
     {
-        decl->dump(indent + 4);
+        decl->Dump(indent + 4);
     }
 }
 
 void
-DeclarationBlock::accept_semantic_analyzer(SemanticAnalyzer &sema)
+DeclarationBlock::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-DeclarationBlock::accept_code_generator(CodeGenerator &cg)
+DeclarationBlock::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-BinaryBoolExpression::dump(unsigned indent) const
+BinaryBoolExpression::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
-    std::cout << "BinaryBoolExpression<" << operator_to_string(m_op) << ">\n";
-    m_exp1->dump(indent + 4);
-    m_exp2->dump(indent + 4);
+    AstNode::Dump(indent);
+    std::cout << "BinaryBoolExpression<" << OperatorToString(m_op) << ">\n";
+    m_expr1->Dump(indent + 4);
+    m_expr2->Dump(indent + 4);
 }
 
 void
-BinaryBoolExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
+BinaryBoolExpression::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-BinaryBoolExpression::accept_code_generator(CodeGenerator &cg)
+BinaryBoolExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-Declaration::dump(unsigned indent) const
+Declaration::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
-    std::cout << "Decl<" << number_type_to_string(m_type) << "> "
+    AstNode::Dump(indent);
+    std::cout << "Decl<" << NumberTypeToString(m_type) << "> "
               << vector_to_string(m_ids) << "\n";
 }
 
 void
-Declaration::accept_semantic_analyzer(SemanticAnalyzer &sema)
+Declaration::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
     UNUSED(sema);
 }
 
 void
-Declaration::accept_code_generator(CodeGenerator &cg)
+Declaration::AcceptCodeGenerator(CodeGenerator &cg)
 {
     UNUSED(cg);
 }
 
 void
-NotExpression::dump(unsigned indent) const
+NotExpression::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "NotExp\n";
-    m_exp->dump(indent + 4);
+    m_expr->Dump(indent + 4);
 }
 
 void
-NotExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
+NotExpression::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-NotExpression::accept_code_generator(CodeGenerator &cg)
+NotExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-NumberExpression::dump(unsigned indent) const
+NumberExpression::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     if (m_number.type == NumberType::FLOAT)
     {
         std::cout << "Number<Float>(" << m_number.d << ")\n";
@@ -117,60 +118,60 @@ NumberExpression::dump(unsigned indent) const
 }
 
 void
-NumberExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
+NumberExpression::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
     UNUSED(sema);
 }
 
 void
-NumberExpression::accept_code_generator(CodeGenerator &cg)
+NumberExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-CastExpression::dump(unsigned indent) const
+CastExpression::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
-    std::cout << "Cast<" << number_type_to_string(m_cast) << ">\n";
-    m_expression->dump(indent + 4);
+    AstNode::Dump(indent);
+    std::cout << "Cast<" << NumberTypeToString(m_cast) << ">\n";
+    m_expr->Dump(indent + 4);
 }
 
 void
-CastExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
+CastExpression::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-CastExpression::accept_code_generator(CodeGenerator &cg)
+CastExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-IdExpression::dump(unsigned indent) const
+IdExpression::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "Id<" << *m_id << ">\n";
 }
 
 void
-IdExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
+IdExpression::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-IdExpression::accept_code_generator(CodeGenerator &cg)
+IdExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 NumberType
-IdExpression::get_type(SymbolTable const &symbol_table) const
+IdExpression::GetType(SymbolTable const &symbol_table) const
 {
-    auto const sym = symbol_table.get(*m_id);
+    auto const sym = symbol_table.Get(*m_id);
     if (sym.has_value())
     {
         return sym->value.type;
@@ -178,37 +179,37 @@ IdExpression::get_type(SymbolTable const &symbol_table) const
     else
     {
         return NumberType::INT; // Default value. If the number has no value
-                                // It will be caught in the semantic analyzer
+                                // It will be caught in the semantic Analyzer
                                 // before this
     }
 }
 
 void
-BinaryExpression::dump(unsigned indent) const
+BinaryExpression::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
-    std::cout << "BinaryExpression<" << operator_to_string(m_op) << ">\n";
-    m_exp1->dump(indent + 4);
-    m_exp2->dump(indent + 4);
+    AstNode::Dump(indent);
+    std::cout << "BinaryExpression<" << OperatorToString(m_op) << ">\n";
+    m_lhsExpr->Dump(indent + 4);
+    m_rhsExpr->Dump(indent + 4);
 }
 
 void
-BinaryExpression::accept_semantic_analyzer(SemanticAnalyzer &sema)
+BinaryExpression::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-BinaryExpression::accept_code_generator(CodeGenerator &cg)
+BinaryExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 NumberType
-BinaryExpression::get_type(SymbolTable const &symbol_table) const
+BinaryExpression::GetType(SymbolTable const &symbol_table) const
 {
-    auto const exp1_type = m_exp1->get_type(symbol_table);
-    auto const exp2_type = m_exp2->get_type(symbol_table);
+    auto const exp1_type = m_lhsExpr->GetType(symbol_table);
+    auto const exp2_type = m_rhsExpr->GetType(symbol_table);
     if (exp1_type == NumberType::FLOAT || exp2_type == NumberType::FLOAT)
     {
         return NumberType::FLOAT;
@@ -218,196 +219,196 @@ BinaryExpression::get_type(SymbolTable const &symbol_table) const
 }
 
 void
-AssignStatement::dump(unsigned indent) const
+AssignStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "Assign<" << *m_id << ">\n";
-    m_exp->dump(indent + 4);
+    m_expr->Dump(indent + 4);
 }
 
 void
-AssignStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+AssignStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-AssignStatement::accept_code_generator(CodeGenerator &cg)
+AssignStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-OutputStatement::dump(unsigned indent) const
+OutputStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "Output\n";
-    m_exp->dump(indent + 4);
+    m_expr->Dump(indent + 4);
 }
 
 void
-OutputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+OutputStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-OutputStatement::accept_code_generator(CodeGenerator &cg)
+OutputStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-InputStatement::dump(unsigned indent) const
+InputStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "Input<" << *m_id << ">\n";
 }
 
 void
-InputStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+InputStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-InputStatement::accept_code_generator(CodeGenerator &cg)
+InputStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-IfStatement::dump(unsigned indent) const
+IfStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "If\n";
-    m_condition_exp->dump(indent + 4);
-    m_then_branch->dump(indent + 4);
-    m_else_branch->dump(indent + 4);
+    m_conditionExpr->Dump(indent + 4);
+    m_thenBranch->Dump(indent + 4);
+    m_elseBranch->Dump(indent + 4);
 }
 
 void
-IfStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+IfStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-IfStatement::accept_code_generator(CodeGenerator &cg)
+IfStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-WhileStatement::dump(unsigned indent) const
+WhileStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "While\n";
-    m_condition_exp->dump(indent + 4);
-    m_body_statement->dump(indent + 4);
+    m_conditionExpr->Dump(indent + 4);
+    m_bodyStatement->Dump(indent + 4);
 }
 
 void
-WhileStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+WhileStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-WhileStatement::accept_code_generator(CodeGenerator &cg)
+WhileStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-BreakStatement::dump(unsigned indent) const
+BreakStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "Break\n";
 }
 
 void
-BreakStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+BreakStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
     // nop
     UNUSED(sema);
 }
 
 void
-BreakStatement::accept_code_generator(CodeGenerator &cg)
+BreakStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-StatementList::dump(unsigned indent) const
+StatementList::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "StatementList\n";
     for (auto const &stmt : m_statements)
     {
-        stmt->dump(indent + 4);
+        stmt->Dump(indent + 4);
     }
 }
 
 void
-StatementList::accept_semantic_analyzer(SemanticAnalyzer &sema)
+StatementList::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-StatementList::accept_code_generator(CodeGenerator &cg)
+StatementList::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-SwitchStatement::dump(unsigned indent) const
+SwitchStatement::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
+    AstNode::Dump(indent);
     std::cout << "Switch\n";
-    m_exp->dump(indent + 4);
+    m_expr->Dump(indent + 4);
     for (auto const &case_pair : m_cases)
     {
         NumberExpression x(case_pair.first);
-        x.dump(indent + 4);
-        (case_pair.second)->dump(indent + 8);
+        x.Dump(indent + 4);
+        (case_pair.second)->Dump(indent + 8);
     }
 
-    AstNode::dump(indent + 4);
+    AstNode::Dump(indent + 4);
     std::cout << "Default\n";
-    m_default_case->dump(indent + 8);
+    m_defaultCase->Dump(indent + 8);
 }
 
 void
-SwitchStatement::accept_semantic_analyzer(SemanticAnalyzer &sema)
+SwitchStatement::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-SwitchStatement::accept_code_generator(CodeGenerator &cg)
+SwitchStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }
 
 void
-Program::dump(unsigned indent) const
+Program::Dump(unsigned indent) const
 {
-    AstNode::dump(indent);
-    m_declaration_block->dump(0);
-    m_program_statements->dump(0);
+    AstNode::Dump(indent);
+    m_declarationBlock->Dump(0);
+    m_programStatements->Dump(0);
 }
 
 void
-Program::accept_semantic_analyzer(SemanticAnalyzer &sema)
+Program::AcceptSemanticAnalyzer(SemanticAnalyzer &sema)
 {
-    sema.analyze(this);
+    sema.Analyze(this);
 }
 
 void
-Program::accept_code_generator(CodeGenerator &cg)
+Program::AcceptCodeGenerator(CodeGenerator &cg)
 {
-    cg.codegen(this);
+    cg.Codegen(this);
 }

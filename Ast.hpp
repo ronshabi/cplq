@@ -2,7 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "Register.hpp"
 #include "SymbolTable.hpp"
@@ -28,24 +27,24 @@ public:
     AstNode()          = default;
     virtual ~AstNode() = default;
 
-    virtual void dump(unsigned indent = 0) const;
-    virtual void accept_semantic_analyzer(SemanticAnalyzer &sema) = 0;
-    virtual void accept_code_generator(CodeGenerator &cg)         = 0;
+    virtual void Dump(unsigned indent = 0) const;
+    virtual void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) = 0;
+    virtual void AcceptCodeGenerator(CodeGenerator &cg)         = 0;
 
     unsigned
-    get_line_number() const
+    GetLineNumber() const
     {
-        return m_line_no;
+        return m_lineNo;
     }
 
     void
-    set_line_number(unsigned line_no)
+    SetLineNumber(unsigned line_no)
     {
-        m_line_no = line_no;
+        m_lineNo = line_no;
     }
 
     Register
-    get_register() const
+    GetRegister() const
     {
         return m_register;
     }
@@ -56,7 +55,7 @@ protected:
     Register m_register{};
 
 private:
-    unsigned m_line_no = 0;
+    unsigned m_lineNo = 0;
 };
 
 //===----------------------------------------------------------------------===//
@@ -69,29 +68,29 @@ public:
     Declaration() = default;
 
     void
-    add_id(std::string *id)
+    AddID(std::string *id)
     {
         m_ids.push_back(id);
     }
 
     void
-    assign_number_type(NumberType type)
+    AssignNumberType(NumberType type)
     {
         m_type = type;
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     std::vector<std::string *> const &
-    get_ids() const
+    GetIDs() const
     {
         return m_ids;
     }
 
     NumberType
-    get_type() const
+    GetType() const
     {
         return m_type;
     }
@@ -109,14 +108,14 @@ class DeclarationBlock : public AstNode
 {
 public:
     DeclarationBlock() = default;
-    void add_declaration(Declaration *decl);
+    void AddDeclaration(Declaration *decl);
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     std::vector<Declaration *> &
-    get_declarations()
+    GetDeclarations()
     {
         return m_declarations;
     }
@@ -133,12 +132,12 @@ class Expression : public AstNode
 {
 public:
     virtual bool
-    is_bool_expr() const
+    IsBoolExpr() const
     {
         return false;
     }
     virtual NumberType
-    get_type(SymbolTable const &symbol_table) const
+    GetType(SymbolTable const &symbol_table) const
     {
         UNUSED(symbol_table);
         return NumberType::INT;
@@ -153,7 +152,7 @@ class BoolExpression : public Expression
 {
 public:
     virtual bool
-    is_bool_expr() const
+    IsBoolExpr() const
     {
         return true;
     }
@@ -164,24 +163,24 @@ public:
 class NotExpression : public BoolExpression
 {
 public:
-    NotExpression(BoolExpression *exp)
+    NotExpression(BoolExpression *expr)
         : BoolExpression()
-        , m_exp(exp)
+        , m_expr(expr)
     {
     }
 
     Expression *
-    get_expression()
+    GetExpr()
     {
-        return m_exp;
+        return m_expr;
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
 private:
-    BoolExpression *m_exp;
+    BoolExpression *m_expr;
 };
 
 //===----------------------------------------------------------------------===//
@@ -194,35 +193,35 @@ public:
     BinaryBoolExpression(Expression *e1, Expression *e2, Operator op)
         : BoolExpression()
         , m_op(op)
-        , m_exp1(e1)
-        , m_exp2(e2)
+        , m_expr1(e1)
+        , m_expr2(e2)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     Expression *
-    get_lhs_expr()
+    GetLhsExpr()
     {
-        return m_exp1;
+        return m_expr1;
     }
     Expression *
-    get_rhs_expr()
+    GetRhsExpr()
     {
-        return m_exp2;
+        return m_expr2;
     }
     Operator
-    get_operator() const
+    GetOperator() const
     {
         return m_op;
     }
 
 private:
     Operator    m_op;
-    Expression *m_exp1;
-    Expression *m_exp2;
+    Expression *m_expr1;
+    Expression *m_expr2;
 };
 
 //===----------------------------------------------------------------------===//
@@ -238,19 +237,19 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     NumberType
-    get_type(SymbolTable const &symbol_table) const override
+    GetType(SymbolTable const &symbol_table) const override
     {
         UNUSED(symbol_table);
         return m_number.type;
     }
 
     Number
-    get_number() const
+    GetNumber() const
     {
         return m_number;
     }
@@ -269,30 +268,30 @@ public:
     CastExpression(NumberType cast_to, Expression *casted_expr)
         : Expression()
         , m_cast(cast_to)
-        , m_expression(casted_expr)
+        , m_expr(casted_expr)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     NumberType
-    get_type(SymbolTable const &symbol_table) const override
+    GetType(SymbolTable const &symbol_table) const override
     {
         UNUSED(symbol_table);
         return m_cast;
     }
 
     Expression *
-    get_expression()
+    GetExpr()
     {
-        return m_expression;
+        return m_expr;
     }
 
 private:
     NumberType  m_cast;
-    Expression *m_expression;
+    Expression *m_expr;
 };
 
 //===----------------------------------------------------------------------===//
@@ -308,17 +307,17 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     std::string *
-    get_id() const
+    GetID() const
     {
         return m_id;
     }
 
-    NumberType get_type(SymbolTable const &symbol_table) const override;
+    NumberType GetType(SymbolTable const &symbol_table) const override;
 
 private:
     std::string *m_id;
@@ -333,37 +332,37 @@ class BinaryExpression : public Expression
 public:
     BinaryExpression(Expression *exp1, Expression *exp2, Operator op)
         : Expression()
-        , m_exp1(exp1)
-        , m_exp2(exp2)
+        , m_lhsExpr(exp1)
+        , m_rhsExpr(exp2)
         , m_op(op)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
-    NumberType get_type(SymbolTable const &symbol_table) const override;
+    NumberType GetType(SymbolTable const &symbolTable) const override;
 
     Expression *
-    get_lhs_expr()
+    GetLhsExpr()
     {
-        return m_exp1;
+        return m_lhsExpr;
     }
     Expression *
-    get_rhs_expr()
+    GetRhsExpr()
     {
-        return m_exp2;
+        return m_rhsExpr;
     }
     Operator
-    get_operator() const
+    GetOperator() const
     {
         return m_op;
     }
 
 private:
-    Expression *m_exp1;
-    Expression *m_exp2;
+    Expression *m_lhsExpr;
+    Expression *m_rhsExpr;
     Operator    m_op;
 };
 
@@ -375,7 +374,7 @@ class Statement : public AstNode
 {
 public:
     virtual bool
-    is_break_statement() const
+    IsBreakStatement() const
     {
         return false;
     }
@@ -388,30 +387,30 @@ public:
 class AssignStatement : public Statement
 {
 public:
-    AssignStatement(std::string *id, Expression *exp)
+    AssignStatement(std::string *id, Expression *expr)
         : m_id(id)
-        , m_exp(exp)
+        , m_expr(expr)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     std::string *
-    get_id() const
+    GetID() const
     {
         return m_id;
     }
     Expression *
-    get_expression()
+    GetExpr()
     {
-        return m_exp;
+        return m_expr;
     }
 
 private:
     std::string *m_id;
-    Expression  *m_exp;
+    Expression  *m_expr;
 };
 
 //===----------------------------------------------------------------------===//
@@ -421,24 +420,24 @@ private:
 class OutputStatement : public Statement
 {
 public:
-    OutputStatement(Expression *exp)
+    OutputStatement(Expression *expr)
         : Statement()
-        , m_exp(exp)
+        , m_expr(expr)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     Expression *
-    get_expression()
+    GetExpr()
     {
-        return m_exp;
+        return m_expr;
     }
 
 private:
-    Expression *m_exp;
+    Expression *m_expr;
 };
 
 //===----------------------------------------------------------------------===//
@@ -453,12 +452,12 @@ public:
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     std::string *
-    get_id() const
+    GetID() const
     {
         return m_id;
     }
@@ -477,36 +476,36 @@ public:
     IfStatement(BoolExpression *condition, Statement *then_stmt,
                 Statement *else_stmt)
         : Statement()
-        , m_condition_exp(condition)
-        , m_then_branch(then_stmt)
-        , m_else_branch(else_stmt)
+        , m_conditionExpr(condition)
+        , m_thenBranch(then_stmt)
+        , m_elseBranch(else_stmt)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     BoolExpression *
-    get_condition_exp()
+    GetConditionExpr()
     {
-        return m_condition_exp;
+        return m_conditionExpr;
     }
     Statement *
-    get_then_branch()
+    GetThenBranch()
     {
-        return m_then_branch;
+        return m_thenBranch;
     }
     Statement *
-    get_else_branch()
+    GetElseBranch()
     {
-        return m_else_branch;
+        return m_elseBranch;
     }
 
 private:
-    BoolExpression *m_condition_exp;
-    Statement      *m_then_branch;
-    Statement      *m_else_branch;
+    BoolExpression *m_conditionExpr;
+    Statement      *m_thenBranch;
+    Statement      *m_elseBranch;
 };
 
 //===----------------------------------------------------------------------===//
@@ -518,29 +517,29 @@ class WhileStatement : public Statement
 public:
     WhileStatement(BoolExpression *condition, Statement *body)
         : Statement()
-        , m_condition_exp(condition)
-        , m_body_statement(body)
+        , m_conditionExpr(condition)
+        , m_bodyStatement(body)
     {
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     BoolExpression *
-    get_condition_expression()
+    GetConditionExpr()
     {
-        return m_condition_exp;
+        return m_conditionExpr;
     }
     Statement *
-    get_body_statement()
+    GetBodyStatement()
     {
-        return m_body_statement;
+        return m_bodyStatement;
     }
 
 private:
-    BoolExpression *m_condition_exp;
-    Statement      *m_body_statement;
+    BoolExpression *m_conditionExpr;
+    Statement      *m_bodyStatement;
 };
 
 class BreakStatement : public Statement
@@ -549,13 +548,13 @@ public:
     BreakStatement() = default;
 
     bool
-    is_break_statement() const override
+    IsBreakStatement() const override
     {
         return true;
     }
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 };
 
 //===----------------------------------------------------------------------===//
@@ -567,17 +566,17 @@ class StatementList : public Statement
 public:
     StatementList() = default;
     void
-    add_statement(Statement *stmt_ptr)
+    AddStatement(Statement *stmt)
     {
-        m_statements.push_back(stmt_ptr);
+        m_statements.push_back(stmt);
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     std::vector<Statement *> &
-    get_statements()
+    GetStatements()
     {
         return m_statements;
     }
@@ -599,55 +598,55 @@ public:
     }
 
     /// \brief Add a case to the switch statement.
-    /// \param case_num The case number.
-    /// \param case_statements The statements for the case.
+    /// \param caseNum The case number.
+    /// \param caseStatements The statements for the case.
     void
-    add_case(Number case_num, StatementList *case_statements)
+    AddCase(Number caseNum, StatementList *caseStatements)
     {
-        m_cases.emplace_back(case_num, case_statements);
+        m_cases.emplace_back(caseNum, caseStatements);
     }
 
     /// \brief Set the expression for the switch statement.
-    /// \param exp The expression.
+    /// \param expr The expression.
     void
-    set_expression(Expression *exp)
+    SetExpr(Expression *expr)
     {
-        m_exp = exp;
+        m_expr = expr;
     }
 
     /// \brief Set the default case for the switch statement.
-    /// \param default_case_stmt_list The statements for the default case.
+    /// \param defaultCaseStatementList The statements for the default case.
     void
-    set_default_case(StatementList *default_case_stmt_list)
+    SetDefaultCase(StatementList *defaultCaseStatementList)
     {
-        m_default_case = default_case_stmt_list;
+        m_defaultCase = defaultCaseStatementList;
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     Expression *
-    get_expression()
+    GetExpr()
     {
-        return m_exp;
+        return m_expr;
     }
     std::vector<std::pair<Number, Statement *>> &
-    get_cases()
+    GetCases()
     {
         return m_cases;
     }
     Statement *
-    get_default_case()
+    GetDefaultCase()
     {
-        return m_default_case;
+        return m_defaultCase;
     }
 
 private:
     /// \brief The expression being switched on.
     /// This expression's value is compared against the case values.
     /// It must evaluate to a number type.
-    Expression *m_exp;
+    Expression *m_expr;
 
     /// \brief The vector of cases in the switch statement.
     /// Each case consists of a number value and a list of statements.
@@ -656,7 +655,7 @@ private:
 
     /// \brief The default case for the switch statement.
     /// This case is executed if no other case matches the expression value.
-    Statement *m_default_case = nullptr;
+    Statement *m_defaultCase = nullptr;
 };
 
 //===----------------------------------------------------------------------===//
@@ -671,35 +670,35 @@ public:
     /// \brief Set the declaration block for the program.
     /// \param db The declaration block.
     void
-    set_declaration_block(DeclarationBlock *db)
+    SetDeclarationBlock(DeclarationBlock *db)
     {
-        m_declaration_block = db;
+        m_declarationBlock = db;
     }
 
     /// \brief Set the program statements.
     /// \param statement The program statements.
     void
-    set_program_statements(Statement *statement)
+    SetProgramStatements(Statement *statement)
     {
-        m_program_statements = statement;
+        m_programStatements = statement;
     }
 
-    void dump(unsigned indent) const override;
-    void accept_semantic_analyzer(SemanticAnalyzer &sema) override;
-    void accept_code_generator(CodeGenerator &cg) override;
+    void Dump(unsigned indent) const override;
+    void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
+    void AcceptCodeGenerator(CodeGenerator &cg) override;
 
     DeclarationBlock *
-    get_declaration_block()
+    GetDeclarationBlock()
     {
-        return m_declaration_block;
+        return m_declarationBlock;
     }
     Statement *
-    get_statemenets()
+    GetStatemenets()
     {
-        return m_program_statements;
+        return m_programStatements;
     }
 
 private:
-    DeclarationBlock *m_declaration_block;
-    Statement        *m_program_statements = nullptr;
+    DeclarationBlock *m_declarationBlock;
+    Statement        *m_programStatements = nullptr;
 };
