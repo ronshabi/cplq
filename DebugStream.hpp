@@ -1,6 +1,13 @@
 //===-- DebugStream.hpp ---------------------------------------------------===//
 //
+// Provides a quick and pretty way to print debug info to stdout. Not used
+// In the final product, but very useful in debugging.
 //
+// To enable this, compile with -DDEBUG.
+//
+//===----------------------------------------------------------------------===//
+//
+// Author: Ron Shabi
 //
 //===----------------------------------------------------------------------===//
 

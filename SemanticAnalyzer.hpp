@@ -1,7 +1,8 @@
 //===-- SemanticAnalyzer.hpp ----------------------------------------------===//
 //
 // This file defines the SemanticAnalyzer class, which performs semantic
-// analysis on a module.
+// analysis on a module. The class uses the visitor pattern to semantically
+// analyze non-trivial ASTNodes.
 //
 //===----------------------------------------------------------------------===//
 //

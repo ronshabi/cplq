@@ -1,9 +1,12 @@
 //===-- Ast.hpp -----------------------------------------------------------===//
 //
-//
+// Definition of the AST & all ASTNodes of the CPL language.
 //
 //===----------------------------------------------------------------------===//
-
+//
+// Author: Ron Shabi.
+//
+//===----------------------------------------------------------------------===//
 #pragma once
 
 #include <string>
@@ -72,6 +75,7 @@ class Declaration : public AstNode
 {
 public:
     Declaration() = default;
+    ~Declaration();
 
     void
     AddID(std::string *id)
@@ -114,6 +118,8 @@ class DeclarationBlock : public AstNode
 {
 public:
     DeclarationBlock() = default;
+    ~DeclarationBlock();
+
     void AddDeclaration(Declaration *decl);
 
     void Dump(unsigned indent) const override;
@@ -169,11 +175,8 @@ public:
 class NotExpression : public BoolExpression
 {
 public:
-    NotExpression(BoolExpression *expr)
-        : BoolExpression()
-        , m_expr(expr)
-    {
-    }
+    NotExpression(BoolExpression *expr);
+    ~NotExpression();
 
     Expression *
     GetExpr()
@@ -196,13 +199,8 @@ private:
 class BinaryBoolExpression : public BoolExpression
 {
 public:
-    BinaryBoolExpression(Expression *e1, Expression *e2, Operator op)
-        : BoolExpression()
-        , m_op(op)
-        , m_expr1(e1)
-        , m_expr2(e2)
-    {
-    }
+    BinaryBoolExpression(Expression *e1, Expression *e2, Operator op);
+    ~BinaryBoolExpression();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -211,12 +209,12 @@ public:
     Expression *
     GetLhsExpr()
     {
-        return m_expr1;
+        return m_lhsExpr;
     }
     Expression *
     GetRhsExpr()
     {
-        return m_expr2;
+        return m_rhsExpr;
     }
     Operator
     GetOperator() const
@@ -226,8 +224,8 @@ public:
 
 private:
     Operator    m_op;
-    Expression *m_expr1;
-    Expression *m_expr2;
+    Expression *m_lhsExpr;
+    Expression *m_rhsExpr;
 };
 
 //===----------------------------------------------------------------------===//
@@ -237,11 +235,7 @@ private:
 class NumberExpression : public Expression
 {
 public:
-    NumberExpression(Number number)
-        : Expression()
-        , m_number(number)
-    {
-    }
+    NumberExpression(Number number);
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -271,12 +265,8 @@ private:
 class CastExpression : public Expression
 {
 public:
-    CastExpression(NumberType cast_to, Expression *casted_expr)
-        : Expression()
-        , m_cast(cast_to)
-        , m_expr(casted_expr)
-    {
-    }
+    CastExpression(NumberType cast_to, Expression *casted_expr);
+    ~CastExpression();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -307,11 +297,8 @@ private:
 class IdExpression : public Expression
 {
 public:
-    IdExpression(std::string *id_name)
-        : Expression()
-        , m_id(id_name)
-    {
-    }
+    IdExpression(std::string *id_name);
+    ~IdExpression();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -336,13 +323,8 @@ private:
 class BinaryExpression : public Expression
 {
 public:
-    BinaryExpression(Expression *exp1, Expression *exp2, Operator op)
-        : Expression()
-        , m_lhsExpr(exp1)
-        , m_rhsExpr(exp2)
-        , m_op(op)
-    {
-    }
+    BinaryExpression(Expression *exp1, Expression *exp2, Operator op);
+    ~BinaryExpression();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -393,11 +375,8 @@ public:
 class AssignStatement : public Statement
 {
 public:
-    AssignStatement(std::string *id, Expression *expr)
-        : m_id(id)
-        , m_expr(expr)
-    {
-    }
+    AssignStatement(std::string *id, Expression *expr);
+    ~AssignStatement();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -426,11 +405,8 @@ private:
 class OutputStatement : public Statement
 {
 public:
-    OutputStatement(Expression *expr)
-        : Statement()
-        , m_expr(expr)
-    {
-    }
+    OutputStatement(Expression *expr);
+    ~OutputStatement();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -453,10 +429,8 @@ private:
 class InputStatement : public Statement
 {
 public:
-    InputStatement(std::string *id)
-        : m_id(id)
-    {
-    }
+    InputStatement(std::string *id);
+    ~InputStatement();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -480,13 +454,9 @@ class IfStatement : public Statement
 {
 public:
     IfStatement(BoolExpression *condition, Statement *then_stmt,
-                Statement *else_stmt)
-        : Statement()
-        , m_conditionExpr(condition)
-        , m_thenBranch(then_stmt)
-        , m_elseBranch(else_stmt)
-    {
-    }
+                Statement *else_stmt);
+
+    ~IfStatement();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -521,12 +491,8 @@ private:
 class WhileStatement : public Statement
 {
 public:
-    WhileStatement(BoolExpression *condition, Statement *body)
-        : Statement()
-        , m_conditionExpr(condition)
-        , m_bodyStatement(body)
-    {
-    }
+    WhileStatement(BoolExpression *condition, Statement *body);
+    ~WhileStatement();
 
     void Dump(unsigned indent) const override;
     void AcceptSemanticAnalyzer(SemanticAnalyzer &sema) override;
@@ -571,6 +537,8 @@ class StatementList : public Statement
 {
 public:
     StatementList() = default;
+    ~StatementList();
+    
     void
     AddStatement(Statement *stmt)
     {
@@ -598,10 +566,10 @@ private:
 class SwitchStatement : public Statement
 {
 public:
-    SwitchStatement()
-        : Statement()
-    {
-    }
+    SwitchStatement() = default;
+    ~SwitchStatement();
+
+    
 
     /// \brief Add a case to the switch statement.
     /// \param caseNum The case number.
@@ -672,6 +640,7 @@ class Program : public AstNode
 {
 public:
     Program() = default;
+    ~Program();
 
     /// \brief Set the declaration block for the program.
     /// \param db The declaration block.

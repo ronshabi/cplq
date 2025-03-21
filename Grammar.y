@@ -1,9 +1,3 @@
-//===-- Grammar.y ---------------------------------------------------------===//
-//
-//
-//
-//===----------------------------------------------------------------------===//
-
 %code requires {
 
 #include <iostream>
@@ -189,7 +183,7 @@ stmtlist:
         | stmtlist stmt 
         { $1->AddStatement($2); $$ = $1; }
 
-        | stmtlist error
+        | stmtlist error {}
         ;
                         
 boolexpr:               

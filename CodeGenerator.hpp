@@ -1,6 +1,14 @@
 //===-- CodeGenerator.hpp -------------------------------------------------===//
 //
+// This file defines the CodeGenerator class, which is responsible for
+// generating code from an AST.
 //
+// The CodeGenerator uses the visitor pattern, and emits
+// corresponding assembly code for each ASTNode visted.
+//
+//===----------------------------------------------------------------------===//
+//
+// Author: Ron Shabi
 //
 //===----------------------------------------------------------------------===//
 
@@ -36,22 +44,22 @@ public:
 
 private:
     unsigned EmitFiller(std::string const &comment);
-    void PatchJmpz(unsigned line_no, unsigned jump_target, Register r);
-    void PatchJump(unsigned line_no, unsigned jump_target);
-    void PatchBreaks();
+    void     PatchJmpz(unsigned line_no, unsigned jump_target, Register r);
+    void     PatchJump(unsigned line_no, unsigned jump_target);
+    void     PatchBreaks();
     unsigned EmitLine(std::string const &str);
     unsigned EmitLine(std::string const &opcode, Register r);
     unsigned EmitLine(std::string const &opcode, Register r1, Register r2);
     unsigned EmitLine(std::string const &opcode, Register r, int val);
-    unsigned EmitLine(std::string const &opcode, Register r, int val1, int val2);
+    unsigned EmitLine(std::string const &opcode, Register r, int val1,
+                      int val2);
     unsigned EmitLine(std::string const &opcode, Register r1, Register r2,
-                   int val);
+                      int val);
     unsigned EmitLine(std::string const &opcode, Register r1, Register r2,
-                   Register r3);
+                      Register r3);
     unsigned EmitLine(std::string const &opcode, Register r, double val);
 
     SymbolTable &GetSymbolTable();
-
 
     unsigned GetCurrentAsmLineNumber() const;
 

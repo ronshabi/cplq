@@ -1,4 +1,6 @@
+# IMPORTANT: use `make test` to invoke this. Do NOT invoke directly.
 # Test the error checking capabilities of the compiler
+
 clear
 TESTS_DIR="tests/error"
 

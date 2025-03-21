@@ -1,13 +1,5 @@
-#===-- Makefile ------------------------------------------------------------===#
-#
-#
-#
-#===------------------------------------------------------------------------===#
-
-
 CXX=g++
-DEFINITIONS=-DDEBUG
-CXXFLAGS=-std=c++20 -g -O1 -Wall -Wextra -Wformat $(DEFINITIONS)
+CXXFLAGS=-std=c++20 -g -O1 -Wall
 
 TARGET=cplq
 OBJECTS=Cpq.o Ast.o Types.o Utils.o Module.o Print.o \

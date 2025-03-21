@@ -1,6 +1,6 @@
 //===-- Ast.cpp -----------------------------------------------------------===//
 //
-//
+// Author: Ron Shabi
 //
 //===----------------------------------------------------------------------===//
 
@@ -16,6 +16,12 @@ AstNode::Dump(unsigned indent) const
     for (unsigned i = 0; i < indent; ++i)
     {
         std::cout << ' ';
+    }
+}
+
+DeclarationBlock::~DeclarationBlock() {
+    for (auto decl : m_declarations) {
+        delete decl;
     }
 }
 
@@ -48,13 +54,26 @@ DeclarationBlock::AcceptCodeGenerator(CodeGenerator &cg)
     cg.Codegen(this);
 }
 
+BinaryBoolExpression::BinaryBoolExpression(Expression *e1, Expression *e2, Operator op)
+    : BoolExpression()
+    , m_op(op)
+    , m_lhsExpr(e1)
+    , m_rhsExpr(e2)
+{
+}
+
+BinaryBoolExpression::~BinaryBoolExpression() {
+    delete m_lhsExpr;
+    delete m_rhsExpr;
+}
+
 void
 BinaryBoolExpression::Dump(unsigned indent) const
 {
     AstNode::Dump(indent);
     std::cout << "BinaryBoolExpression<" << OperatorToString(m_op) << ">\n";
-    m_expr1->Dump(indent + 4);
-    m_expr2->Dump(indent + 4);
+    m_lhsExpr->Dump(indent + 4);
+    m_rhsExpr->Dump(indent + 4);
 }
 
 void
@@ -67,6 +86,12 @@ void
 BinaryBoolExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+Declaration::~Declaration() {
+    for (auto id : m_ids) {
+        delete id;
+    }
 }
 
 void
@@ -89,6 +114,16 @@ Declaration::AcceptCodeGenerator(CodeGenerator &cg)
     UNUSED(cg);
 }
 
+NotExpression::NotExpression(BoolExpression *expr)
+    : BoolExpression()
+    , m_expr(expr)
+{
+}
+
+NotExpression::~NotExpression() {
+    delete m_expr;
+}
+
 void
 NotExpression::Dump(unsigned indent) const
 {
@@ -107,6 +142,12 @@ void
 NotExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+NumberExpression::NumberExpression(Number number)
+    : Expression()
+    , m_number(number)
+{
 }
 
 void
@@ -135,6 +176,17 @@ NumberExpression::AcceptCodeGenerator(CodeGenerator &cg)
     cg.Codegen(this);
 }
 
+CastExpression::CastExpression(NumberType cast_to, Expression *casted_expr)
+    : Expression()
+    , m_cast(cast_to)
+    , m_expr(casted_expr)
+{
+}
+
+CastExpression::~CastExpression() {
+    delete m_expr;
+}
+
 void
 CastExpression::Dump(unsigned indent) const
 {
@@ -153,6 +205,17 @@ void
 CastExpression::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+IdExpression::IdExpression(std::string *id_name)
+    : Expression()
+    , m_id(id_name)
+{
+}
+
+IdExpression::~IdExpression()
+{
+    delete m_id;
 }
 
 void
@@ -190,6 +253,20 @@ IdExpression::GetType(SymbolTable const &symbol_table) const
     }
 }
 
+BinaryExpression::BinaryExpression(Expression *exp1, Expression *exp2, Operator op)
+    : Expression()
+    , m_lhsExpr(exp1)
+    , m_rhsExpr(exp2)
+    , m_op(op)
+{
+}
+
+BinaryExpression::~BinaryExpression()
+{
+    delete m_lhsExpr;
+    delete m_rhsExpr;
+}
+
 void
 BinaryExpression::Dump(unsigned indent) const
 {
@@ -224,6 +301,18 @@ BinaryExpression::GetType(SymbolTable const &symbol_table) const
     return NumberType::INT;
 }
 
+AssignStatement::AssignStatement(std::string *id, Expression *expr)
+    : m_id(id)
+    , m_expr(expr)
+{
+}
+
+AssignStatement::~AssignStatement()
+{
+    delete m_expr;
+    delete m_id;
+}
+
 void
 AssignStatement::Dump(unsigned indent) const
 {
@@ -242,6 +331,17 @@ void
 AssignStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+OutputStatement::OutputStatement(Expression *expr)
+    : Statement()
+    , m_expr(expr)
+{
+}
+
+OutputStatement::~OutputStatement()
+{
+    delete m_expr;
 }
 
 void
@@ -264,6 +364,16 @@ OutputStatement::AcceptCodeGenerator(CodeGenerator &cg)
     cg.Codegen(this);
 }
 
+InputStatement::InputStatement(std::string *id)
+    : m_id(id)
+{
+}
+
+InputStatement::~InputStatement()
+{
+    delete m_id;
+}
+
 void
 InputStatement::Dump(unsigned indent) const
 {
@@ -281,6 +391,22 @@ void
 InputStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+IfStatement::IfStatement(BoolExpression *condition, Statement *then_stmt,
+                         Statement *else_stmt)
+    : Statement()
+    , m_conditionExpr(condition)
+    , m_thenBranch(then_stmt)
+    , m_elseBranch(else_stmt)
+{
+}
+
+IfStatement::~IfStatement()
+{
+    delete m_conditionExpr;
+    delete m_thenBranch;
+    delete m_elseBranch;
 }
 
 void
@@ -303,6 +429,19 @@ void
 IfStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+WhileStatement::WhileStatement(BoolExpression *condition, Statement *body)
+    : Statement()
+    , m_conditionExpr(condition)
+    , m_bodyStatement(body)
+{
+}
+
+WhileStatement::~WhileStatement()
+{
+    delete m_conditionExpr;
+    delete m_bodyStatement;
 }
 
 void
@@ -346,6 +485,13 @@ BreakStatement::AcceptCodeGenerator(CodeGenerator &cg)
     cg.Codegen(this);
 }
 
+StatementList::~StatementList()
+{
+    for (auto stmt : m_statements) {
+        delete stmt;
+    }
+}
+
 void
 StatementList::Dump(unsigned indent) const
 {
@@ -367,6 +513,17 @@ void
 StatementList::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+SwitchStatement::~SwitchStatement()
+{
+    delete m_expr;
+
+    for (auto [_, stmt] : m_cases) {
+        delete stmt;
+    }
+
+    delete m_defaultCase;
 }
 
 void
@@ -397,6 +554,12 @@ void
 SwitchStatement::AcceptCodeGenerator(CodeGenerator &cg)
 {
     cg.Codegen(this);
+}
+
+Program::~Program()
+{
+    delete m_declarationBlock;
+    delete m_programStatements;
 }
 
 void

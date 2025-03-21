@@ -1,6 +1,16 @@
+//===-- Module.hpp --------------------------------------------------------===//
+//
+// The `Module` class represents a compilation module for a single .ou file,
+// encapsulating parsing, semantic analysis, and code generation phases. It
+// manages the module's status, input file, AST, symbol table, and generated
+// assembly. The class provides methods for error handling, parsing, semantic
+// analysis, and code generation, and includes debugging utilities for dumping
+// the AST and symbol table.
+//
 //===----------------------------------------------------------------------===//
-// CPL to Quad Transpiler
+//
 // Author: Ron Shabi
+//
 //===----------------------------------------------------------------------===//
 
 #pragma once
@@ -71,7 +81,7 @@ public:
 
     /// \brief Returns true if the module has no errors whatsoever, false
     /// otherwise.
-    
+
     int
     IsOK() const
     {
@@ -159,8 +169,8 @@ private:
     ModuleStatus     m_status = ModuleStatus::Ok;
     std::string      m_fileName;
     unsigned         m_currentLineNo = 0;
-    FILE            *m_filePtr        = nullptr;
-    AstNode         *m_ast             = nullptr;
+    FILE            *m_filePtr       = nullptr;
+    AstNode         *m_ast           = nullptr;
     SemanticAnalyzer m_semanticAnalyzer;
     SymbolTable      m_symbolTable;
     CodeGenerator    m_codeGenerator;

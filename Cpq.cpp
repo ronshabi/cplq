@@ -1,9 +1,21 @@
 //===-- Cpq.cpp -----------------------------------------------------------===//
 //
+// This is the main entry point for the compiler.
+// We do that by creating a `Module` class and passing the path of the source
+// file we want to compile to it. Additionally, we assign the global pointer
+// g_module to the module created in the main function here, to have Bison
+// interact with it.
 //
+// The global module pointer will not be a dangling pointer, because its
+// lifetime is exactly the lifetime of the entire program run, and Bison is not
+// called before this pointer is assigned to the only module in memory, which is
+// the module created here.
 //
 //===----------------------------------------------------------------------===//
-
+//
+// Author: Ron Shabi
+//
+//===----------------------------------------------------------------------===//
 
 #include <iostream>
 
@@ -16,9 +28,7 @@ Module *g_module;
 void
 usage(int exit_code = 1)
 {
-    std::cerr << "cplq compiler\nusage: ./cplq <source-file.ou> [command]\n\n";
-    std::cerr << "available commands:\n";
-    std::cerr << "    --dump-ast           Dumps the AST to stdout\n";
+    std::cerr << "cplq compiler\nusage: ./cplq <source-file.ou> [command]\n";
     exit(exit_code);
 }
 

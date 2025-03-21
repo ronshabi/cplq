@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# IMPORTANT: use `make test` to invoke this. Do NOT invoke directly.
+
+# Script for testing, which includes:
+# 1. Running the compiler on every test in tests/{,basic,given,switch}
+#    All tests in these directories should pass.
+# 2. Running the VM on the test output
+# 3. Comparing VM output to the exp file (done through the VM itself)
+#
+# If one of these steps fail, the testsuite stops and reports an error.
+
+
 for f in tests/{,basic/,given/,switch/}*.ou; do
     PUREFILE=${f%%.ou}
     echo "--" $f
